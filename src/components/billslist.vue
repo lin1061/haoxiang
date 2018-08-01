@@ -1,18 +1,18 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/back.png" class="back">
-            <span class="title">其他</span>
-        </header>
+        <!--<header>-->
+            <!--<img src="../assets/images/back.png" class="back">-->
+            <!--<span class="title">其他</span>-->
+        <!--</header>-->
         <main>
-            <div class="list-item">
+            <div class="list-item clearfix">
                 <div class="list-itemtop">
                     <span class="list-title1">成都叮叮驾到科技有限公司</span>
                     <span class="list-title2">企业</span>
                     <span class="list-title2 list-title3">gaieur guiheqruighiu</span>
                 </div>
-                <div class="list-itembottom">
+                <div class="list-itembottom clearfix">
                     <img src="../assets/images/mr@2x.png" alt="" class="mr">
                     <div class="list-ritem">
                         <div class="list-ritem1">
@@ -26,13 +26,13 @@
                     </div>
                 </div>
             </div>
-            <div class="list-item">
-                <div class="list-itemtop">
+            <div class="list-item clearfix">
+                <div class="list-itemtop clearfix">
                     <span class="list-title1">成都叮叮驾到科技有限公司</span>
                     <span class="list-title2">企业</span>
                     <span class="list-title2 list-title3">gaieur guiheqruighiu</span>
                 </div>
-                <div class="list-itembottom">
+                <div class="list-itembottom clearfix">
                     <img src="../assets/images/sw@2x.png" alt="" class="mr sw">
                     <div class="list-ritem">
                         <div class="list-ritem1">
@@ -46,13 +46,13 @@
                     </div>
                 </div>
             </div>
-
-        </main>
-        <footer>
             <button class="anniu">
                 <span class="anniu-wenzi">添加新发票抬头</span>
             </button>
-        </footer>
+        </main>
+
+
+
     </div>
 </template>
 
@@ -171,15 +171,16 @@
         left:8.5vw;
     }
     .anniu{
-        width: 6.36rem;
+        width: 100%;
         height: 1.78rem;
         display: block;
         margin:0 auto;
-        margin-top:0.78rem;
+        margin-top:5.68rem;
         border:none;
         outline:none;
         background-color: #fff;
         background:url(../assets/images/button.png) no-repeat center;
+
     }
     .anniu-wenzi{
         font-size:0.36rem;

@@ -1,18 +1,18 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">好象会员</span>
-        </header>
+        <!--<header class="clearfix">-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">好象会员</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <div class="cardshow">
                 <span class="carshow-title">体验无差价购物</span>
                 <span class="carshow-title carshow-title1">9天最高可买1000元</span>
             </div>
-            <span class="hy-title">会员特权</span>
-            <div class="tequan">
+            <span class="hy-title ">会员特权</span>
+            <div class="tequan clearfix">
                 <div class="tequan-item">
                     <img src="../assets/images/gift@2x.png" class="tetu">
                     <span class="tetitle">会员活动</span>
@@ -27,25 +27,25 @@
                 </div>
             </div>
             <span class="hy-title">办卡须知</span>
-            <div class="tequan">
+            <div class="tequan clearfix">
 
             </div>
             <span class="hy-title">持卡人信息</span>
             <div class="tequan tequan1">
-                <div class="name">
+                <div class="name clearfix">
                     <span class="hy-name">姓名</span>
                     <input type="text" class="namekuan" placeholder="请填写真实姓名">
                 </div>
-                <div class="name">
+                <div class="name clearfix">
                     <span class="hy-name phone">电话</span>
                     <input type="text" class="namekuan" placeholder="请确保手机号无误">
                 </div>
-                <div class="name school">
+                <div class="name school clearfix">
                     <span class="hy-name">学校</span>
                     <input type="text" class="namekuan" placeholder="请确保所选校区无误">
                     <img src="../assets/images/hyd@2x.png" class="hyaddr">
                 </div>
-                <img src="../assets/images/x_1@2x.png" class="gou">
+                <div class="gou"></div>
                 <span class="tong">我已阅读并同意<a>[会员协议]</a></span>
             </div>
         </main>
@@ -74,7 +74,10 @@
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.32rem;
+        line-height: 0.50rem;
+        position: fixed;
+        top:0;
+        left:0;
     }
     .back{
         width: 0.34rem;
@@ -85,6 +88,10 @@
         font-size:0.30rem;
         color:#fff;
         margin-left:2.20rem;
+    }
+    main{
+        width: 100%;
+        /*margin-top: 0.88rem;*/
     }
     .cardshow{
         width: 100%;
@@ -119,6 +126,7 @@
         margin-top: 0.26rem;
         float:left;
         margin-bottom: 0.23rem;
+        position: relative;
         background: url("../assets/images/hybg@2x.png") no-repeat center/cover;
     }
     .tetu{
@@ -156,7 +164,7 @@
     }
     .name{
         width: 6.25rem;
-        height: 0.96rem;
+        /*height: 0.96rem;*/
         border-bottom:0.01rem solid #e4e4e4;
         margin:0 auto;
 
@@ -172,13 +180,15 @@
     }
     .namekuan{
         width: 5.00rem;
-        height: 0.90rem;
+        /*height: 0.90rem;*/
         display: block;
         border: none;
         outline: none;
         float:left;
+        line-height: 0.9rem;
         font-size: 0.28rem;
         margin-top: 0.05rem;
+        background-color: transparent;
     }
     .school{
         height: 0.98rem;
@@ -232,6 +242,7 @@
         display: block;
         float:left;
         margin:0.22rem 0.14rem 0.24rem 0.65rem;
+        background: url("../assets/images/x_1@2x.png") no-repeat center/cover;
     }
     .tong{
         font-size:0.24rem;
@@ -243,5 +254,16 @@
     .tong a{
         color:#f9444d;
     }
+    main{
+        width: 100%;
+        height: auto;
+        float:left;
+        margin-bottom: 0.85rem;
+    }
+    .gou:hover{
+        background: url("../assets/images/x_2@2x.png") no-repeat center/cover;
+    }
+
+
 
 </style>

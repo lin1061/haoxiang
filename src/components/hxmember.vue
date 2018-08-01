@@ -1,15 +1,15 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">好象会员</span>
-        </header>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">好象会员</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <!--会员卡-->
-            <section class="card">
-                <div class="card-rtop">
+            <section class="card clearfix">
+                <div class="card-rtop clearfix">
                     9天
                 </div>
                 <span class="card-title">体验无差价购物</span>
@@ -17,23 +17,23 @@
                 <span class="card-title3">好象有货体验卡</span>
                 <button class="anniu">￥9.90</button>
             </section>
-            <section class="card card1">
-                <div class="card-rtop">
-                    9天
+            <section class="card card1 clearfix">
+                <div class="card-rtop clearfix">
+                    6个月
                 </div>
                 <span class="card-title">半年内无差价购物</span>
                 <span class="card-title card-title1">享受最新你会员活动</span>
                 <span class="card-title3">好象有货半年卡</span>
-                <button class="anniu">￥9.90</button>
+                <button class="anniu">￥89.90</button>
             </section>
             <section class="card card1">
-                <div class="card-rtop">
-                    9天
+                <div class="card-rtop clearfix">
+                    12个月
                 </div>
                 <span class="card-title">会员活动优先参与</span>
                 <span class="card-title card-title1">预计全年省钱2000元以上</span>
                 <span class="card-title3">好象有货年卡</span>
-                <button class="anniu">￥9.90</button>
+                <button class="anniu">￥189.90</button>
             </section>
         </main>
     </div>
@@ -46,14 +46,15 @@
 </script>
 
 <style scoped>
-    body{
-        background: #f5f5f5;
-    }
+
     header{
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.32rem;
+        line-height: 0.50rem;
+        position: fixed;
+        top:0;
+        left:0;
     }
     .back{
         width: 0.34rem;
@@ -65,6 +66,10 @@
         color:#fff;
         margin-left:2.20rem;
     }
+    main{
+        width: 100%;
+        /*margin-top: 0.95rem;*/
+    }
     .card{
         width: 7.32rem;
         height: 4.89rem;
@@ -74,10 +79,11 @@
         background: url("../assets/images/组1@2x.png") no-repeat center/cover;
     }
     .card-rtop{
-        width: 0.88rem;
+        width: auto;
         height: 0.53rem;
         background: #fff;
         float:right;
+        padding:0rem 0.2rem;
         -webkit-border-radius: 0.5rem;
         -moz-border-radius: 0.5rem;
         border-radius: 0.5rem;
@@ -106,7 +112,7 @@
         display: block;
         text-align: center;
         line-height: 0.34rem;
-        padding-top: 0.73rem;
+        padding-top: 0.60rem;
     }
     .anniu{
         width: 1.84rem;
@@ -125,5 +131,5 @@
     }
     .card1{
         margin-top: 0;
-    }a
+    }
 </style>

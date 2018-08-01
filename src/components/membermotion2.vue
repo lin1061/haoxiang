@@ -1,62 +1,52 @@
 <template>
     <div id="main">
-        <!--头部-->
-        <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">好象会员</span>-->
-        <!--</header>-->
-        <!--内容-->
-        <main>
+        <div class="zhezhao">
             <!--会员卡-->
-            <section class="card clearfix">
-                <div class="card-rtop clearfix">
-                    已过期
+            <section class="card">
+                <div class="card-rtop">
+                    9天
                 </div>
                 <span class="card-title">7744-0494-9480-954</span>
                 <div class="tiaoma"></div>
-                <span class="card-title3">好象有货半年卡</span>
-                <button class="anniu">立即续费</button>
+                <span class="card-title3">好象有货体验卡</span>
+                <span class="card-title4">线下消费时，请出示此卡享受优惠</span>
             </section>
-        </main>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: "memberover"
+        name: "membermotion2"
     }
 </script>
 
 <style scoped>
-    header{
-        width: 100%;
-        height: 0.88rem;
-        background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.50rem;
-    }
-    .back{
-        width: 0.34rem;
-        height: 0.24rem;
-        margin-left:0.32rem;
-    }
-    .title{
-        font-size:0.30rem;
-        color:#fff;
-        margin-left:2.20rem;
+    .zhezhao{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
     }
     .card{
         width: 7.32rem;
         height: 4.89rem;
         background: #ff1c8b;
-        margin:0 auto;
-        margin-top:0.16rem;
+        position:fixed;
+        top:4.23rem;
+        left:0;
+        right:0;
+        margin:auto;
         background: url("../assets/images/组1@2x.png") no-repeat center/cover;
     }
     .card-rtop{
-        width: 1.25rem;
+        width: auto;
         height: 0.53rem;
         background: #fff;
         float:right;
+        padding:0rem 0.2rem;
         -webkit-border-radius: 0.5rem;
         -moz-border-radius: 0.5rem;
         border-radius: 0.5rem;
@@ -87,20 +77,13 @@
         line-height: 0.34rem;
         padding-top: 0.45rem;
     }
-    .anniu{
-        width: 1.84rem;
-        height: 0.60rem;
-        background: pink;
-        margin:0 auto;
-        border: none;
+    .card-title4{
+        font-size:0.28rem;
+        color:#555555;
         display: block;
-        outline: none;
-        margin-top: 0.19rem;
-        font-size:0.32rem;
-        /*font-weight: bold;*/
+        padding-top: 0.30rem;
+        line-height: 0.28rem;
         text-align: center;
-        color:#fff;
-        background: url("../assets/images/buttonhy@2x.png") no-repeat center/cover;
     }
     .tiaoma{
         width: 4.6rem;

@@ -1,10 +1,10 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <span class="back">xxx</span>
-            <span class="title">订单详情</span>
-        </header>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">订单详情</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <div class="order-box1">
@@ -14,12 +14,12 @@
                 <span>订单号：39839053</span>
                 <img src="../assets/images/fz@2x.png" class="copy">
             </div>
-            <div class="order-info">
+            <div class="order-info clearfix">
                 <span class="order-man">收货人：陈祥明</span>
                 <span class="order-phone">135****8899</span>
                 <span class="order-address">四川大学锦江学院1栋208号（可选择自提服务）</span>
             </div>
-            <div class="order-mitem">
+            <div class="order-mitem clearfix">
                 <div class="order-tu">
                     <img src="../assets/images/tu@2x.png" alt="">
                 </div>
@@ -28,7 +28,7 @@
                 <span class="order-price">￥65</span>
                 <span class="order-num">x2</span>
             </div>
-            <div class="paybox">
+            <div class="paybox clearfix">
                 <div class="order-box1 pay-title1">
                     <span>待支付</span>
                     <span class="pay-title">在线支付</span>
@@ -57,10 +57,10 @@
                     <span >实付金额</span>
                     <span class="pay-title">￥65.00</span>
                 </div>
-                <div class="order-active">
+                <div class="order-active clearfix">
                     <span class="time">自动取消: 14:29</span>
-                    <img src="image/qx@2x.png" alt="" class="cancel">
-                    <img src="image/zf@2x.png" alt="" class="cancel pay">
+                    <img src="../assets/images/qx@2x.png" alt="" class="cancel">
+                    <img src="../assets/images/zf@2x.png" alt="" class="cancel pay">
                 </div>
             </div>
             <div class="imgbox">
@@ -77,24 +77,29 @@
 </script>
 
 <style scoped>
-    body{
-        background: #f5f5f5;
-    }
     header{
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.32rem;
+        line-height: 0.50rem;
+        position: fixed;
+        top:0;
+        left:0;
+        z-index:99;
     }
     .back{
-        font-size:0.22rem;
-        color:#fff;
+        width: 0.34rem;
+        height: 0.24rem;
         margin-left:0.32rem;
     }
     .title{
         font-size:0.30rem;
         color:#fff;
         margin-left:2.20rem;
+    }
+    main{
+        width: 100%;
+        /*margin-top: 0.88rem;*/
     }
     .order-box1{
         width: 100%;

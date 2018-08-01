@@ -1,13 +1,13 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
+        <header class="clearfix">
             <img src="../assets/images/backWhite.png" class="back">
             <span class="title">我的订单</span>
         </header>
         <!--内容-->
         <main>
-            <div class="nav">
+            <div class="nav clearfix">
                 <div class="nav-item">
                     <span>全部</span>
                     <img src="../assets/images/d@2x.png" alt="" class="xian">
@@ -25,9 +25,11 @@
                     <span>已完成</span>
                 </div>
             </div>
-            <div class="bg"></div>
-            <span class="note1">您还没有相关订单</span>
-            <span class="note1 note2">去看看有什么想买的</span>
+            <div class="bg">
+                <span class="note1">您还没有相关订单</span>
+                <span class="note1 note2">去看看有什么想买的</span>
+            </div>
+
         </main>
     </div>
 </template>
@@ -39,11 +41,16 @@
 </script>
 
 <style scoped>
+    #main{
+        background-color: #fff;
+        width: 100vw;
+        height: 100vh;
+    }
     header{
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.32rem;
+        line-height: 0.50rem;
     }
     .back{
         width: 0.34rem;
@@ -59,6 +66,7 @@
         width: 100%;
         height: 0.83rem;
         border-bottom:0.01rem solid #d4d7da;
+        background-color: #fff;
     }
     .nav-item{
         width: 25vw;
@@ -101,13 +109,13 @@
         color:#a2a2a2;
         text-align: center;
         position:absolute;
-        bottom:6.01rem;
+        bottom:5.01rem;
         left:0;
         right:0;
         margin:auto;
     }
     .note2{
-        bottom:5.54rem;
+        bottom:4.54rem;
         font-size:0.22rem;
     }
 </style>

@@ -1,14 +1,14 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">商家详情</span>
-            <img src="../assets/images/fx@2x.png" class="share">
-        </header>
+        <!--<header class="clearfix">-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">商家详情</span>-->
+            <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
+        <!--</header>-->
         <!--内容-->
         <main>
-            <div class="shop">
+            <div class="shop clearfix">
                 <div class="shop_jieshao">
                     <span class="shop-name">大风炊成都老火锅（玉林西路店）</span>
                     <span class="shop-juli">320m</span>
@@ -17,7 +17,7 @@
                 <span class="shop-time">00.00-00.00</span>
                 <span class="shop-time shop-jia">￥45/人</span>
 
-                <div class="tushow">
+                <div class="tushow ">
                     <div class="tushou-item">
                         <img src="../assets/images/nn@2x.png">
                     </div>
@@ -29,8 +29,8 @@
                     </div>
 
                 </div>
-                <div class="tushow-addr">
-                    <span class="diwei">xxx</span>
+                <div class="tushow-addr clearfix">
+                    <img class="aimg" src="../assets/images/ad@2x.png">
                     <span class="diwei diwei1">成都市武侯区玉林西路22号</span>
                     <img src="../assets/images/dh@2x.png" class="pimg">
                 </div>
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <!--菜品推荐-->
-            <section class="caipin">
+            <section class="caipin clearfix">
                 <div class="caipin-title">菜品推荐</div>
                 <div class="caipin-item">
                     <img src="../assets/images/Image@2x.png" class="caipin-image">
@@ -75,14 +75,15 @@
 </script>
 
 <style scoped>
-    body{
-        background: #f5f5f5;
-    }
+
     header{
         width: 100%;
         height: 6vh;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
         line-height: 0.32rem;
+        position: fixed;
+        left:0;
+        top:0;
     }
     .back{
         width: 0.34rem;
@@ -101,6 +102,10 @@
         margin-right:0.38rem;
         margin-top: 0.25rem;
         float:right;
+    }
+    main{
+        width: 100%;
+        /*margin-top: 0.8rem;*/
     }
     .shop{
         width: 100%;
@@ -162,6 +167,13 @@
         width: 100%;
         height: auto;
         float:left;
+    }
+    .aimg{
+        width: 0.25rem;
+        height: 0.33rem;
+        display: block;
+        float:left;
+        margin:0.22rem 0 0 0.36rem;
     }
     .diwei{
         font-size:0.31rem;
