@@ -1,0 +1,47 @@
+// dpr是2的时候缩放0.7倍
+@media (-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5){
+  .border-1px{
+    &:after{
+    -webkit-transform: scaleY(0.7); 
+      transform: scaleY(0.7);
+      } 
+  }
+}
+ // dpr是2的时候缩放0.5倍
+@media (-webkit-min-device-pixel-ratio: 2),(min-device-pixel-ratio: 2){
+  .border-1px{
+    &:after {
+      -webkit-transform: scaleY(0.5); 
+      transform: scaleY(0.5);
+      }
+  }
+}
+// 减去图标
+.minus{
+  background: url(../images/jh@2x.png) no-repeat;
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  background-size: 0.4rem 0.4rem;
+}
+// 增加图标
+.add{
+  background: url(../images/jhh@2x.png) no-repeat;
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  background-size: 0.4rem 0.4rem;
+}
+// 复选框
+.seller-checkbox{
+  background: url(../images/y@2x.png) no-repeat;
+  width: 0.32rem;
+  height: 0.32rem;
+  background-size: 0.32rem 0.32rem;
+  display: inline-block;
+  // 选中
+  &.checked{
+    background: url(../images/wc@2x.png) no-repeat;
+    background-size: 0.32rem 0.32rem;
+  }
+}

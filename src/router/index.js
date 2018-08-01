@@ -25,6 +25,7 @@ const Membermotion1 = r => require.ensure([], () => r(require('@/components/hxme
 const Membermotion2 = r => require.ensure([], () => r(require('@/components/hxmember')), 'membermotion2')
 const Tourmore = r => require.ensure([], () => r(require('@/components/hxmember')), 'tourmore')
 const Collect = r => require.ensure([], () => r(require('@/components/hxmember')), 'collect')
+const Shopcart = r => require.ensure([], () => r(require('@/components/shopcart')), 'shopcart')
 
 Vue.use(Router)
 
@@ -168,7 +169,12 @@ export default new Router({
             name: 'collect',
             component: Collect
         },
-
+        // 购物车
+        {
+            path: '/shopcart',
+            name: 'shopcart',
+            component: Shopcart
+        }
 
 
     ]
