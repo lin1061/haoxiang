@@ -95,7 +95,12 @@
         <footer class="footer">
         	<div class="footer-vip">成为好象会员，享受会员特权。立即开通></div>
         	<div class="footer-cont">
-        		开发中
+        		<div class="seller-checkbox checked">全选</div>
+        		<div class="footer-num">
+        			<p class="num1"><label>合计：</label><span>¥ 130</span></p>
+        			<p class="num2">不含运费</p>
+        		</div>
+        		<div class="footer-btn">去结算(3)</div>
         	</div>
         </footer>
     </div>
@@ -240,9 +245,49 @@
 	    		background: #b5b6b7;
 	    	}
 	    	.footer-cont{
-	    		height: (1.4-0.4)rem;
+	    		height: 1rem;
 	    		display: flex;
 	    		align-items: center;
+	    		.seller-checkbox{
+	    			font-size: 0.28rem;
+	    			width: 1.15rem;
+	    			padding-left: 0.5rem;
+	    			height: 0.4rem;
+	    			background-position: left center;
+	    			margin-left: 0.24rem;
+	    			margin-right: 0.5rem;
+	    		}
+	    	}
+	    	.footer-num{
+	    		flex: 1;
+	    	}
+	    	.num1{
+	    		font-size: 0;
+	    		text-align: right;
+	    		label{
+	    			font-size: 0.36rem;
+	    			color: #282828;
+	    		}
+	    		span{
+	    			font-size: 0.32rem;
+	    			color: #fc5459;
+	    		}
+	    	}
+	    	.num2{
+	    		text-align: right;
+	    		font-size: 0.24rem;
+	    		color: #8a959e;
+	    	}
+	    	.footer-btn{
+	    		width: 2.8rem;
+	    		height: 1rem;
+	    		text-align: center;
+	    		color: #fff;
+	    		font-size: 0.38rem;
+	    		background: url(../assets/images/header@2x.png);
+	    		background-size: 2.8rem 1rem;
+	    		line-height: 1rem;
+	    		margin-left: 0.34rem;
 	    	}
 	    }
 	}
