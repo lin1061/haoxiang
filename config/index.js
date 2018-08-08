@@ -10,7 +10,15 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+      proxyTable: {
+          '/api': {
+              //target代表源地址
+              target: 'http://total.googlehack.cn',
+              changeOrigin: true, //允许跨域
+
+          }
+
+      },
 
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST

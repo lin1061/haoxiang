@@ -6,6 +6,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 import './assets/js/rem.js'
+import axios from 'axios'
+Vue.prototype.$axios = axios;
+axios.defaults.baseURL = '/api'
 router.beforeEach(function (to, from, next) {
   store.commit('updateLoadingStatus', {isLoading: true})
   next()

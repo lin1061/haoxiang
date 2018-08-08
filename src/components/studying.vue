@@ -2,45 +2,45 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">出国留学</span>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">出国留学</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
-            <div class="huodong">
-                <div class="banner">
+            <div class="huodong" >
+                <Swiper class="banner" height="5.07rem">
+                    <img :src="goods.img_path" alt="">
                     <div class="pager">
                         5/5
                     </div>
-                </div>
-                <span class="hudong-title">日本东京暑假短期游学 日本短期留学游学东京横滨大阪京都中介</span>
+                </Swiper>
+                <span class="hudong-title">{{goods.name}}</span>
 
                 <div class="xiaoqu clearfix">
-                    <span class="price">市场价:￥3180/人</span>
-                    <span class="addr">当前校区:四川大学锦城学院</span>
+                    <span class="price">市场价:￥{{goods.original_price}}/人</span>
+                    <span class="addr">当前校区:{{schoolname}}</span>
                     <img src="../assets/images/wz@2x.png" class="wz">
                 </div>
                 <div class="xiaoqu clearfix">
-                    <span class="huiprice">会员价:￥2405/人</span>
-                    <span class="chajia">已省400元</span>
-                    <span class="numb">销量:168件</span>
+                    <span class="huiprice">会员价:￥{{goods.membership_price}}/人</span>
+                    <span class="chajia">已省{{goods.earnest_money}}元</span>
+                    <span class="numb">销量:{{goods.sales_volume}}件</span>
                 </div>
-                <span class="huititle">已选: <span class="schools">东京大学</span></span>
-                <img src="../assets/images/ddd@2x.png" class="more">
+                <span class="huititle">已选: <span class="schools">{{goodsname}}</span></span>
+                <img src="../assets/images/ddd@2x.png" class="more" @click="yuyue">
             </div>
-            <div class="xiangqin"></div>
+            <div class="xiangqin clearfix" v-html="goods.describe"></div>
         </main>
         <footer>
             <button class="yuyue" @click="yuyue">立即预约</button>
-            <div class="zhezhao" v-show="showbox">
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="yuyuemore">
-                    <span class="huititle1">会员价:￥65.00 <span class="shijia">市场价:<span class="oldjia">￥3180/人</span></span></span>
+                    <span class="huititle1">会员价:￥{{original_price}}<span class="shijia">市场价:<span class="oldjia">￥{{membership_price}}/人</span></span></span>
 
                     <span class="style ">类型:</span>
-                    <div class="stylebox clearfix">
-                        <div class="style1">东京大阪</div>
-                        <div class="style1 style2">大阪</div>
-                        <div class="style1 style2">京都</div>
+                    <div class="stylebox clearfix" >
+                        <button class="style1" v-for="(item,index) in goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
+
                     </div>
                     <div class="close" @click="close">X</div>
                     <span class="num">数量:</span>
@@ -56,26 +56,47 @@
 </template>
 
 <script>
+    import { Swiper } from 'vux'
     export default {
         name: "studying",
         data(){
             return{
                 showbox:false,
-                num:0
+                num:0,
+                goods:[],
+                goodsname:"",
+                schoolname:"",
+                original_price:"",
+                membership_price:"",
+                name:""
             }
+        },
+        created:function () {
+            this.$axios.get('/goods/school_shop?university_id=1&goods_type=2').then(res=>{
+                this.goods=res.data.data;
+                this.schoolname=this.goods.university.name;
+                this.original_price=this.goods.goods_spec[0].original_price;
+                this.membership_price=this.goods.goods_spec[0].membership_price;
+            })
         },
         methods:{
             close(){
                 this.showbox=false;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='';//出现滚动条
-                document.removeEventListener("touchmove",mo,{passive:false});
+                // var mo=function(e){e.preventDefault();};
+                // document.body.style.overflow='';//出现滚动条
+                // document.removeEventListener("touchmove",mo,{passive:false});
             },
             yuyue(){
                 this.showbox=!this.showbox;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='hidden';
-                document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
+                // var mo=function(e){e.preventDefault();};
+                // document.body.style.overflow='hidden';
+                // document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
+
+            },
+            check(item,index){
+                this.goodsname=item.name;
+                this.original_price=item.original_price;
+                this.membership_price=item.membership_price;
             },
             add(){
                 this.num++;
@@ -86,6 +107,9 @@
                     this.num=0;
                 }
             }
+        },
+        components: {
+            Swiper
         }
     }
 </script>
@@ -125,9 +149,13 @@
     }
     .banner{
         width: 100%;
-        height: 5.07rem;
-        background-color: red;
+        height: auto;
         position: relative;
+    }
+    .banner img{
+        width: 100%;
+        height: 100%;
+
     }
     .pager{
         width: 0.71rem;
@@ -175,7 +203,7 @@
         display: block;
         position: absolute;
         right:0.33rem;
-        bottom:1.16rem;
+        top:0rem;
     }
     .huiprice{
         font-size:0.28rem;
@@ -190,6 +218,7 @@
     .xiaoqu{
         width: 100%;
         float:left;
+        position:relative;
     }
     .chajia{
         font-size:0.22rem;
@@ -223,10 +252,10 @@
     }
     .xiangqin{
         width: 100%;
-        height: 5.0rem;
         margin-bottom: 0.96rem;
         margin-top: 0.08rem;
-        background: red;
+        background: #fff;
+        padding:0.34rem;
     }
     .yuyue{
         width: 100%;
@@ -289,6 +318,8 @@
         line-height: 0.63rem;
         margin:0.28rem 0.18rem 0 0.53rem;
         float:left;
+        border:none;
+        outline: none;
     }
     .style2{
         margin-left:0;

@@ -31,6 +31,7 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  font-size:0.20rem;
 }
 *{
   margin: 0;           /*  body-8px */
@@ -40,6 +41,19 @@ body{
   list-style: none;
   -webkit-tap-highlight-color:rgba(0,0,0,0) ;
   box-sizing: border-box;
+}
+.clearfix:after
+{
+  content:".";
+  display:block;
+  height:0;
+  visibility:hidden;
+  clear:both;
+}
+.clearfix {
+  zoom:1;
+  display:block;
+  clear:both;
 }
 img{
   width: 25%;

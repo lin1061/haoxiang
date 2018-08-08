@@ -2,45 +2,51 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">叮叮驾考</span>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">叮叮驾考</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
             <div class="huodong">
-                <div class="banner">
+                <swiper class="banner" height="5.07rem">
+                    <img :src="travel_goods.img_path" alt="">
                     <div class="pager">
                         5/5
                     </div>
-                </div>
-                <span class="hudong-title">日本东京暑假短期游学 日本短期留学游学东京横滨大阪京都中介</span>
+                </swiper>
+                <span class="hudong-title">{{travel_goods.name}}</span>
 
                 <div class="xiaoqu clearfix">
-                    <span class="price">市场价:￥3180/人</span>
-                    <span class="addr">当前校区:四川大学锦城学院</span>
+                    <span class="price">市场价:￥{{travel_goods.original_price}}/人</span>
+                    <span class="addr">当前校区:{{schoolname}}</span>
                     <img src="../assets/images/wz@2x.png" class="wz">
                 </div>
                 <div class="xiaoqu clearfix">
-                    <span class="huiprice">会员价:￥2405/人</span>
-                    <span class="chajia">已省400元</span>
-                    <span class="numb">销量:168件</span>
+                    <span class="huiprice">会员价:￥2405.00/人</span>
+                    <span class="chajia">已省{{travel_goods.earnest_money}}元</span>
+                    <span class="numb">销量:{{travel_goods.sales_volume}}件</span>
                 </div>
-                <span class="huititle clearfix">已选: <span class="schools">东京大学</span></span>
-                <img src="../assets/images/ddd@2x.png" class="more clearfix">
+                <span class="huititle">已选: <span class="schools">{{data}}</span></span>
+                <img src="../assets/images/ddd@2x.png" class="more" @click="yuyue">
+
             </div>
-            <div class="xiangqin"></div>
+            <div class="xiangqin clearfix" v-html="travel_goods.describe"></div>
         </main>
         <footer>
             <button class="yuyue" @click="yuyue">立即预约</button>
-            <div class="zhezhao" v-show="showbox">
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="yuyuemore">
                     <span class="yudate">请选择出游日期</span>
                     <div class="close" @click="close">X</div>
-                    <!--<div class="canl">-->
-                    <calendara
-                            :start-date="new Date(2015,7)">
-                    </calendara>
-                    <!--</div>-->
+                    <div class="canl">
+                        <!--<calendara-->
+                        <!--:start-date="new Date(2015,7)">-->
+                        <!--</calendara>-->
+                        <Calendar
+                                v-on:choseDay="clickDay"
+                                v-on:changeMonth="changeDate">
+                        </Calendar>
+                    </div>
                     <div class="ok">
                         <span>定金: <span class="jiage">￥130元</span></span>
                         <button class="yuprice">立即预约</button>
@@ -53,28 +59,59 @@
 </template>
 
 <script>
-
-    import calendara from '@/components/calendara.vue'
+    import Calendar from './vue-calendar-component/index';
+    // import calendara from '@/components/calendara.vue'
+    import { Swiper } from 'vux'
+    const imgList = [
+        'http://placeholder.qiniudn.com/800x300/FF3B3B/ffffff',
+        'http://placeholder.qiniudn.com/800x300/FFEF7D/ffffff',
+        'http://placeholder.qiniudn.com/800x300/8AEEB1/ffffff'
+    ]
+    const demoList = imgList.map((one, index) => ({
+        url: 'javascript:',
+        img: one
+    }))
     export default {
         name: "tourmore",
         data(){
             return{
                 showbox:false,
-                num:0
+                num:0,
+                travel_goods:[],
+                data:"",
+                schoolname:"",
+                demo03_list: demoList,
             }
+        },
+        created:function () {
+            this.$axios.get('/goods/travel_goods_info?goods_id=2').then(res=>{
+                this.travel_goods=res.data.data;
+                this.schoolname=this.travel_goods.university.name;
+
+            })
         },
         methods:{
             close(){
                 this.showbox=false;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='';//出现滚动条
-                document.removeEventListener("touchmove",mo,{passive:false});
+                // var mo=function(e){e.preventDefault();};
+                // document.body.style.overflow='';//出现滚动条
+                // document.removeEventListener("touchmove",mo,{passive:false});
             },
             yuyue(){
                 this.showbox=!this.showbox;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='hidden';
-                document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
+                // var mo=function(e){e.preventDefault();};
+                // document.body.style.overflow='hidden';
+                // document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
+            },
+            clickDay(data) {
+                console.log(data)
+                this.data=data; //选中某天
+            },
+            changeDate(data) {
+                console.log(data); //左右点击切换月份
+            },
+            clickToday(data) {
+                console.log(data); //跳到了本月
             },
             add(){
                 this.num++;
@@ -86,8 +123,10 @@
                 }
             }
         },
+
         components: {
-            calendara: calendara
+            Calendar,
+            Swiper
         }
     }
 </script>
@@ -104,6 +143,11 @@
         z-index: 99;
 
     }
+    ul>li{
+        width: 100%!important;
+        height: auto!important;
+        text-align: center!important;
+    }
     .back{
         width: 0.34rem;
         height: 0.24rem;
@@ -119,16 +163,22 @@
     }
     .huodong{
         width: 100%;
-        height: 7.87rem;
+        height: auto;
         background: #fff;
         border-bottom:0.01rem solid #cccccc;
         position: relative;
+        overflow: hidden;
+        padding-bottom: 0.2rem
     }
     .banner{
         width: 100%;
-        height: 5.07rem;
-        background-color: red;
+        height: auto;
         position: relative;
+    }
+    .banner img{
+        width: 100%;
+        height: 100%;
+
     }
     .pager{
         width: 0.71rem;
@@ -176,7 +226,7 @@
         display: block;
         position: absolute;
         right:0.33rem;
-        bottom:1.16rem;
+        top:0rem;
     }
     .huiprice{
         font-size:0.28rem;
@@ -191,6 +241,7 @@
     .xiaoqu{
         width: 100%;
         float:left;
+        position: relative;
     }
     .chajia{
         font-size:0.22rem;
@@ -224,11 +275,12 @@
     }
     .xiangqin{
         width: 100%;
-        height: 5.0rem;
         margin-bottom: 0.96rem;
         margin-top: 0.08rem;
-        background: red;
+        background: #fff;
+        padding:0.34rem;
     }
+
     .yuyue{
         width: 100%;
         height: 0.96rem;
@@ -296,77 +348,6 @@
         text-align: center;
         padding-top: 0.40rem;
     }
-    .canl{
-        width: 6.25rem;
-        height: 6.25rem;
-        margin:0 auto;
-        margin-top:0.2rem;
-    }
-    ul{
-        list-style: none;
-    }
-    #schedule-box{
-        width: 6.5rem;
-        margin: 0 auto;
-        padding: 0.4rem 0.1rem;
-        font-size: 0.30rem;
-
-    }
-    .schedule-hd{
-        display: flex;
-        justify-content: space-between;
-        padding: 0 0.15rem;
-    }
-    .today{
-        flex: 1;
-        text-align: center;
-        color:#a2a2a2;
-    }
-    .ul-box{
-        overflow: hidden;
-    }
-    .ul-box > li{
-        float: left;
-        width: 14.28%;
-        /*font-size:0.28rem;*/
-        text-align: center;
-        padding: 0.27rem 0;
-    }
-    .other-month{
-        color: #999999;
-    }
-    .current-month{
-        color: #333333;
-    }
-    .today-style{
-        border-radius: 50%;
-        background: #58d321;
-    }
-    .arrow{
-        cursor: pointer;
-    }
-    .dayStyle{
-        display: inline-block;
-        width: 0.45rem;
-        height: 0.45rem;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 0.45rem;
-        cursor: pointer;
-    }
-    .current-month > .dayStyle:hover{
-        background: #f5f5f5;
-        color:#f84848;
-    }
-    .today-flag{
-        background: #f84848;
-        color: #fff;
-    }
-
-    .selected-style {
-        background: #00BDFF;
-        color: #ffffff;
-    }
     .yuprice{
         width: 2.76rem;
         height: 100%;
@@ -390,5 +371,16 @@
         position: fixed;
         top:0;
         left:0;
+    }
+    .list-paddingleft-2{
+        width: 100%;
+        height: 100%;
+    }
+    .canl{
+        margin-top: 0.30rem;
+        padding-left: 0.30rem;
+    }
+    .wh_content_all{
+        background-color: #fff;
     }
 </style>
