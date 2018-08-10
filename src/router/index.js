@@ -26,6 +26,8 @@ const Membermotion2 = r => require.ensure([], () => r(require('@/components/memb
 const Tourmore = r => require.ensure([], () => r(require('@/components/tourmore')), 'tourmore')
 const Collect = r => require.ensure([], () => r(require('@/components/collect')), 'collect')
 const Shopcart = r => require.ensure([], () => r(require('@/components/shopcart')), 'shopcart')
+const Activegood = r => require.ensure([], () => r(require('@/components/activegood')), 'activegood')
+const Signinfo = r => require.ensure([], () => r(require('@/components/signinfo')), 'signinfo')
 
 Vue.use(Router)
 
@@ -174,7 +176,19 @@ export default new Router({
             path: '/shopcart',
             name: 'shopcart',
             component: Shopcart
-        }
+        },
+        //活动商品详情页
+        {
+            path: '/activegood',
+            name: 'activegood',
+            component: Activegood
+        },
+        //报名信息
+        {
+            path: '/signinfo',
+            name: 'signinfo',
+            component: Signinfo
+        },
 
 
     ]
