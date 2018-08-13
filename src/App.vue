@@ -56,7 +56,7 @@ body{
   clear:both;
 }
 img{
-  width: 25%;
+  width: 100%;
   border: 0;
   display: inline-block;
 }

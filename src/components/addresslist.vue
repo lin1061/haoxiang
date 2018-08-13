@@ -2,28 +2,21 @@
     <div id="main">
         <!--头部-->
         <!--<header class="clearfix">-->
-            <!--<img src="../assets/images/back.png" class="back">-->
-            <!--<span class="title">收货地址</span>-->
+        <!--<img src="../assets/images/back.png" class="back">-->
+        <!--<span class="title">收货地址</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
-            <div class="list-item clearfix">
+            <div class="list-item clearfix" v-for="item in adr">
                 <div class="list-itemtop">
-                    <span class="list-title1">四川省成都市金牛区西南交通大学</span>
-                    <span class="list-title2">成祥明</span>
-                    <span class="list-title2 list-title3">135****8866</span>
+                    <span class="list-title1">{{item.address}}</span>
+                    <span class="list-title2">{{item.name}}</span>
+                    <span class="list-title2 list-title3">{{item.phone}}</span>
                 </div>
 
             </div>
-            <div class="list-item">
-                <div class="list-itemtop">
-                    <span class="list-title1">四川省成都市金牛区西南交通大学</span>
-                    <span class="list-title2">成祥明</span>
-                    <span class="list-title2 list-title3">135****8866</span>
-                </div>
-            </div>
             <button class="anniu">
-                <span class="anniu-wenzi">新增收货地址</span>
+                <span class="anniu-wenzi" @click="add">新增收货地址</span>
             </button>
         </main>
 
@@ -32,7 +25,27 @@
 
 <script>
     export default {
-        name: "addresslist"
+        name: "addresslist",
+        data(){
+            return{
+                adr:[]
+            }
+        },
+        mounted:function () {
+            let token=JSON.parse(localStorage.getItem('user')).token;
+            this.$axios.get('/user/addresses',
+                { headers: {
+                        'Authorization': 'Bearer ' + token,
+                    }}).then(res=>{
+                this.adr=res.data.data;
+                console.log(res.data.data)
+            })
+        },
+        methods:{
+            add:function () {
+                this.$router.push({name:'shouhuoadd'})
+            }
+        }
     }
 </script>
 
@@ -47,9 +60,9 @@
         top:0;
         left:0;
     }
-    main{
-        margin-top:1.07rem;
-    }
+    /*main{*/
+    /*margin-top:1.07rem;*/
+    /*}*/
     .back{
         width: 0.32rem;
         height: 0.22rem;

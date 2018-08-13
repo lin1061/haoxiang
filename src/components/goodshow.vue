@@ -2,28 +2,27 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">商品详情</span>-->
-            <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">商品详情</span>-->
+        <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
         <!--</header>-->
         <!--内容-->
         <main>
             <div class="good-info clearfix">
                 <div class="imgbox">
-                    <img src="../assets/images/banner2@2x.png" class="banner">
-                    <img src="../assets/images/Favourite@2x.png" class="love">
+                    <img :src="goods.goods_img" class="banner">
                 </div>
                 <p>
                     <span class="good-form">[门店自营]</span>
-                    <p class="description">三只松鼠乳_酸菌小伴侣面包 520gx2箱 营养早餐口袋零食</p>
+                <p class="description">{{goods.name}}</p>
                 </p>
                 <div class="price">
-                    <span class="oldprice">￥65</span>
-                    <span class="newprice">已省:￥55</span>
-                    <span class="number">销量：168件</span>
+                    <span class="oldprice">￥{{goods.member_price}}</span>
+                    <span class="newprice">已省:￥{{save_price}}</span>
+                    <span class="number">销量：{{goods.sales_volume}}件</span>
                 </div>
                 <div class="price">
-                    <span class="oldprice oldprice1">原价：￥55</span>
+                    <span class="oldprice oldprice1">原价：￥{{goods.market_price}}</span>
                     <img src="../assets/images/hy@2x.png"class="anniu" >
                 </div>
                 <div class="price price1">
@@ -40,58 +39,25 @@
             <!--商家详情-->
             <section class="goodsmore">
                 <div class="goostitle">商品详情</div>
-                <div class="imgsbox">
-                    <img src="../assets/images/gs@2x.png" alt="">
+                <div class="imgsbox" v-html="goods.description">
                 </div>
             </section>
             <!--优选好货-->
-            <section class="yx clearfix">
+            <ul class="yx clearfix">
                 <div class="youxuan">优选好货</div>
-                <div class="yx-item">
+                <li class="yx-item" v-for="item in goods.about_recommend">
                     <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
+                        <img :src="item.goods_img" class="goodstu">
                     </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
+                    <div class="yx-ginfo clearfix">
+                        <span class="yx-gname">{{item.goods_name}}</span>
+                        <span class="yx-newprice">￥{{item.shop_price}}</span>
                         <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
+                        <span class="yx-oldprice">原价:￥{{item.market_price}}元</span>
                     </div>
-                </div>
-                <div class="yx-item yx-item1">
-                    <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
-                    </div>
-                </div>
-                <div class="yx-item">
-                    <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
-                    </div>
-                </div>
-                <div class="yx-item yx-item1">
-                    <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
-                    </div>
-                </div>
-            </section>
+                </li>
+
+            </ul>
         </main>
 
         <!--底部-->
@@ -108,24 +74,29 @@
                 <button class="lijishop" @click="goodshow">立即购买</button>
                 <button class="lijishop lijishop1" @click="goodshow">加入购物车</button>
             </div>
-            <div class="zhezhao" v-show="showbox">
-                <div class="goods">
-                    <div class="goodsxtu"></div>
-                    <span class="sum">共计: <span class="prices">￥65.00</span></span>
-                    <span class="numbers">库存600件</span>
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
+                <div class="goods clearfix">
+                    <div class="goodsxtu">
+                        <img :src="style_img" alt="">
+                    </div>
+                    <span class="sum">共计: <span class="prices">￥{{style_price}}</span></span>
+                    <span class="numbers">库存{{style_stock}}件</span>
                     <div class="close" @click="close">x</div>
-                    <span class="style">类型:</span>
-                    <div class="stylebox">
-                        <div class="style1">120g</div>
-                        <div class="style1 style2">120g</div>
-                        <div class="style1 style2">120g</div>
+                    <div class="group" v-for="(item,index) in goods.spec_group">
+                        <span class="style">{{item.spec_name}}:</span>
+                        <div class="stylebox">
+                            <div class="style1" v-for="(value,index) in item.spec_value" @click="check(value,index)">{{value}}</div>
+                        </div>
                     </div>
 
-                    <span class="num">数量:</span>
-                    <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                    <span class="numadd">{{goodsnum}}</span>
-                    <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
-                    <div class="ok">选好了</div>
+                    <div class="choose">
+                        <span class="num">数量:</span>
+                        <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                        <span class="numadd">{{goodsnum}}</span>
+                        <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                    </div>
+
+                    <div class="ok" clearfix>选好了</div>
                 </div>
             </div>
 
@@ -138,22 +109,39 @@
         name: "goodshow",
         data () {
             return {
-               showbox:false,
-                goodsnum:0
+                showbox:false,
+                goodsnum:0,
+                goods:[],
+                names:"",
+                save_price:"",
+                style_img:"",
+                style_price:"",
+                style_stock:""
             }
+        },
+        mounted:function(){
+            this.$axios.get('/goods/detail?goods_id=11').then(res=>{
+                console.log(res.data.data);
+                this.goods=res.data.data;
+                this.save_price=this.goods.market_price-this.goods.member_price;
+
+
+                console.log(this.goods.spec_group);
+
+                // this.style_price=this.goods.info[0].member_price;
+            })
+        },
+        computed:{
+
         },
         methods:{
             goodshow(){
                 this.showbox=!this.showbox;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='hidden';
-                document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
+
             },
             close(){
                 this.showbox=false;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='';//出现滚动条
-                document.removeEventListener("touchmove",mo,{passive:false});
+
             },
             add(){
                 this.goodsnum++
@@ -164,13 +152,30 @@
                     this.goodsnum=0;
                 }
             },
+            check(value,index){
+                this.names=value;
+                console.log(this.names)
+
+
+            },
+
+
 
         }
     }
 </script>
 
 <style scoped>
-
+    .group{
+        width: 100%;
+        height: auto;
+        float:left;
+    }
+    .choose{
+        width: 100%;
+        height: 1.5rem;
+        float:left;
+    }
     header{
         width: 100%;
         height: 6vh;
@@ -200,8 +205,8 @@
         float:right;
     }
     /*main{*/
-        /*width: 100%;*/
-        /*margin-top:0.8rem;*/
+    /*width: 100%;*/
+    /*margin-top:0.8rem;*/
     /*}*/
     .good-info{
         width: 100%;
@@ -238,7 +243,7 @@
         color:#555555;
         display: block;
         padding-left:0.34rem;
-        padding-top:0.34rem;
+        padding-top:0.40rem;
         width: 7.0rem;
     }
     .oldprice{
@@ -283,7 +288,7 @@
         display: block;
     }
     .price1{
-        margin-top: 0.48rem;
+        /*margin-top: 0.48rem;*/
         padding-bottom: 0.16rem;
         border-bottom: 0.01rem solid #cccccc;
     }
@@ -309,7 +314,7 @@
     }
     .fuwu li img{
         width: 2.11rem;
-        height: 0.26rem;
+        /*height: 0.26rem;*/
         display: block;
         margin:0 auto;
         margin-top: 0.23rem;
@@ -331,7 +336,8 @@
     }
     .imgsbox{
         width: 100%;
-        height: 6.34rem;
+        height: auto;
+        background: #fff;
     }
     .imgsbox img{
         width: 100%;
@@ -354,12 +360,16 @@
     }
     .yx-item{
         width: 3.745rem;
-        height: 4.30rem;
+        /*height: 4.30rem;*/
         float:left;
+    }
+    .yx li:nth-child(2n+1){
+        float: right;
+        border-left:0.02rem solid #e5e5e5;
     }
     .box{
         width: 100%;
-        height: 3.07rem;
+        /*height: 3.07rem;*/
         border-bottom:0.01rem solid #e5e5e5;
         position: relative;
     }
@@ -370,15 +380,21 @@
 
     .yx-ginfo{
         width: 100%;
-        height: 1.22rem;
+        /*height: 1.22rem;*/
         background: #fff;
         padding-left: 0.21rem;
+
     }
     .yx-gname{
         font-size:0.22rem;
         color:#2c2c2c;
         display: block;
         padding-top: 0.12rem;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow: ellipsis;
+        width: 96%;
+
     }
     .yx-newprice{
         font-size:0.26rem;
@@ -403,12 +419,14 @@
         border-left:0.02rem solid #e5e5e5;
     }
     .yx-oldprice{
-        font-size:0.24rem;
-        color:#8a959e;
+        font-size: 0.24rem;
+        color: #8a959e;
         display: block;
-        float: right;
+        float: left;
+        width: 100%;
         padding-top: 0.13rem;
         margin-right: 0.12rem;
+        margin-bottom: 0.10rem;
     }
     .footbox{
         width: 100%;
@@ -473,7 +491,7 @@
     }
     .goods{
         width: 100%;
-        height: 6.72rem;
+        height: 8.6rem;
         background: #fff;
         position: fixed;
         left:0;
@@ -484,6 +502,10 @@
         height: 2.22rem;
         background: #f5f5f5;
         margin:0.35rem 0.22rem 0 0.45rem;
+    }
+    .goodsxtu img{
+        width: 100%;
+        height: 100%;
     }
     .sum{
         font-size:0.28rem;
@@ -520,21 +542,26 @@
     }
     .style{
         font-size:0.28rem;
-        color:#a2a2a2;
+        color:#555555;
         padding-left: 0.53rem;
         display: block;
         padding-top: 0.51rem;
     }
     .style1{
-        width: 1.26rem;
-        height: 0.63rem;
-        background: url("../assets/images/gg@2x.png") no-repeat center/cover;
+        /*width: 1.26rem;*/
+        height: 0.60rem;
+        background: #f5f5f5;
+        border-radius: 0.40rem;
+        padding: 0 0.20rem;
         font-size:0.26rem;
         color:#555555;
         text-align: center;
-        line-height: 0.63rem;
-        margin:0.28rem 0.18rem 0 0.53rem;
+        line-height: 0.60rem;
+        margin:0.28rem 0.18rem 0 0rem;
         float:left;
+    }
+    .style1:nth-child(n+2){
+        margin-left:0;
     }
     .style2{
         margin-left:0;
@@ -546,6 +573,7 @@
         width: 100%;
         height: auto;
         float: left;
+        padding-left: 0.53rem;
     }
     .num{
         display: block;

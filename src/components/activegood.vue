@@ -9,20 +9,18 @@
         <!--内容-->
         <main>
             <div class="good-info clearfix">
-                <div class="imgbox">
-                    <img src="../assets/images/banner2@2x.png" class="banner">
-                    <img src="../assets/images/Favourite@2x.png" class="love">
-                </div>
+                <Swiper class="imgbox" height="5.04rem" >
+                    <img :src="item" class="banner" v-for="item in active.banner_img">
+                </Swiper>
                 <p>
-                <p class="description">三只松鼠乳_酸菌小伴侣面包 520gx2箱 营养早餐口袋零食</p>
+                <p class="description">{{active.name}}</p>
                 </p>
                 <div class="price">
-                    <span class="oldprice">￥65</span>
-                    <span class="newprice">已省:￥55</span>
-                    <span class="number">销量：168件</span>
+                    <span class="oldprice">￥{{active.member_price}}</span>
+                    <span class="newprice">已省:￥{{active.saved_price}}</span>
                 </div>
                 <div class="price">
-                    <span class="oldprice oldprice1">原价：￥55</span>
+                    <span class="oldprice oldprice1">原价：￥{{active.original_price}}</span>
                     <img src="../assets/images/hy@2x.png"class="anniu" >
                 </div>
                 <div class="price price1">
@@ -39,58 +37,26 @@
             <!--商家详情-->
             <section class="goodsmore">
                 <div class="goostitle">商品详情</div>
-                <div class="imgsbox">
-                    <img src="../assets/images/gs@2x.png" alt="">
+                <div class="imgsbox" v-html="active.describe">
+
                 </div>
             </section>
             <!--优选好货-->
-            <section class="yx clearfix">
+            <ul class="yx clearfix">
                 <div class="youxuan">优选好货</div>
-                <div class="yx-item">
+                <li class="yx-item" v-for="item in active.spec">
                     <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
+                        <img :src="item.goods_spec_img_path" class="goodstu">
                     </div>
                     <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
+                        <span class="yx-gname">{{item.goods_spec_name}}</span>
+                        <span class="yx-newprice">￥{{item.goods_spec_price}}</span>
+                        <span class="yx-shen">库存:{{item.goods_spec_stock}}</span>
+
                     </div>
-                </div>
-                <div class="yx-item yx-item1">
-                    <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
-                    </div>
-                </div>
-                <div class="yx-item">
-                    <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
-                    </div>
-                </div>
-                <div class="yx-item yx-item1">
-                    <div class="box">
-                        <img src="../assets/images/Image1@2x.png" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">三只松鼠夏威夷果 100g*3新鲜混合 最新口味</span>
-                        <span class="yx-newprice">￥65</span>
-                        <span class="yx-shen">已省:10元</span>
-                        <span class="yx-oldprice">原价:￥88元</span>
-                    </div>
-                </div>
-            </section>
+                </li>
+
+            </ul>
         </main>
 
         <!--底部-->
@@ -98,7 +64,7 @@
             <div class="footbox clearfix">
                 <button class="lijishop" @click="goodshow">立即参加</button>
             </div>
-            <div class="zhezhao" v-show="showbox">
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="goods">
                     <div class="goodsxtu"></div>
                     <span class="sum">共计: <span class="prices">￥65.00</span></span>
@@ -124,26 +90,31 @@
 </template>
 
 <script>
+    import { Swiper } from 'vux'
     export default {
         name: "activegood",
         data () {
             return {
                 showbox:false,
-                goodsnum:0
+                goodsnum:0,
+                active:[]
             }
+        },
+        mounted:function () {
+            this.$axios.get('/find/activity_detail?activity_id=5&user_id=1').then(res=>{
+                console.log(res);
+                this.active=res.data.data;
+                console.log(this.active.banner_img[0]);
+            })
         },
         methods:{
             goodshow(){
                 this.showbox=!this.showbox;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='hidden';
-                document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
+
             },
             close(){
                 this.showbox=false;
-                var mo=function(e){e.preventDefault();};
-                document.body.style.overflow='';//出现滚动条
-                document.removeEventListener("touchmove",mo,{passive:false});
+
             },
             add(){
                 this.goodsnum++
@@ -155,6 +126,9 @@
                 }
             },
 
+        },
+        components: {
+            Swiper
         }
     }
 </script>
@@ -299,7 +273,7 @@
     }
     .fuwu li img{
         width: 2.11rem;
-        height: 0.26rem;
+        /*height: 0.26rem;*/
         display: block;
         margin:0 auto;
         margin-top: 0.23rem;
@@ -321,7 +295,7 @@
     }
     .imgsbox{
         width: 100%;
-        height: 6.34rem;
+        height: auto;
     }
     .imgsbox img{
         width: 100%;
@@ -333,6 +307,7 @@
         float:left;
         margin-top: 0.08rem;
     }
+
     .youxuan{
         width: 100%;
         height: 0.70rem;
@@ -381,12 +356,16 @@
     }
     .yx-shen{
         font-size:0.24rem;
-        color:#f84848;
+        color:#a2a2a2;
         display: block;
         line-height: 0.24rem;
         padding-top: 0.16rem;
         float: left;
         padding-left: 0.13rem;
+    }
+    .yx li:nth-child(2n+1){
+        float: right;
+        border-left:0.02rem solid #e5e5e5;
     }
     .yx-item1{
         float: right;

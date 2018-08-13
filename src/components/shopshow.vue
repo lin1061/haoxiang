@@ -2,67 +2,49 @@
     <div id="main">
         <!--头部-->
         <!--<header class="clearfix">-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">商家详情</span>-->
-            <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">商家详情</span>-->
+        <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
         <!--</header>-->
         <!--内容-->
         <main>
             <div class="shop clearfix">
                 <div class="shop_jieshao">
-                    <span class="shop-name">大风炊成都老火锅（玉林西路店）</span>
+                    <span class="shop-name">{{shop.name}}</span>
                     <span class="shop-juli">320m</span>
                 </div>
 
-                <span class="shop-time">00.00-00.00</span>
-                <span class="shop-time shop-jia">￥45/人</span>
+                <span class="shop-time">{{shop.start_time}}-{{shop.end_time}}</span>
+                <span class="shop-time shop-jia">￥{{shop.consumption}}/人</span>
 
-                <div class="tushow ">
-                    <div class="tushou-item">
-                        <img src="../assets/images/nn@2x.png">
-                    </div>
-                    <div class="tushou-item">
-                        <img src="../assets/images/nn@2x.png">
-                    </div>
-                    <div class="tushou-item">
-                        <img src="../assets/images/nn@2x.png">
-                    </div>
-
+                <div class="tushow" v-for="item in shop.banner">
+                    <img :src="item.img_path">
                 </div>
                 <div class="tushow-addr clearfix">
                     <img class="aimg" src="../assets/images/ad@2x.png">
-                    <span class="diwei diwei1">成都市武侯区玉林西路22号</span>
-                    <img src="../assets/images/dh@2x.png" class="pimg">
+                    <span class="diwei diwei1">{{shop.address}}</span>
+                    <a :tel="shop.contact" >
+                        <img src="../assets/images/dh@2x.png" class="pimg">
+                    </a>
+
                 </div>
                 <span class="shop-title1">出示好象会员卡，专享以下:</span>
                 <span class="shop-title1 shop-title2">199元小焗龙虾两人套餐</span>
                 <div class="tushow-addr">
                     <span class="diwei shop-title3">全场菜品8.5折</span>
-                    <img src="image/hy@2x.png" class="pimg pimg1">
+                    <img src="../assets/images/hy@2x.png" class="pimg pimg1">
                 </div>
             </div>
             <!--菜品推荐-->
             <section class="caipin clearfix">
                 <div class="caipin-title">菜品推荐</div>
-                <div class="caipin-item">
-                    <img src="../assets/images/Image@2x.png" class="caipin-image">
-                    <span class="caipin-name">草原极品鲜毛肚</span>
-                </div>
-                <div class="caipin-item">
-                    <img src="../assets/images/Image@2x.png" class="caipin-image">
-                    <span class="caipin-name">草原极品鲜毛肚</span>
-                </div>
-                <div class="caipin-item">
-                    <img src="../assets/images/Image@2x.png" class="caipin-image">
-                    <span class="caipin-name">草原极品鲜毛肚</span>
-                </div>
-                <div class="caipin-item">
-                    <img src="../assets/images/Image@2x.png" class="caipin-image">
-                    <span class="caipin-name">草原极品鲜毛肚</span>
+                <div class="caipin-item" v-for="item in shop.foods">
+                    <img :src="item.path" class="caipin-image">
+                    <span class="caipin-name">{{item.name}}</span>
                 </div>
             </section>
             <div class="imgbox">
-                <img src="../assets/images/banner@2x.png">
+                <img src="http://pcvkprs2t.bkt.clouddn.com/member/images/background/banner@2x.png">
             </div>
         </main>
     </div>
@@ -70,7 +52,18 @@
 
 <script>
     export default {
-        name: "shopshow"
+        name: "shopshow",
+        data(){
+            return{
+                shop:[],
+            }
+        },
+        mounted:function () {
+            this.$axios.get('/business/detail?business_id=4&longitude=103.936376&latitude=30.786626').then(res=>{
+                console.log(res.data.data);
+                this.shop=res.data.data;
+            })
+        }
     }
 </script>
 
@@ -143,24 +136,15 @@
         margin:0.30rem 0 0 0.27rem;
     }
     .tushow{
-
+        width: 100%;
         height: 3.90rem;
         float:left;
         margin-top:0.25rem;
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-content: center;
-    }
-    .tushou-item{
-        width: 3.89rem;
-        height: 100%;
-        margin-right:0.18rem;
-
 
     }
-    .tushou-item img{
-        width: 3.89rem;
+
+    .tushow img{
+        width: 100%;
         height: 100%;
     }
     .tushow-addr{
@@ -179,9 +163,13 @@
         font-size:0.31rem;
         line-height: 0.31rem;
         color:#e0e0e0;
+        width: 70%;
         display: block;
         float:left;
         margin:0.24rem 0 0 0.36rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .diwei1{
         margin-left:0.13rem;
@@ -222,7 +210,7 @@
         float:left;
         background:#fff;
         margin:0.11rem 0 0.11rem 0;
-        padding-bottom:0.30rem;
+        /*padding-bottom:0.30rem;*/
     }
     .caipin-title{
         width: 100%;
@@ -233,17 +221,23 @@
         padding-left:0.33rem;
     }
     .caipin-item{
+        width: 3.745rem;
+        /*height: 4.30rem;*/
         float:left;
     }
+    .caipin-item:nth-child(2n+1){
+        float: right;
+        border-left:0.02rem solid #e5e5e5;
+    }
     .caipin-image{
-        width: 3.75rem;
+        width: 3.745rem;
         height: 3.08rem;
     }
     .caipin-name{
         font-size:0.22rem;
         color:#2c2c2c;
         display: block;
-        margin:0.13rem 0 0 0.33rem;
+        margin: 0.13rem 0 0.20rem 0.33rem;
     }
     .imgbox{
         width: 100%;

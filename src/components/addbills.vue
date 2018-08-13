@@ -2,31 +2,58 @@
     <div id="main">
         <!--头部-->
         <!--<header class="clearfix">-->
-            <!--<img src="../assets/images/back.png" class="back">-->
-            <!--<span class="title">新增发票</span>-->
+        <!--<img src="../assets/images/back.png" class="back">-->
+        <!--<span class="title">新增发票</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
             <!--输入发票抬头名称-->
             <div class="name clearfix">
                 <span class="michen">名称</span>
-                <input type="text" class="bill-name" placeholder="发票抬头名称">
+                <input type="text" class="bill-name" placeholder="发票抬头名称" v-model="name">
             </div>
             <!--输入发票抬头税号-->
             <div class="name billsNO clearfix">
                 <span class="michen billno">税号</span>
-                <input type="text" class="bill-name billno" placeholder="发票抬头税号">
+                <input type="text" class="bill-name billno" placeholder="发票抬头税号" v-model="no">
             </div>
             <button class="anniu">
-                <span class="anniu-wenzi">添加并使用新抬头</span>
+                <span class="anniu-wenzi" @click="add">添加并使用新抬头</span>
             </button>
         </main>
     </div>
 </template>
 
 <script>
+    import qs from 'qs'
     export default {
-        name: "addbills"
+        name: "addbills",
+        data(){
+            return{
+                name:"",
+                no:""
+            }
+        },
+        methods:{
+            add:function () {
+                let token=JSON.parse(localStorage.getItem('user')).token;
+                this.$axios.post('/user/invoice_store',
+                    qs.stringify({
+                        name:this.name,
+                        no:this.no
+                    }),{
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+
+                        }
+                    }).then(res=>{
+                    let {err_code,msg,data}=res.data;
+                    if(err_code=='0'){
+                        this.$router.push({name:'billslist'})
+                    }
+                })
+            }
+        }
     }
 </script>
 

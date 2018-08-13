@@ -93,15 +93,9 @@
         methods:{
             close(){
                 this.showbox=false;
-                // var mo=function(e){e.preventDefault();};
-                // document.body.style.overflow='';//出现滚动条
-                // document.removeEventListener("touchmove",mo,{passive:false});
             },
             yuyue(){
                 this.showbox=!this.showbox;
-                // var mo=function(e){e.preventDefault();};
-                // document.body.style.overflow='hidden';
-                // document.addEventListener("touchmove",mo,{passive:false});//禁止滚动
             },
             clickDay(data) {
                 console.log(data)

@@ -1,21 +1,19 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header class="clearfix">
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">活动详情</span>
-            <!--<img src="../assets/images/fx@2x.png" class="share">-->
-        </header>
+        <!--<header class="clearfix">-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">活动详情</span>-->
+        <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
+        <!--</header>-->
         <!--内容-->
         <main>
-            <span class="biaoti">开学季，全部换换换</span>
-            <span class="jianshu">你要的，这里全都有</span>
-            <span class="jianshu">有效期：2018-7-23___2018-8-1</span>
+            <span class="biaoti">{{active.name}}</span>
+            <span class="jianshu">{{active.title}}</span>
+            <span class="jianshu">有效期：{{active.end_time}}</span>
             <div class="content">
-                <img src="../assets/images/banner2@2x.png" alt="">
-                <p>奶类中含有的钙质是人体钙的最好来源，热量低且含钙高，可使皮肤柔软滋润，并且可以强壮筋骨。牛奶、酸奶含有8种人体必需氨基酸以及大量优质蛋白质，可促进健康发育和构成机体组织。酸奶不但营养丰富，还易于消化吸收，尤其适合乳糖不耐受者。每天喝一些牛奶或酸奶，可以获得丰富的蛋白质和钙.</p>
-                <p>奶类中含有的钙质是人体钙的最好来源，热量低且含钙高，可使皮肤柔软滋润，并且可以强壮筋骨。牛奶、酸奶含有8种人体必需氨基酸以及大量优质蛋白质，可促进健康发育和构成机体组织。</p>
-                <p>奶类中含有的钙质是人体钙的最好来源，热量低且含钙高，可使皮肤柔软滋润，并且可以强壮筋骨。牛奶、酸奶含有8种人体必需氨基酸以及大量优质蛋白质，可促进健康发育和构成机体组织。酸奶不但营养丰富，还易于消化吸收，尤其适合乳糖不耐受者。每天喝一些牛奶或酸奶，可以获得丰富的蛋白质和钙.</p>
+                <img :src="active.img_path" alt="">
+                <p v-html="active.describe" class="describe"></p>
             </div>
             <button class="join">立即参与</button>
         </main>
@@ -24,16 +22,28 @@
 
 <script>
     export default {
-        name: "activemore"
+        name: "activemore",
+        data(){
+            return{
+                active:[]
+            }
+        },
+        mounted:function () {
+            this.$axios.get('/find/activity_detail?activity_id=7&user_id=1').then(res=>{
+                console.log(res);
+                this.active=res.data.data;
+            })
+        }
     }
 </script>
 
 <style scoped>
+
     header{
         width: 100%;
         height: 6vh;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.32rem;
+        line-height: 0.88rem;
         position: fixed;
         left:0;
         top:0;
@@ -52,7 +62,7 @@
         float:right;
     }
     main{
-        margin-top: 0.80rem;
+        /*margin-top: 0.80rem;*/
         background: #fff;
     }
     .title{
@@ -108,5 +118,9 @@
         letter-spacing: 0.02rem;
         text-indent: 0.6rem;
 
+    }
+    .describe img{
+        width: 50%;
+        height: 50%;
     }
 </style>

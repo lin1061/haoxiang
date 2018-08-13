@@ -2,38 +2,18 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/back.png" class="back">-->
-            <!--<span class="title">其他</span>-->
+        <!--<img src="../assets/images/back.png" class="back">-->
+        <!--<span class="title">其他</span>-->
         <!--</header>-->
         <main>
-            <div class="list-item clearfix">
+            <div class="list-item clearfix" v-for="item in bills">
                 <div class="list-itemtop">
-                    <span class="list-title1">成都叮叮驾到科技有限公司</span>
-                    <span class="list-title2">企业</span>
-                    <span class="list-title2 list-title3">gaieur guiheqruighiu</span>
+                    <span class="list-title1">{{item.name}}</span>
+                    <span class="list-title2">{{types}}</span>
+                    <span class="list-title2 list-title3">{{item.tax_number}}</span>
                 </div>
                 <div class="list-itembottom clearfix">
                     <img src="../assets/images/mr@2x.png" alt="" class="mr">
-                    <div class="list-ritem">
-                        <div class="list-ritem1">
-                            <img src="../assets/images/b@2x.png" alt="">
-                            <span class="list-ritem1-wen">编辑</span>
-                        </div>
-                        <div class="list-ritem1 ritem2">
-                            <img src="../assets/images/s@2x.png" alt="">
-                            <span class="list-ritem1-wen">删除</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="list-item clearfix">
-                <div class="list-itemtop clearfix">
-                    <span class="list-title1">成都叮叮驾到科技有限公司</span>
-                    <span class="list-title2">企业</span>
-                    <span class="list-title2 list-title3">gaieur guiheqruighiu</span>
-                </div>
-                <div class="list-itembottom clearfix">
-                    <img src="../assets/images/sw@2x.png" alt="" class="mr sw">
                     <div class="list-ritem">
                         <div class="list-ritem1">
                             <img src="../assets/images/b@2x.png" alt="">
@@ -58,7 +38,33 @@
 
 <script>
     export default {
-        name: "billslist"
+        name: "billslist",
+        data(){
+            return{
+                bills:[],
+                types:""
+            }
+        },
+        mounted:function () {
+            let token=JSON.parse(localStorage.getItem('user')).token;
+            this.$axios.get('/user/invoices',
+                {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+
+                    }
+                }).then(res=>{
+                this.bills=res.data.data;
+                this.types=res.data.data.type;
+                if(this.types=='1'){
+                    this.types="个人"
+                }else if(this.types=='2'){
+                    this.types="公司"
+                }
+
+            })
+        },
+
     }
 </script>
 
@@ -78,7 +84,7 @@
         /*left:0;*/
     }
     /*main{*/
-        /*margin-top:1.07rem;*/
+    /*margin-top:1.07rem;*/
     /*}*/
     .back{
         width: 0.32rem;
