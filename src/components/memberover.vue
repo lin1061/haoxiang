@@ -2,19 +2,19 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">好象会员</span>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">好象会员</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
             <!--会员卡-->
             <section class="card clearfix">
                 <div class="card-rtop clearfix">
-                    已过期
+                    {{member.rest_days}}
                 </div>
-                <span class="card-title">7744-0494-9480-954</span>
-                <div class="tiaoma"></div>
-                <span class="card-title3">好象有货半年卡</span>
+                <span class="card-title">{{member.series_number }}</span>
+                <div class="tiaoma">{{member.bar_pic }}</div>
+                <span class="card-title3">好象有货{{member.card_type }}</span>
                 <button class="anniu">立即续费</button>
             </section>
         </main>
@@ -23,7 +23,25 @@
 
 <script>
     export default {
-        name: "memberover"
+        name: "memberover",
+        data(){
+            return{
+                member:[],
+                state:""
+
+            }
+        },
+        mounted:function () {
+            this.$axios.get('/user/card').then(res=>{
+                this.member=res.data.data;
+                this.state=res.data.data.status;
+                if(this.state=="0"){
+                    this.state="过期"
+                }else if(this.state=="1"){
+                    this.state="正常"
+                }
+            })
+        }
     }
 </script>
 
@@ -50,6 +68,7 @@
         background: #ff1c8b;
         margin:0 auto;
         margin-top:0.16rem;
+        position: relative;
         background: url("../assets/images/组1@2x.png") no-repeat center/cover;
     }
     .card-rtop{
@@ -85,7 +104,11 @@
         display: block;
         text-align: center;
         line-height: 0.34rem;
-        padding-top: 0.45rem;
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:1.20rem;
+        margin:auto;
     }
     .anniu{
         width: 1.84rem;
@@ -100,6 +123,11 @@
         /*font-weight: bold;*/
         text-align: center;
         color:#fff;
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:0.45rem;
+        margin:auto;
         background: url("../assets/images/buttonhy@2x.png") no-repeat center/cover;
     }
     .tiaoma{

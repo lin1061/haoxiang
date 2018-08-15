@@ -2,8 +2,8 @@
     <div id="main">
         <!--头部-->
         <!--<header class="clearfix">-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">好象会员</span>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">好象会员</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
@@ -34,15 +34,15 @@
             <div class="tequan tequan1">
                 <div class="name clearfix">
                     <span class="hy-name">姓名</span>
-                    <input type="text" class="namekuan" placeholder="请填写真实姓名">
+                    <input type="text" class="namekuan" placeholder="请填写真实姓名" v-model="name">
                 </div>
                 <div class="name clearfix">
                     <span class="hy-name phone">电话</span>
-                    <input type="text" class="namekuan" placeholder="请确保手机号无误">
+                    <input type="text" class="namekuan" placeholder="请确保手机号无误" v-model="phone">
                 </div>
                 <div class="name school clearfix">
                     <span class="hy-name">学校</span>
-                    <input type="text" class="namekuan" placeholder="请确保所选校区无误">
+                    <input type="text" class="namekuan" placeholder="请确保所选校区无误" v-model="school">
                     <img src="../assets/images/hyd@2x.png" class="hyaddr">
                 </div>
                 <div class="gou"></div>
@@ -61,8 +61,28 @@
 </template>
 
 <script>
+    import qs from 'qs'
     export default {
-        name: "membershow"
+        name: "membershow",
+        data(){
+            return{
+                name:"",
+                phone:"",
+                school:""
+            }
+        },
+        mounted:function () {
+            this.$axios.post('/user/card_store',
+                qs.stringify({
+                    user_id:"",
+                    card_id:"",
+                    name:this.name,
+                    tel:this.phone,
+                    university_id:this.school
+                })).then(res=>{
+
+            })
+        }
     }
 </script>
 

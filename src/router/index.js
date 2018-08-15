@@ -28,6 +28,12 @@ const Collect = r => require.ensure([], () => r(require('@/components/collect'))
 const Shopcart = r => require.ensure([], () => r(require('@/components/shopcart')), 'shopcart')
 const Activegood = r => require.ensure([], () => r(require('@/components/activegood')), 'activegood')
 const Signinfo = r => require.ensure([], () => r(require('@/components/signinfo')), 'signinfo')
+const Goldlist = r => require.ensure([], () => r(require('@/components/goldlist')), 'goldlist')
+const Goldgood = r => require.ensure([], () => r(require('@/components/goldgood')), 'goldgood')
+const Confirmorder = r => require.ensure([], () => r(require('@/components/confirmorder')), 'confirmorder')
+const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
+const Goldorder = r => require.ensure([], () => r(require('@/components/goldorder')), 'goldorder')
+const Goldrule = r => require.ensure([], () => r(require('@/components/goldrule')), 'goldrule')
 
 Vue.use(Router)
 
@@ -188,6 +194,42 @@ export default new Router({
             path: '/signinfo',
             name: 'signinfo',
             component: Signinfo
+        },
+        //金币商城列表
+        {
+            path: '/goldlist',
+            name: 'goldlist',
+            component: Goldlist
+        },
+        //金币商品
+        {
+            path: '/goldgood',
+            name: 'goldgood',
+            component: Goldgood
+        },
+        //金币确认订单
+        {
+            path: '/goldorder',
+            name: 'goldorder',
+            component: Goldorder
+        },
+        //购物车确认订单
+        {
+            path: '/confirmorder',
+            name: 'confirmorder',
+            component: Confirmorder
+        },
+        //订单详情已支付
+        {
+            path: '/ordershow1',
+            name: 'ordershow1',
+            component: Ordershow1
+        },
+        //金币规则
+        {
+            path: '/goldrule',
+            name: 'goldrule',
+            component: Goldrule
         },
 
 

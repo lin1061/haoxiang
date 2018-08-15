@@ -2,8 +2,8 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">订单详情</span>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">订单详情</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
@@ -11,51 +11,52 @@
                 <span>待支付</span>
             </div>
             <div class="order-box1">
-                <span>订单号：39839053</span>
-                <img src="../assets/images/fz@2x.png" class="copy">
+                <span>订单号：<span class="orderno">{{order.order_num}}</span></span>
+                <img src="../assets/images/fz@2x.png" class="copy" @click="copy">
             </div>
             <div class="order-info clearfix">
-                <span class="order-man">收货人：陈祥明</span>
-                <span class="order-phone">135****8899</span>
-                <span class="order-address">四川大学锦江学院1栋208号（可选择自提服务）</span>
+                <span class="order-man">收货人：{{info.name}}</span>
+                <span class="order-phone">{{info.phone}}</span>
+                <span class="order-address">{{info.address}}（可选择自提服务）</span>
             </div>
-            <div class="order-mitem clearfix">
+            <div class="order-mitem clearfix" v-for="item in order.good">
                 <div class="order-tu">
-                    <img src="../assets/images/tu@2x.png" alt="">
+                    <img :src="item.img_path" alt="">
                 </div>
-                <span class="order-title1">三只松鼠夏威夷果 100g*3 新鲜混合 最新口味</span>
+                <span class="order-title1">{{item.goods_name}}</span>
                 <span class="order-weight"></span>
-                <span class="order-price">￥65</span>
-                <span class="order-num">x2</span>
+                <span class="order-price">￥{{item.price}}</span>
+                <span class="order-num">x{{item.quantity}}</span>
             </div>
             <div class="paybox clearfix">
-                <div class="order-box1 pay-title1">
-                    <span>待支付</span>
-                    <span class="pay-title">在线支付</span>
+                <div class="order-box1 ">
+                    <span>支付方式</span>
+                    <span class="pay-title">{{order_pay}}</span>
                 </div>
-                <div class="order-box1 pay-title1">
+                <div class="order-box1">
                     <span >配送</span>
-                    <span class="pay-title">仓库自提</span>
+                    <span class="pay-title">{{distribution}}</span>
                 </div>
-                <div class="order-box1 pay-title1">
+                <div class="order-box1">
                     <span >发票抬头</span>
-                    <span class="pay-title">在线支付</span>
+                    <span class="pay-title">{{order.invoices_title}}</span>
                 </div>
-                <div class="order-box1 pay-title1">
-                    <span >待支付</span>
-                    <span class="pay-title">陈祥明</span>
-                </div>
-                <div class="order-box1 pay-title1">
+
+                <div class="order-box1">
                     <span >商品总额</span>
-                    <span class="pay-title">￥65.00</span>
+                    <span class="pay-title">￥{{order.total_money}}</span>
                 </div>
-                <div class="order-box1 pay-title1">
+                <div class="order-box1">
                     <span >运费</span>
                     <span class="pay-title">+￥0.00</span>
                 </div>
-                <div class="order-box1 pay-title1 order-box2">
+                <div class="order-box1">
                     <span >实付金额</span>
-                    <span class="pay-title">￥65.00</span>
+                    <span class="pay-title">￥{{order.total_money}}</span>
+                </div>
+                <div class="order-box1 order-box2">
+                    <span >下单时间</span>
+                    <span class="pay-title">{{order.pay_at}}</span>
                 </div>
                 <div class="order-active clearfix">
                     <span class="time">自动取消: 14:29</span>
@@ -72,7 +73,43 @@
 
 <script>
     export default {
-        name: "ordershow"
+        name: "ordershow",
+        data(){
+            return{
+                order:[],
+                oid:"",
+                order_pay:"",
+                distribution:"",
+                info:[],
+
+            }
+        },
+        mounted:function () {
+            this.oid=this.$route.query.oid;
+            this.$axios.get('/user/order_detail?order_id='+this.oid).then(res=>{
+                this.order=res.data.data;
+                this.info=this.order.address;
+                this.order_pay=this.order.pay_type;
+                if(this.order_pay=="1"){
+                    this.order_pay="在线支付"
+                }else if(this.order_pay=="2"){
+                    this.order_pay="线下支付"
+                }
+                this.distribution=this.order.distribution_mode;
+                if(this.distribution=="1"){
+                    this.distribution="送货上门"
+                }else if(this.distribution=="2"){
+                    this.distribution="自提"
+                }
+            })
+        },
+        methods:{
+            copy(){
+                let num=document.querySelector(".orderno");
+                console.log(num.innerText)
+            }
+        }
+
     }
 </script>
 
@@ -144,6 +181,7 @@
         color:#555555;
         display: block;
         float:left;
+        width: 100%;
         margin:0rem 0 0.26rem 0.40rem;
     }
     .order-mitem{

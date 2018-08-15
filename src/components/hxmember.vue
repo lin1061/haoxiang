@@ -2,38 +2,20 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-            <!--<img src="../assets/images/backWhite.png" class="back">-->
-            <!--<span class="title">好象会员</span>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">好象会员</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
             <!--会员卡-->
-            <section class="card clearfix">
+            <section class="card clearfix" v-for="item in list">
                 <div class="card-rtop clearfix">
-                    9天
+                    {{item.days}}天
                 </div>
-                <span class="card-title">体验无差价购物</span>
-                <span class="card-title card-title1">9天最高可买1000元</span>
-                <span class="card-title3">好象有货体验卡</span>
-                <button class="anniu">￥9.90</button>
-            </section>
-            <section class="card card1 clearfix">
-                <div class="card-rtop clearfix">
-                    6个月
-                </div>
-                <span class="card-title">半年内无差价购物</span>
-                <span class="card-title card-title1">享受最新你会员活动</span>
-                <span class="card-title3">好象有货半年卡</span>
-                <button class="anniu">￥89.90</button>
-            </section>
-            <section class="card card1">
-                <div class="card-rtop clearfix">
-                    12个月
-                </div>
-                <span class="card-title">会员活动优先参与</span>
-                <span class="card-title card-title1">预计全年省钱2000元以上</span>
-                <span class="card-title3">好象有货年卡</span>
-                <button class="anniu">￥189.90</button>
+                <span class="card-title">{{item.desc}}</span>
+                <!--<span class="card-title card-title1">9天最高可买1000元</span>-->
+                <span class="card-title3">{{item.name}}</span>
+                <button class="anniu">￥{{item.price}}</button>
             </section>
         </main>
     </div>
@@ -41,7 +23,18 @@
 
 <script>
     export default {
-        name: "hxmember"
+        name: "hxmember",
+        data(){
+            return{
+                list:[]
+            }
+        },
+        mounted:function () {
+            this.$axios.get('/cards').then(res=>{
+                this.list=res.data.data;
+                console.log(res.data.data)
+            })
+        }
     }
 </script>
 
@@ -76,6 +69,7 @@
         background: #ff1c8b;
         margin:0 auto;
         margin-top:0.16rem;
+        position: relative;
         background: url("../assets/images/组1@2x.png") no-repeat center/cover;
     }
     .card-rtop{
@@ -112,24 +106,31 @@
         display: block;
         text-align: center;
         line-height: 0.34rem;
-        padding-top: 0.60rem;
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:1.20rem;
+        margin:auto;
     }
     .anniu{
         width: 1.84rem;
         height: 0.60rem;
         background: pink;
-        margin:0 auto;
         border: none;
         display: block;
         outline: none;
-        margin-top: 0.19rem;
         font-size:0.34rem;
         /*font-weight: bold;*/
         text-align: center;
         color:#fff;
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:0.45rem;
+        margin:auto;
         background: url("../assets/images/buttonhy@2x.png") no-repeat center/cover;
     }
-    .card1{
+    .card:nth-child(n+2){
         margin-top: 0;
     }
 </style>
