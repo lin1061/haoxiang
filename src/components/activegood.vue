@@ -41,22 +41,6 @@
 
                 </div>
             </section>
-            <!--优选好货-->
-            <ul class="yx clearfix">
-                <div class="youxuan">优选好货</div>
-                <li class="yx-item" v-for="item in active.spec">
-                    <div class="box">
-                        <img :src="item.goods_spec_img_path" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">{{item.goods_spec_name}}</span>
-                        <span class="yx-newprice">￥{{item.goods_spec_price}}</span>
-                        <span class="yx-shen">库存:{{item.goods_spec_stock}}</span>
-
-                    </div>
-                </li>
-
-            </ul>
         </main>
 
         <!--底部-->
@@ -65,23 +49,30 @@
                 <button class="lijishop" @click="goodshow">立即参加</button>
             </div>
             <div class="zhezhao" v-show="showbox" @touchmove.prevent>
-                <div class="goods">
-                    <div class="goodsxtu"></div>
-                    <span class="sum">共计: <span class="prices">￥65.00</span></span>
-                    <span class="numbers">库存600件</span>
-                    <div class="close" @click="close">x</div>
-                    <span class="style">类型:</span>
-                    <div class="stylebox">
-                        <div class="style1">120g</div>
-                        <div class="style1 style2">120g</div>
-                        <div class="style1 style2">120g</div>
+                <div class="goods clearfix">
+                    <div class="ginfo">
+                        <div class="goodsxtu">
+                            <img :src="style_img" alt="">
+                        </div>
+                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
+                        <span class="numbers">库存{{style_stock}}件</span>
+                        <div class="close" @click="close">x</div>
+                        <span class="style">类型:</span>
+                        <div class="group" v-for="(item,index) in active.spec" :key="index">
+
+                            <div class="stylebox">
+                                <div class="style1"  @click="check(item)">{{item.goods_spec_name}}</div>
+                            </div>
+                        </div>
+                        <div class="choose">
+                            <span class="num">数量:</span>
+                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                            <span class="numadd">{{goodsnum}}</span>
+                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                        </div>
                     </div>
 
-                    <span class="num">数量:</span>
-                    <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                    <span class="numadd">{{goodsnum}}</span>
-                    <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
-                    <div class="ok">立即参加</div>
+                    <div class="ok" clearfix>选好了</div>
                 </div>
             </div>
 
@@ -90,23 +81,42 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     import { Swiper } from 'vux'
     export default {
         name: "activegood",
         data () {
             return {
                 showbox:false,
-                goodsnum:0,
-                active:[]
+                goodsnum:1,
+                active:[],
+                names:"",
+                save_price:"",
+                style_img:"",
+                style_price:"",
+                style_stock:"",
+
+                choose:[]
+            }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                activity_id:state=>state.activity_id
+            }),
+            // 总金额
+            moneynum:function(){
+                return this.style_price * this.goodsnum
             }
         },
         mounted:function () {
-            this.$axios.get('/find/activity_detail?activity_id=5&user_id=1').then(res=>{
-                console.log(res);
+            this.$axios.get('/find/activity_detail',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
+                console.log(res.data.data);
                 this.active=res.data.data;
-                console.log(this.active.banner_img[0]);
+
             })
         },
+
         methods:{
             goodshow(){
                 this.showbox=!this.showbox;
@@ -125,6 +135,13 @@
                     this.goodsnum=0;
                 }
             },
+            check(item){
+                console.log(item)
+                this.style_img=item.goods_spec_img_path;
+                this.style_stock=item.goods_spec_stock;
+                this.style_price=item.goods_spec_price;
+            }
+
 
         },
         components: {
@@ -134,7 +151,27 @@
 </script>
 
 <style scoped>
+    .group{
+        width: 100%;
+        height: auto;
+        float:left;
+    }
+    .choose{
+        width: 100%;
+        height: 1.5rem;
+        float:left;
+        position: relative;
 
+    }
+    .ginfo{
+        width: 100%;
+        height: auto;
+        float:left;
+        position: absolute;
+        bottom:1.02rem;
+        left:0;
+        background: #fff;
+    }
     header{
         width: 100%;
         height: 6vh;
@@ -155,18 +192,6 @@
         color:#fff;
         margin-left:2.20rem;
     }
-    .share{
-        width: 0.30rem;
-        height: 0.33rem;
-        display: block;
-        margin-right:0.38rem;
-        margin-top: 0.25rem;
-        float:right;
-    }
-    /*main{*/
-    /*width: 100%;*/
-    /*margin-top:0.8rem;*/
-    /*}*/
     .good-info{
         width: 100%;
         height: auto;
@@ -202,7 +227,7 @@
         color:#555555;
         display: block;
         padding-left:0.34rem;
-        padding-top:0.34rem;
+        padding-top:0.40rem;
         width: 7.0rem;
     }
     .oldprice{
@@ -247,7 +272,7 @@
         display: block;
     }
     .price1{
-
+        /*margin-top: 0.48rem;*/
         padding-bottom: 0.16rem;
         border-bottom: 0.01rem solid #cccccc;
     }
@@ -283,6 +308,7 @@
         height: auto;
         float: left;
         margin-top: 0.07rem;
+        margin-bottom: 0.20rem;
     }
     .goostitle{
         width: 100%;
@@ -296,6 +322,7 @@
     .imgsbox{
         width: 100%;
         height: auto;
+        background: #fff;
     }
     .imgsbox img{
         width: 100%;
@@ -307,7 +334,6 @@
         float:left;
         margin-top: 0.08rem;
     }
-
     .youxuan{
         width: 100%;
         height: 0.70rem;
@@ -317,14 +343,13 @@
         background: #fff;
         padding-left:0.33rem;
     }
-    .yx-item{
-        width: 3.745rem;
-        height: 4.30rem;
-        float:left;
+    .yx li:nth-child(2n+1){
+        float: right;
+        border-left:0.02rem solid #e5e5e5;
     }
     .box{
         width: 100%;
-        height: 3.07rem;
+        /*height: 3.07rem;*/
         border-bottom:0.01rem solid #e5e5e5;
         position: relative;
     }
@@ -333,52 +358,7 @@
         height: 100%;
     }
 
-    .yx-ginfo{
-        width: 100%;
-        height: 1.22rem;
-        background: #fff;
-        padding-left: 0.21rem;
-    }
-    .yx-gname{
-        font-size:0.22rem;
-        color:#2c2c2c;
-        display: block;
-        padding-top: 0.12rem;
-    }
-    .yx-newprice{
-        font-size:0.26rem;
-        color:#f84848;
-        display: block;
-        line-height: 0.26rem;
-        padding-top: 0.16rem;
-        float: left;
-        font-weight: bold;
-    }
-    .yx-shen{
-        font-size:0.24rem;
-        color:#a2a2a2;
-        display: block;
-        line-height: 0.24rem;
-        padding-top: 0.16rem;
-        float: left;
-        padding-left: 0.13rem;
-    }
-    .yx li:nth-child(2n+1){
-        float: right;
-        border-left:0.02rem solid #e5e5e5;
-    }
-    .yx-item1{
-        float: right;
-        border-left:0.02rem solid #e5e5e5;
-    }
-    .yx-oldprice{
-        font-size:0.24rem;
-        color:#8a959e;
-        display: block;
-        float: right;
-        padding-top: 0.13rem;
-        margin-right: 0.12rem;
-    }
+
     .footbox{
         width: 100%;
         height: 0.96rem;
@@ -390,7 +370,7 @@
 
     }
     main{
-        margin-bottom: 1.04rem;
+        margin-bottom: 0.3rem;
         width: 100%;
         float:left;
     }
@@ -401,25 +381,21 @@
         float: left;
 
     }
-
     .lijishop{
         width: 100%;
         height: 100%;
         background: linear-gradient(to right, #ff1c8b , #f37404);
         display: block;
+        float:left;
         border: none;
         outline: none;
         font-size:0.36rem;
         text-align: center;
         color:#fff;
     }
-    .lijishop1{
-        width: 2.43rem;
-        margin-left: 0;
-    }
     .goods{
         width: 100%;
-        height: 6.72rem;
+        /*height: 8.6rem;*/
         background: #fff;
         position: fixed;
         left:0;
@@ -430,6 +406,10 @@
         height: 2.22rem;
         background: #f5f5f5;
         margin:0.35rem 0.22rem 0 0.45rem;
+    }
+    .goodsxtu img{
+        width: 100%;
+        height: 100%;
     }
     .sum{
         font-size:0.28rem;
@@ -466,21 +446,26 @@
     }
     .style{
         font-size:0.28rem;
-        color:#a2a2a2;
+        color:#555555;
         padding-left: 0.53rem;
         display: block;
         padding-top: 0.51rem;
     }
     .style1{
-        width: 1.26rem;
-        height: 0.63rem;
-        background: url("../assets/images/gg@2x.png") no-repeat center/cover;
+        /*width: 1.26rem;*/
+        height: 0.60rem;
+        background: #f5f5f5;
+        border-radius: 0.40rem;
+        padding: 0 0.20rem;
         font-size:0.26rem;
         color:#555555;
         text-align: center;
-        line-height: 0.63rem;
-        margin:0.28rem 0.18rem 0 0.53rem;
+        line-height: 0.60rem;
+        margin:0.28rem 0.18rem 0 0rem;
         float:left;
+    }
+    .style1:nth-child(n+2){
+        margin-left:0;
     }
     .style2{
         margin-left:0;
@@ -492,6 +477,7 @@
         width: 100%;
         height: auto;
         float: left;
+        padding-left: 0.53rem;
     }
     .num{
         display: block;
@@ -518,14 +504,14 @@
         display: block;
         position: absolute;
         right:1.41rem;
-        bottom:1.55rem;
+        bottom:0.5rem;
     }
     .numadd{
         font-size:0.28rem;
         color:#555555;
         position: absolute;
         right:0.97rem;
-        bottom:1.58rem;
+        bottom:0.52rem;
     }
     .jhh{
         right:0.41rem;

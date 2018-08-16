@@ -51,6 +51,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "shopshow",
         data(){
@@ -58,8 +59,16 @@
                 shop:[],
             }
         },
+        computed: {
+            ...mapState({
+                business_id: state => state.business_id,
+                longitude: state => state.longitude,
+                laitude:state=>state.laitude
+            }),
+
+        },
         mounted:function () {
-            this.$axios.get('/business/detail?business_id=4&longitude=103.936376&latitude=30.786626').then(res=>{
+            this.$axios.get('/business/detail',{params:{business_id:this.business_id,longitude:this.longitude,latitude:this.latitude}}).then(res=>{
                 console.log(res.data.data);
                 this.shop=res.data.data;
             })

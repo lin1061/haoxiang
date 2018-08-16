@@ -12,15 +12,15 @@
         <main>
             <ul class="yx">
                 <router-link :to="{name:'goldgood',query:{gid:item.goods_id}}" v-for="item in list" :key="item.goods_id">
-                <li class="yx-item">
-                    <div class="box">
-                        <img :src="item.goods_img" class="goodstu">
-                    </div>
-                    <div class="yx-ginfo">
-                        <span class="yx-gname">{{item.goods_name}}</span>
-                        <span class="yx-newprice">金币兑换:{{item.price}}</span>
-                    </div>
-                </li>
+                    <li class="yx-item">
+                        <div class="box">
+                            <img :src="item.goods_img" class="goodstu">
+                        </div>
+                        <div class="yx-ginfo">
+                            <span class="yx-gname">{{item.goods_name}}</span>
+                            <span class="yx-newprice">金币兑换:{{item.price}}</span>
+                        </div>
+                    </li>
                 </router-link>
             </ul>
         </main>
@@ -35,17 +35,13 @@
                 list:[]
             }
         },
+
         mounted:function () {
-            let token=JSON.parse(localStorage.getItem('user')).token;
-          this.$axios.get('/user/exchanges',
-              {
-                  headers: {
-                      'Authorization': 'Bearer ' + token,
-                  }
-              }).then(res=>{
-                  this.list=res.data.data;
+
+            this.$axios.get('/user/exchanges',).then(res=>{
+                this.list=res.data.data;
                 console.log(res)
-          })
+            })
         }
     }
 </script>
@@ -112,10 +108,13 @@
         padding-left: 0.21rem;
     }
     .yx-gname{
-        font-size:0.22rem;
-        color:#2c2c2c;
+        font-size: 0.22rem;
+        color: #2c2c2c;
         display: block;
-        padding-top: 0.12rem;
+        width: 90%;
+        height: 0.75rem;
+        overflow: hidden;
+        padding-top: 0.12rem
     }
     .yx-newprice{
         font-size:0.26rem;
@@ -146,8 +145,8 @@
         padding-top: 0.13rem;
         margin-right: 0.12rem;
     }
-    .yx li:nth-child(2n){
-        float: right;
+    .yx li:nth-child(2n+1){
+        float: left;
         border-left:0.02rem solid #e5e5e5;
     }
 </style>

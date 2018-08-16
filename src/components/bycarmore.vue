@@ -18,8 +18,8 @@
 
                 <div class="xiaoqu clearfix">
                     <span class="price">市场价:￥{{goods.original_price}}/人</span>
-                    <span class="addr" @click="addr">当前校区:{{schoolname}}</span>
-                    <img src="../assets/images/wz@2x.png" class="wz">
+                    <span class="addr">当前校区:{{schoolname}}</span>
+                    <img src="../assets/images/wz@2x.png" class="wz" @click="addr">
                 </div>
                 <div class="xiaoqu clearfix">
                     <span class="huiprice">会员价:￥{{goods.membership_price}}/人</span>
@@ -53,6 +53,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     import { Swiper } from 'vux'
     export default {
         name: "bycarmore",
@@ -66,9 +67,17 @@
                 membership_price:"",
             }
         },
-        created:function () {
-            this.$axios.get('/goods/school_shop?university_id=1&goods_type=0').then(res=>{
+        computed: {
+            ...mapState({
+                goods_type: state => state.goods_type,
+                university_id:state=>state.university_id
+            }),
+
+        },
+        mounted:function () {
+            this.$axios.get('/goods/school_shop',{params:{university_id:this.university_id,goods_type:this.goods_type}}).then(res=>{
                 this.goods=res.data.data;
+                console.log(this.goods)
                 this.schoolname=this.goods.university.name;
                 this.original_price=this.goods.goods_spec[0].original_price;
                 this.membership_price=this.goods.goods_spec[0].membership_price;

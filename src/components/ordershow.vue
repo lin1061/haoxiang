@@ -72,6 +72,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "ordershow",
         data(){
@@ -83,6 +84,13 @@
                 info:[],
 
             }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                activity_id:state=>state.activity_id
+            }),
+
         },
         mounted:function () {
             this.oid=this.$route.query.oid;

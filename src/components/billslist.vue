@@ -37,6 +37,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "billslist",
         data(){
@@ -45,19 +46,22 @@
                 types:""
             }
         },
-        mounted:function () {
-            let token=JSON.parse(localStorage.getItem('user')).token;
-            this.$axios.get('/user/invoices',
-                {
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
 
-                    }
-                }).then(res=>{
+            }),
+
+        },
+        mounted:function () {
+
+            this.$axios.get('/user/invoices',{params:{user_id:this.user_id}}).then(res=>{
                 this.bills=res.data.data;
                 this.types=res.data.data.type;
+                console.log(res.data.data)
                 if(this.types=='1'){
                     this.types="个人"
+
                 }else if(this.types=='2'){
                     this.types="公司"
                 }
@@ -69,11 +73,6 @@
 </script>
 
 <style scoped>
-    #main{
-        width: 100vw;
-        height: 100vh;
-        background: #f5f5f5;
-    }
     header{
         width: 100%;
         height: 0.93rem;
@@ -181,7 +180,7 @@
         height: 1.78rem;
         display: block;
         margin:0 auto;
-        margin-top:5.68rem;
+        margin-top:5.00rem;
         border:none;
         outline:none;
         background-color: #fff;

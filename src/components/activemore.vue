@@ -21,6 +21,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "activemore",
         data(){
@@ -28,8 +29,15 @@
                 active:[]
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                activity_id:state=>state.activity_id
+            }),
+
+        },
         mounted:function () {
-            this.$axios.get('/find/activity_detail?activity_id=7&user_id=1').then(res=>{
+            this.$axios.get('/find/activity_detail',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
                 console.log(res);
                 this.active=res.data.data;
             })

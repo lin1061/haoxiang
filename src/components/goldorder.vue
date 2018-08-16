@@ -1,10 +1,10 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">确认订单</span>
-        </header>
+        <!--<header>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">确认订单</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <div class="top">
@@ -87,7 +87,7 @@
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.32rem;
+        line-height: 0.88rem;
     }
     .back{
         width: 0.34rem;

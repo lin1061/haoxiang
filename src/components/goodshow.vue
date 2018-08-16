@@ -9,9 +9,9 @@
         <!--内容-->
         <main>
             <div class="good-info clearfix">
-                <div class="imgbox">
+                <swiper class="imgbox">
                     <img :src="goods.goods_img" class="banner">
-                </div>
+                </swiper>
                 <p>
                     <span class="good-form">[门店自营]</span>
                 <p class="description">{{goods.name}}</p>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="price price1">
                     <span class="oldprice oldprice1">已选：</span>
-                    <span class="newprice newprice1">原味，100g</span>
+                    <span class="newprice newprice1">{{choose}}</span>
                     <img src="../assets/images/ddd@2x.png"class="anniu anniu1" @click="goodshow">
                 </div>
                 <ul class="fuwu">
@@ -106,7 +106,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+
+    import { mapState } from 'vuex'
+    import { Swiper } from 'vux'
     export default {
         name: "goodshow",
         data () {
@@ -120,12 +122,13 @@ import { mapState } from 'vuex'
                 style_price:"",
                 style_stock:"",
                 choose_spec:[],
-                img:""
+                img:"",
+                choose:""
             }
         },
         computed: {
             ...mapState({
-              goods_id: state => state.goods_id
+                goods_id: state => state.goods_id
             }),
             // 总金额
             moneynum:function(){
@@ -145,6 +148,10 @@ import { mapState } from 'vuex'
                     }
                 }
             })
+        },
+        components: {
+
+            Swiper
         },
         methods:{
             goodshow(){
@@ -172,6 +179,7 @@ import { mapState } from 'vuex'
                 var reg_str = '';
                 for(var i=0;i<this.choose_spec.length;i++){
                     reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
+                    this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
                 }
 
                 for (var i=0;i<this.goods.spec_reg.length;i++){
@@ -182,29 +190,25 @@ import { mapState } from 'vuex'
 
                 }
 
-                if(this.names){
-
-                }
-
             },
 
         }
     }
 
-function array_search(arr,val,type) {
-    type = type==undefined?false:type;
-    console.log(arr);
-    for(var i = 0;i<arr.length;i++){
-        if(arr[i] == val)
-            return i;
-        if(type){
-            if(typeof arr[i] == 'object'){
-                 return array_search(arr[i],val,type);
+    function array_search(arr,val,type) {
+        type = type==undefined?false:type;
+        console.log(arr);
+        for(var i = 0;i<arr.length;i++){
+            if(arr[i] == val)
+                return i;
+            if(type){
+                if(typeof arr[i] == 'object'){
+                    return array_search(arr[i],val,type);
+                }
             }
         }
+        return false;
     }
-    return false;
-}
 </script>
 
 <style scoped>
@@ -417,7 +421,7 @@ function array_search(arr,val,type) {
         float:left;
     }
     .yx li:nth-child(2n+1){
-        float: right;
+        float: left;
         border-left:0.02rem solid #e5e5e5;
     }
     .box{

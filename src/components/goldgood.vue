@@ -1,30 +1,32 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">商品详情</span>
-        </header>
+        <!--<header>-->
+        <!--<img src="../assets/images/backWhite.png" class="back">-->
+        <!--<span class="title">商品详情</span>-->
+        <!--&lt;!&ndash;<img src="../assets/images/fx@2x.png" class="share">&ndash;&gt;-->
+        <!--</header>-->
         <!--内容-->
         <main>
-            <div class="good-info">
-                <div class="imgbox">
+            <div class="good-info clearfix">
+                <swiper class="imgbox" height="5.04rem">
                     <img :src="good.goods_img" class="banner">
-                </div>
+                </swiper>
+                <p>
                 <p class="description">{{good.name}}</p>
+                </p>
                 <div class="price">
-                    <span class="oldprice">金币:{}个</span>
-
-                    <span class="number">已兑换：{{good.sales_volume}}件</span>
+                    <span class="oldprice">金币{{good.exchange_gold_coin}}</span>
+                    <span class="number">已兑换:{{good.sales_volume}}件</span>
                 </div>
                 <div class="price">
-                    <span class="oldprice oldprice1">原价：￥{{good.market_price}}</span>
+                    <span class="oldprice oldprice1">原价：￥</span>
                     <img src="../assets/images/hy@2x.png"class="anniu" >
                 </div>
                 <div class="price price1">
                     <span class="oldprice oldprice1">已选：</span>
-                    <span class="newprice newprice1">原味，100g</span>
-                    <img src="../assets/images/ddd@2x.png"class="anniu anniu1" >
+                    <span class="newprice newprice1">{{choose}}</span>
+                    <img src="../assets/images/ddd@2x.png"class="anniu anniu1" @click="goodshow">
                 </div>
                 <ul class="fuwu">
                     <li><img src="../assets/images/cj@2x.png" alt=""></li>
@@ -35,15 +37,15 @@
             <!--商家详情-->
             <section class="goodsmore">
                 <div class="goostitle">商品详情</div>
-                <div class="imgsbox">
-                    <img src="../assets/images/gs@2x.png" alt="">
+                <div class="imgsbox" v-html="good.description">
                 </div>
             </section>
+
         </main>
 
         <!--底部-->
         <footer>
-            <div class="footbox">
+            <div class="footbox clearfix">
                 <div class="ser">
                     <img src="../assets/images/ej@2x.png" class="server">
                     <span class="kefu">客服</span>
@@ -52,58 +54,156 @@
                     <img src="../assets/images/Favourite@3x.png" class="server liketu">
                     <span class="kefu">收藏</span>
                 </div>
-                <button class="lijishop">立即购买</button>
-                <button class="lijishop lijishop1">加入购物车</button>
+                <button class="lijishop" @click="goodshow">立即购买</button>
+                <button class="lijishop lijishop1" @click="goodshow">加入购物车</button>
             </div>
-            <!--<div class="goods">-->
-                <!--<div class="goodsxtu"></div>-->
-                <!--<span class="sum">共计: <span class="prices">￥65.00</span></span>-->
-                <!--<span class="numbers">库存600件</span>-->
-                <!--<div class="close">x</div>-->
-                <!--<span class="style">类型:</span>-->
-                <!--<div class="stylebox">-->
-                <!--<div class="style1">120g</div>-->
-                <!--<div class="style1 style2">120g</div>-->
-                <!--<div class="style1 style2">120g</div>-->
-                <!--</div>-->
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
+                <div class="goods clearfix">
+                    <div class="ginfo">
+                        <div class="goodsxtu">
+                            <img src="" alt="">
+                        </div>
+                        <span class="sum">共计: <span class="prices">￥</span></span>
+                        <span class="numbers">库存件</span>
+                        <div class="close" @click="close">x</div>
+                        <!--<div class="group" v-for="(item,index) in good.spec_group" :key="index">-->
+                        <!--<span class="style">{{item.spec_name}}:</span>-->
+                        <!--<div class="stylebox">-->
+                        <!--<div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <div class="choose">
+                            <span class="num">数量:</span>
+                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                            <span class="numadd">{{goodsnum}}</span>
+                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                        </div>
+                    </div>
 
-                <!--<span class="num">数量:</span>-->
-                <!--<img src="../assets/images/jh@2x.png" class="jh">-->
-                <!--<span class="numadd">2</span>-->
-                <!--<img src="../assets/images/jhh@2x.png" class="jh jhh">-->
-                <!--<div class="ok">选好了</div>-->
-            <!--</div>-->
+                    <div class="ok" clearfix>选好了</div>
+                </div>
+            </div>
+
         </footer>
     </div>
 </template>
 
 <script>
+    import { Swiper } from 'vux'
+    import { mapState } from 'vuex'
     export default {
         name: "goldgood",
         data(){
             return{
                 gid:"",
-                good:[]
+                good:[],
+                names:"",
+                showbox:false,
+                save_price:"",
+                style_img:"",
+                style_price:"",
+                style_stock:"",
+                choose_spec:[],
+                img:"",
+                choose:"",
+                goodsnum:1
+
             }
         },
+        components: {
+
+            Swiper
+        },
+        computed: {
+            ...mapState({
+                goods_id: state => state.goods_id
+            }),
+            // 总金额
+            // moneynum:function(){
+            //     return this.goods.member_price * this.goodsnum
+            // }
+        },
         mounted:function () {
-            this.gid=this.$route.query.id;
-            this.$axios.get('/user/exchange_goods_info?goods_id=45').then(res=>{
-                    this.good=res.data.data;
+            this.gid=this.$route.query.gid
+            this.$axios.get('/user/exchange_goods_info?goods_id='+this.gid).then(res=>{
+                this.good=res.data.data;
+                console.log(this.good)
             })
+        },
+        methods:{
+            goodshow(){
+                this.showbox=!this.showbox;
+
+            },
+            close(){
+                this.showbox=false;
+
+            },
+            add(){
+                this.goodsnum++
+            },
+            reduce(){
+                this.goodsnum--;
+                if(this.goodsnum<=0){
+                    this.goodsnum=0;
+                }
+            },
+            check(value,cellIndex,index){
+                // this.names=cellIndex;
+                // // console.log(this.names)
+                // this.choose_spec[index] = value;
+                // // console.log(this.goods.spec_reg);
+                // var reg_str = '';
+                // for(var i=0;i<this.choose_spec.length;i++){
+                //     reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
+                //     this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
+                // }
+                //
+                // for (var i=0;i<this.goods.spec_reg.length;i++){
+                //     if(this.goods.spec_reg[i].reg_spec_str == reg_str){
+                //         this.style_img=this.goods.spec_reg[i].spec_img_path
+                //         this.style_stock=this.goods.spec_reg[i].stock
+                //     }
+                //
+                // }
+
+            },
         }
+
     }
 </script>
 
 <style scoped>
-    body{
-        background: #f5f5f5;
+    .group{
+        width: 100%;
+        height: auto;
+        float:left;
+    }
+    .choose{
+        width: 100%;
+        height: 1.5rem;
+        float:left;
+        position: relative;
+
+    }
+    .ginfo{
+        width: 100%;
+        height: auto;
+        float:left;
+        position: absolute;
+        bottom:1.02rem;
+        left:0;
+        background: #fff;
     }
     header{
         width: 100%;
         height: 6vh;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.88rem;
+        line-height: 0.50rem;
+        position:fixed;
+        top:0;
+        left:0;
+        z-index:99;
     }
     .back{
         width: 0.34rem;
@@ -123,6 +223,10 @@
         margin-top: 0.25rem;
         float:right;
     }
+    /*main{*/
+    /*width: 100%;*/
+    /*margin-top:0.8rem;*/
+    /*}*/
     .good-info{
         width: 100%;
         height: auto;
@@ -132,7 +236,6 @@
     .imgbox{
         width: 100%;
         height: 5.04rem;
-        /*background: #ff1c8b;*/
         position: relative;
     }
     .banner{
@@ -158,10 +261,9 @@
         font-size:0.32rem;
         color:#555555;
         display: block;
-        width: 98%;
-
         padding-left:0.34rem;
-        padding-top:0.34rem;
+        padding-top:0.40rem;
+        width: 7.0rem;
     }
     .oldprice{
         font-size:0.28rem;
@@ -205,7 +307,7 @@
         display: block;
     }
     .price1{
-        margin-top: 0.20rem;
+        /*margin-top: 0.48rem;*/
         padding-bottom: 0.16rem;
         border-bottom: 0.01rem solid #cccccc;
     }
@@ -231,7 +333,7 @@
     }
     .fuwu li img{
         width: 2.11rem;
-        height: 0.26rem;
+        /*height: 0.26rem;*/
         display: block;
         margin:0 auto;
         margin-top: 0.23rem;
@@ -239,7 +341,6 @@
     .goodsmore{
         width: 100%;
         height: auto;
-        background: #ff1c8b;
         float: left;
         margin-top: 0.07rem;
     }
@@ -254,7 +355,8 @@
     }
     .imgsbox{
         width: 100%;
-        height: 6.34rem;
+        height: auto;
+        background: #fff;
     }
     .imgsbox img{
         width: 100%;
@@ -277,12 +379,16 @@
     }
     .yx-item{
         width: 3.745rem;
-        height: 4.30rem;
+        /*height: 4.30rem;*/
         float:left;
+    }
+    .yx li:nth-child(2n+1){
+        float: left;
+        border-left:0.02rem solid #e5e5e5;
     }
     .box{
         width: 100%;
-        height: 3.07rem;
+        /*height: 3.07rem;*/
         border-bottom:0.01rem solid #e5e5e5;
         position: relative;
     }
@@ -290,24 +396,24 @@
         width: 100%;
         height: 100%;
     }
-    .box .goodstu2{
-        width: 0.34rem;
-        height: 0.29rem;
-        position: absolute;
-        top:0.15rem;
-        right:0.18rem;
-    }
+
     .yx-ginfo{
         width: 100%;
-        height: 1.22rem;
+        /*height: 1.22rem;*/
         background: #fff;
         padding-left: 0.21rem;
+
     }
     .yx-gname{
         font-size:0.22rem;
         color:#2c2c2c;
         display: block;
         padding-top: 0.12rem;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow: ellipsis;
+        width: 96%;
+
     }
     .yx-newprice{
         font-size:0.26rem;
@@ -329,14 +435,17 @@
     }
     .yx-item1{
         float: right;
+        border-left:0.02rem solid #e5e5e5;
     }
     .yx-oldprice{
-        font-size:0.24rem;
-        color:#8a959e;
+        font-size: 0.24rem;
+        color: #8a959e;
         display: block;
-        float: right;
+        float: left;
+        width: 100%;
         padding-top: 0.13rem;
         margin-right: 0.12rem;
+        margin-bottom: 0.10rem;
     }
     .footbox{
         width: 100%;
@@ -401,7 +510,7 @@
     }
     .goods{
         width: 100%;
-        height: 6.72rem;
+        /*height: 8.6rem;*/
         background: #fff;
         position: fixed;
         left:0;
@@ -412,6 +521,10 @@
         height: 2.22rem;
         background: #f5f5f5;
         margin:0.35rem 0.22rem 0 0.45rem;
+    }
+    .goodsxtu img{
+        width: 100%;
+        height: 100%;
     }
     .sum{
         font-size:0.28rem;
@@ -439,37 +552,47 @@
         position: absolute;
         top:0.34rem;
         right:0.40rem;
-        border:0.01rem solid #a2a2a2;
+        border:0.02rem solid #a2a2a2;
         border-radius: 50%;
         text-align: center;
         font-size:0.18rem;
+        line-height: 0.39rem;
         color:#a2a2a2;
     }
     .style{
         font-size:0.28rem;
-        color:#a2a2a2;
+        color:#555555;
         padding-left: 0.53rem;
         display: block;
         padding-top: 0.51rem;
     }
     .style1{
-        width: 1.26rem;
-        height: 0.63rem;
-        background: url("../assets/images/gg@2x.png") no-repeat center/cover;
+        /*width: 1.26rem;*/
+        height: 0.60rem;
+        background: #f5f5f5;
+        border-radius: 0.40rem;
+        padding: 0 0.20rem;
         font-size:0.26rem;
         color:#555555;
         text-align: center;
-        line-height: 0.63rem;
-        margin:0.28rem 0.18rem 0 0.53rem;
+        line-height: 0.60rem;
+        margin:0.28rem 0.18rem 0 0rem;
         float:left;
+    }
+    .style1:nth-child(n+2){
+        margin-left:0;
     }
     .style2{
         margin-left:0;
+    }
+    .style1:hover{
+        color:#f9444d;
     }
     .stylebox{
         width: 100%;
         height: auto;
         float: left;
+        padding-left: 0.53rem;
     }
     .num{
         display: block;
@@ -496,16 +619,24 @@
         display: block;
         position: absolute;
         right:1.41rem;
-        bottom:1.62rem;
+        bottom:0.5rem;
     }
     .numadd{
-        font-size:0.24rem;
+        font-size:0.28rem;
         color:#555555;
         position: absolute;
-        right:1.03rem;
-        bottom:1.67rem;
+        right:0.97rem;
+        bottom:0.52rem;
     }
     .jhh{
         right:0.41rem;
+    }
+    .zhezhao{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
     }
 </style>
