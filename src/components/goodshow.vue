@@ -76,24 +76,25 @@
             </div>
             <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="goods clearfix">
-                    <div class="goodsxtu">
-                        <img :src="goods.goods_img" alt="">
-                    </div>
-                    <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
-                    <span class="numbers">库存{{style_stock}}件</span>
-                    <div class="close" @click="close">x</div>
-                    <div class="group" v-for="(item,index) in goods.spec_group">
-                        <span class="style">{{item.spec_name}}:</span>
-                        <div class="stylebox">
-                            <div class="style1" v-for="(value,index) in item.spec_value" @click="check(value,index)">{{value}}</div>
+                    <div class="ginfo">
+                        <div class="goodsxtu">
+                            <img :src="style_img" alt="">
                         </div>
-                    </div>
-
-                    <div class="choose">
-                        <span class="num">数量:</span>
-                        <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                        <span class="numadd">{{goodsnum}}</span>
-                        <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
+                        <span class="numbers">库存{{style_stock}}件</span>
+                        <div class="close" @click="close">x</div>
+                        <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
+                            <span class="style">{{item.spec_name}}:</span>
+                            <div class="stylebox">
+                                <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
+                            </div>
+                        </div>
+                        <div class="choose">
+                            <span class="num">数量:</span>
+                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                            <span class="numadd">{{goodsnum}}</span>
+                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                        </div>
                     </div>
 
                     <div class="ok" clearfix>选好了</div>
@@ -117,7 +118,9 @@ import { mapState } from 'vuex'
                 save_price:"",
                 style_img:"",
                 style_price:"",
-                style_stock:""
+                style_stock:"",
+                choose_spec:[],
+                img:""
             }
         },
         computed: {
@@ -131,14 +134,16 @@ import { mapState } from 'vuex'
         },
         mounted:function(){
             this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id}}).then(res=>{
-                console.log(res.data.data);
+                // console.log(res.data.data);
                 this.goods=res.data.data;
                 this.save_price=this.goods.market_price-this.goods.member_price;
+                for (var i=0;i<this.goods.spec_reg.length;i++){
 
-
-                console.log(this.goods.spec_group);
-
-                // this.style_price=this.goods.info[0].member_price;
+                    if(this.names=this.goods.spec_reg[i]){
+                        this.style_img=this.goods.spec_reg[i].spec_img_path
+                        this.style_stock=this.goods.spec_reg[i].stock
+                    }
+                }
             })
         },
         methods:{
@@ -159,17 +164,47 @@ import { mapState } from 'vuex'
                     this.goodsnum=0;
                 }
             },
-            check(value,index){
-                this.names=value;
-                console.log(this.names)
+            check(value,cellIndex,index){
+                this.names=cellIndex;
+                // console.log(this.names)
+                this.choose_spec[index] = value;
+                // console.log(this.goods.spec_reg);
+                var reg_str = '';
+                for(var i=0;i<this.choose_spec.length;i++){
+                    reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
+                }
 
+                for (var i=0;i<this.goods.spec_reg.length;i++){
+                    if(this.goods.spec_reg[i].reg_spec_str == reg_str){
+                        this.style_img=this.goods.spec_reg[i].spec_img_path
+                        this.style_stock=this.goods.spec_reg[i].stock
+                    }
+
+                }
+
+                if(this.names){
+
+                }
 
             },
 
-
-
         }
     }
+
+function array_search(arr,val,type) {
+    type = type==undefined?false:type;
+    console.log(arr);
+    for(var i = 0;i<arr.length;i++){
+        if(arr[i] == val)
+            return i;
+        if(type){
+            if(typeof arr[i] == 'object'){
+                 return array_search(arr[i],val,type);
+            }
+        }
+    }
+    return false;
+}
 </script>
 
 <style scoped>
@@ -182,6 +217,17 @@ import { mapState } from 'vuex'
         width: 100%;
         height: 1.5rem;
         float:left;
+        position: relative;
+
+    }
+    .ginfo{
+        width: 100%;
+        height: auto;
+        float:left;
+        position: absolute;
+        bottom:1.02rem;
+        left:0;
+        background: #fff;
     }
     header{
         width: 100%;
@@ -498,7 +544,7 @@ import { mapState } from 'vuex'
     }
     .goods{
         width: 100%;
-        height: 8.6rem;
+        /*height: 8.6rem;*/
         background: #fff;
         position: fixed;
         left:0;
@@ -607,14 +653,14 @@ import { mapState } from 'vuex'
         display: block;
         position: absolute;
         right:1.41rem;
-        bottom:1.55rem;
+        bottom:0.5rem;
     }
     .numadd{
         font-size:0.28rem;
         color:#555555;
         position: absolute;
         right:0.97rem;
-        bottom:1.58rem;
+        bottom:0.52rem;
     }
     .jhh{
         right:0.41rem;
