@@ -18,7 +18,7 @@
 
                 <div class="xiaoqu clearfix">
                     <span class="price">市场价:￥{{goods.original_price}}/人</span>
-                    <span class="addr">当前校区:{{schoolname}}</span>
+                    <span class="addr" @click="addr">当前校区:{{schoolname}}</span>
                     <img src="../assets/images/wz@2x.png" class="wz">
                 </div>
                 <div class="xiaoqu clearfix">
@@ -86,6 +86,10 @@
                 this.goodsname=item.name;
                 this.original_price=item.original_price;
                 this.membership_price=item.membership_price;
+            },
+            // 调用原生定位方法
+            addr(){
+                jsObj.gps();
             }
         },
         components: {

@@ -31,7 +31,7 @@ const Signinfo = r => require.ensure([], () => r(require('@/components/signinfo'
 const Goldlist = r => require.ensure([], () => r(require('@/components/goldlist')), 'goldlist')
 const Goldgood = r => require.ensure([], () => r(require('@/components/goldgood')), 'goldgood')
 const Confirmorder = r => require.ensure([], () => r(require('@/components/confirmorder')), 'confirmorder')
-const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
+// const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
 const Goldorder = r => require.ensure([], () => r(require('@/components/goldorder')), 'goldorder')
 const Goldrule = r => require.ensure([], () => r(require('@/components/goldrule')), 'goldrule')
 
@@ -220,11 +220,11 @@ export default new Router({
             component: Confirmorder
         },
         //订单详情已支付
-        {
-            path: '/ordershow1',
-            name: 'ordershow1',
-            component: Ordershow1
-        },
+        // {
+        //     path: '/ordershow1',
+        //     name: 'ordershow1',
+        //     component: Ordershow1
+        // },
         //金币规则
         {
             path: '/goldrule',

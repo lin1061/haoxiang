@@ -77,9 +77,9 @@
             <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="goods clearfix">
                     <div class="goodsxtu">
-                        <img :src="style_img" alt="">
+                        <img :src="goods.goods_img" alt="">
                     </div>
-                    <span class="sum">共计: <span class="prices">￥{{style_price}}</span></span>
+                    <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
                     <span class="numbers">库存{{style_stock}}件</span>
                     <div class="close" @click="close">x</div>
                     <div class="group" v-for="(item,index) in goods.spec_group">
@@ -105,12 +105,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
     export default {
         name: "goodshow",
         data () {
             return {
                 showbox:false,
-                goodsnum:0,
+                goodsnum:1,
                 goods:[],
                 names:"",
                 save_price:"",
@@ -119,8 +120,17 @@
                 style_stock:""
             }
         },
+        computed: {
+            ...mapState({
+              goods_id: state => state.goods_id
+            }),
+            // 总金额
+            moneynum:function(){
+                return this.goods.member_price * this.goodsnum
+            }
+        },
         mounted:function(){
-            this.$axios.get('/goods/detail?goods_id=11').then(res=>{
+            this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id}}).then(res=>{
                 console.log(res.data.data);
                 this.goods=res.data.data;
                 this.save_price=this.goods.market_price-this.goods.member_price;
@@ -130,9 +140,6 @@
 
                 // this.style_price=this.goods.info[0].member_price;
             })
-        },
-        computed:{
-
         },
         methods:{
             goodshow(){
