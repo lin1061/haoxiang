@@ -1,26 +1,26 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">金币商城</span>
-            <router-link to="/goldrule">
-                <span class="share">编辑</span>
-            </router-link>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">金币商城</span>-->
+            <!--<router-link to="/goldrule">-->
+                <!--<span class="share">编辑</span>-->
+            <!--</router-link>-->
 
-        </header>
+        <!--</header>-->
         <main>
             <ul class="yx">
                 <router-link :to="{name:'goldgood',query:{gid:item.goods_id}}" v-for="item in list" :key="item.goods_id">
-                    <li class="yx-item">
-                        <div class="box">
-                            <img :src="item.goods_img" class="goodstu">
-                        </div>
-                        <div class="yx-ginfo">
-                            <span class="yx-gname">{{item.goods_name}}</span>
-                            <span class="yx-newprice">金币兑换:{{item.price}}</span>
-                        </div>
-                    </li>
+                <li class="yx-item">
+                    <div class="box">
+                        <img :src="item.goods_img" class="goodstu">
+                    </div>
+                    <div class="yx-ginfo">
+                        <span class="yx-gname">{{item.goods_name}}</span>
+                        <span class="yx-newprice">金币兑换:{{item.price}}</span>
+                    </div>
+                </li>
                 </router-link>
             </ul>
         </main>
@@ -38,10 +38,10 @@
 
         mounted:function () {
 
-            this.$axios.get('/user/exchanges',).then(res=>{
-                this.list=res.data.data;
+          this.$axios.get('/user/exchanges',).then(res=>{
+                  this.list=res.data.data;
                 console.log(res)
-            })
+          })
         }
     }
 </script>

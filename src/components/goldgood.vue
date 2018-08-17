@@ -67,10 +67,10 @@
                         <span class="numbers">库存件</span>
                         <div class="close" @click="close">x</div>
                         <!--<div class="group" v-for="(item,index) in good.spec_group" :key="index">-->
-                        <!--<span class="style">{{item.spec_name}}:</span>-->
-                        <!--<div class="stylebox">-->
-                        <!--<div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>-->
-                        <!--</div>-->
+                            <!--<span class="style">{{item.spec_name}}:</span>-->
+                            <!--<div class="stylebox">-->
+                                <!--<div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>-->
+                            <!--</div>-->
                         <!--</div>-->
                         <div class="choose">
                             <span class="num">数量:</span>
@@ -126,8 +126,8 @@
         mounted:function () {
             this.gid=this.$route.query.gid
             this.$axios.get('/user/exchange_goods_info?goods_id='+this.gid).then(res=>{
-                this.good=res.data.data;
-                console.log(this.good)
+                    this.good=res.data.data;
+                    console.log(this.good)
             })
         },
         methods:{

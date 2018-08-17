@@ -26,10 +26,6 @@
                     <span class="tetitle tetitle1">直营商品</span>
                 </div>
             </div>
-            <span class="hy-title">办卡须知</span>
-            <div class="tequan clearfix">
-
-            </div>
             <span class="hy-title">持卡人信息</span>
             <div class="tequan tequan1">
                 <div class="name clearfix">
@@ -61,6 +57,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     import qs from 'qs'
     export default {
         name: "membershow",

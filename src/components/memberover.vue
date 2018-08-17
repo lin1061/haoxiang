@@ -10,11 +10,11 @@
             <!--会员卡-->
             <section class="card clearfix">
                 <div class="card-rtop clearfix">
-                    {{member.rest_days}}
+                    {{state}}
                 </div>
                 <span class="card-title">{{member.series_number }}</span>
-                <div class="tiaoma">{{member.bar_pic }}</div>
-                <span class="card-title3">好象有货{{member.card_type }}</span>
+                <div class="tiaoma" v-html="member.bar_pic"></div>
+                <span class="card-title3">好象有货{{member.card_type}}</span>
                 <button class="anniu">立即续费</button>
             </section>
         </main>
@@ -22,23 +22,35 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "memberover",
         data(){
             return{
                 member:[],
-                state:""
+                state:"",
+
 
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+
+        },
         mounted:function () {
-            this.$axios.get('/user/card').then(res=>{
+            this.$axios.get('/user/card',{params:{user_id:this.user_id}}).then(res=>{
                 this.member=res.data.data;
+                console.log(res.data.data)
+                // console.log(this.member)
                 this.state=res.data.data.status;
                 if(this.state=="0"){
-                    this.state="过期"
+                    this.state="已过期"
+
                 }else if(this.state=="1"){
-                    this.state="正常"
+                    this.state=this.member.rest_days+"天"
+
                 }
             })
         }
@@ -65,7 +77,7 @@
     .card{
         width: 7.32rem;
         height: 4.89rem;
-        background: #ff1c8b;
+
         margin:0 auto;
         margin-top:0.16rem;
         position: relative;
@@ -133,8 +145,12 @@
     .tiaoma{
         width: 4.6rem;
         height: 1.04rem;
-        background: #ff1c8b;
+
         margin:0 auto;
         margin-top: 0.10rem;
+    }
+    .tiaoma img{
+        width: 4.6rem!important;
+        height: 1.04rem!important;
     }
 </style>

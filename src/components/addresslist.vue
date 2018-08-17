@@ -43,7 +43,7 @@
 
             this.$axios.get('/user/addresses',
                 {params:{user_id:this.user_id}},
-            ).then(res=>{
+                ).then(res=>{
                 this.adr=res.data.data;
                 console.log(res)
 

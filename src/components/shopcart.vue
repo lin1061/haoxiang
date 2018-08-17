@@ -1,96 +1,34 @@
 <template>
     <div id="main" class="shopcart">
         <main>
-          	<div class="shopcart-itme">
+          	<div class="shopcart-itme" v-for="item in cart">
           		<div class="shopcart-title border-1px">
           			<div class="seller-checkbox checked"></div>
-          			<div class="seller-name">门店自营</div>
-          			<div class="seller-del"></div>
+          			<div class="seller-name">{{types}}</div>
+          			<div class="seller-del" @click="del"></div>
           		</div>
-          		<div class="shopcart-cont border-1px">
+          		<div class="shopcart-cont border-1px" >
           			<div class="seller-checkbox"></div>
           			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
+          				<img :src="item.goods.goods_img">
           			</div>
           			<div class="shopcart-info">
           				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
+          					<div class="n1">{{item.goods.goods_name}}</div>
+          					<!--<div class="n2"></div>-->
           				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
+          				<div class="shopcart-info-pro">原价:{{item.goods.market_price}}</div>
+          				<div class="shopcart-info-rmb">会员价¥{{item.goods.shop_price}}</div>
           				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
+          					<span class="minus" @click="minus"></span>
+							<div class="goos-num">{{num}}</div>
+          					<span class="add" @click="add"></span>
           				</div>	
           			</div>
           		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
-          			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
-          			</div>
-          			<div class="shopcart-info">
-          				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
-          				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
-          				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
-          				</div>	
-          			</div>
-          		</div>
+
           	</div>
-          	<div class="shopcart-itme">
-          		<div class="shopcart-title border-1px">
-          			<div class="seller-checkbox checked"></div>
-          			<div class="seller-name">重仓邮寄</div>
-          			<div class="seller-del"></div>
-          		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
-          			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
-          			</div>
-          			<div class="shopcart-info">
-          				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
-          				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
-          				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
-          				</div>	
-          			</div>
-          		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
-          			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
-          			</div>
-          			<div class="shopcart-info">
-          				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
-          				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
-          				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
-          				</div>	
-          			</div>
-          		</div>
-          	</div>
+
         </main>
         <footer class="footer">
         	<div class="footer-vip">成为好象会员，享受会员特权。立即开通></div>
@@ -107,8 +45,72 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
-        name: "shopcart"
+        name: "shopcart",
+		data(){
+            return{
+                cart:[],
+				types:"",
+				num:0,
+				shop_id:""
+			}
+		},
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+			moneytotal(){
+
+			}
+
+        },
+		mounted:function () {
+			this.$axios.get('/user/shop_card',{params:{user_id:this.user_id}}).then(res=>{
+			    this.cart=res.data.data;
+
+
+			    for(let i=0;i<this.cart.length;i++){
+                    this.shop_id=this.cart[i].id
+                    this.types=this.cart[i].goods.types,
+						this.num=this.cart[i].num;
+                    console.log(this.num)
+						// console.log(this.types)
+					if(this.types=="1"){
+                        this.types="门店直营"
+					}else if(this.types=="2"){
+                        this.types="总仓包邮"
+					}
+
+				}
+
+				console.log(res.data.data)
+			})
+        },
+		methods:{
+            add(){
+				this.num++;
+				this.$axios.get('/user/shop_card_num',
+					{params:{shop_card_id:this.shop_id,num:this.num}}).then(res=>{
+						console.log(res)
+				})
+			},
+			del(){
+                this.$axios.get('/user/delete_shop_card',{params:{shop_card_id:this.shop_id}}).then(res=>{
+					console.log(res)
+				})
+			},
+			minus(){
+                this.num--;
+                if(this.num<=0){
+                    this.num=0;
+				}
+                this.$axios.get('/user/shop_card_num',
+                    {params:{shop_card_id:this.shop_id,num:this.num}}).then(res=>{
+                    console.log(res)
+                })
+			}
+		}
     }
 </script>
 
@@ -134,7 +136,7 @@
 		}
 		.shopcart-itme{
 			background: #fff;
-			margin-top: 0.15rem;
+			/*margin-top: 0.15rem;*/
 		}
 	    .shopcart-title{
 	    	position: relative;
@@ -207,6 +209,7 @@
 	    		position: absolute;
 	    		right: 0;
 	    		bottom: 0;
+
 	    		height: 0.4rem;
 	    		font-size: 0;
 	    		span{
@@ -216,8 +219,9 @@
 	    	}
 	    	.goos-num{
 	    		display: inline-block;
-	    		font-size: 0.26rem;
+	    		font-size: 0.28rem;
 	    		color: #323a45;
+				padding-top: 0.04rem;
 	    		width: 0.4rem;
 	    		text-align: center;
 	    		height: 0.4rem;

@@ -2,8 +2,8 @@
     <div id="main">
         <!--头部-->
         <!--<header class="clearfix">-->
-        <!--<img src="../assets/images/back.png" class="back">-->
-        <!--<span class="title">新增收货地址</span>-->
+            <!--<img src="../assets/images/back.png" class="back">-->
+            <!--<span class="title">新增收货地址</span>-->
         <!--</header>-->
         <!--内容-->
         <main>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import qs from 'qs'
     export default {
         name: "shouhuoadd",
         data(){
@@ -42,13 +44,26 @@
                 adr:""
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+
+        },
         methods:{
             school(){
                 jsObj.GPS();
             },
             add(){
-                this.$axios.post('').then(res=>{
-
+                this.$axios.post('/user/address',
+                    qs.stringify({
+                        name:this.name,
+                        phone:this.phone,
+                        university_address:this.area,
+                        address:this.adr,
+                        user_id:this.user_id
+                    }),).then(res=>{
+                        console.log(res)
                 })
             }
         }

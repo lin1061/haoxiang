@@ -25,6 +25,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     import qs from 'qs'
     export default {
         name: "addbills",
@@ -34,20 +35,23 @@
                 no:""
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+
+        },
         methods:{
             add:function () {
-                let token=JSON.parse(localStorage.getItem('user')).token;
+
                 this.$axios.post('/user/invoice_store',
                     qs.stringify({
                         name:this.name,
-                        no:this.no
-                    }),{
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-
-                        }
-                    }).then(res=>{
+                        no:this.no,
+                        user_id:this.user_id
+                    }),).then(res=>{
                     let {err_code,msg,data}=res.data;
+                    console.log(res)
                     if(err_code=='0'){
                         this.$router.push({name:'billslist'})
                     }

@@ -1,18 +1,14 @@
 <template>
     <div id="main">
-        <!--头部-->
-        <!--<header>-->
-        <!--<img src="../assets/images/backWhite.png" class="back">-->
-        <!--<span class="title">订单详情</span>-->
-        <!--</header>-->
+
         <!--内容-->
         <main>
             <div class="order-box1">
-                <span>待支付</span>
+                <span>已支付</span>
             </div>
             <div class="order-box1">
-                <span>订单号：<span class="orderno">{{order.order_num}}</span></span>
-                <img src="../assets/images/fz@2x.png" class="copy" @click="copy">
+                <span>订单号：{{order.order_num}}</span>
+                <img src="image/fz@2x.png" class="copy">
             </div>
             <div class="order-info clearfix">
                 <span class="order-man">收货人：{{info.name}}</span>
@@ -28,40 +24,42 @@
                 <span class="order-price">￥{{item.price}}</span>
                 <span class="order-num">x{{item.quantity}}</span>
             </div>
-            <div class="paybox clearfix">
-                <div class="order-box1 ">
+            <div class="order-active order-active1">
+
+                <img src="../assets/images/售后服务.png" alt="" class="cancel pay cancel1">
+            </div>
+            <div class="paybox">
+                <div class="order-box1 pay-title1">
                     <span>支付方式</span>
                     <span class="pay-title">{{order_pay}}</span>
                 </div>
-                <div class="order-box1">
+                <div class="order-box1 pay-title1">
                     <span >配送</span>
                     <span class="pay-title">{{distribution}}</span>
                 </div>
-                <div class="order-box1">
+                <div class="order-box1 pay-title1">
                     <span >发票抬头</span>
                     <span class="pay-title">{{order.invoices_title}}</span>
                 </div>
-
-                <div class="order-box1">
+                <div class="order-box1 pay-title1">
+                    <span >已支付</span>
+                    <span class="pay-title">{{order.total_money}}</span>
+                </div>
+                <div class="order-box1 pay-title1">
                     <span >商品总额</span>
                     <span class="pay-title">￥{{order.total_money}}</span>
                 </div>
-                <div class="order-box1">
+                <div class="order-box1 pay-title1">
                     <span >运费</span>
                     <span class="pay-title">+￥0.00</span>
                 </div>
-                <div class="order-box1">
+                <div class="order-box1 pay-title1 order-box2">
                     <span >实付金额</span>
                     <span class="pay-title">￥{{order.total_money}}</span>
                 </div>
-                <div class="order-box1 order-box2">
-                    <span >下单时间</span>
-                    <span class="pay-title">{{order.pay_at}}</span>
-                </div>
-                <div class="order-active clearfix">
-                    <span class="time">自动取消: 14:29</span>
-                    <img src="../assets/images/qx@2x.png" alt="" class="cancel">
-                    <img src="../assets/images/zf@2x.png" alt="" class="cancel pay">
+                <div class="order-active">
+                    <img src="../assets/images/删除订单.png" alt="" class="cancel">
+                    <img src="../assets/images/再次购买.png" alt="" class="cancel pay">
                 </div>
             </div>
             <div class="imgbox">
@@ -72,9 +70,8 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex'
     export default {
-        name: "ordershow",
+        name: "ordershow1",
         data(){
             return{
                 order:[],
@@ -84,13 +81,6 @@
                 info:[],
 
             }
-        },
-        computed: {
-            ...mapState({
-                user_id: state => state.user_id,
-                activity_id:state=>state.activity_id
-            }),
-
         },
         mounted:function () {
             this.oid=this.$route.query.oid;
@@ -118,20 +108,18 @@
                 console.log(num.innerText)
             }
         }
-
     }
 </script>
 
 <style scoped>
+    body{
+        background: #f5f5f5;
+    }
     header{
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.50rem;
-        position: fixed;
-        top:0;
-        left:0;
-        z-index:99;
+        line-height: 0.32rem;
     }
     .back{
         width: 0.34rem;
@@ -142,10 +130,6 @@
         font-size:0.30rem;
         color:#fff;
         margin-left:2.20rem;
-    }
-    main{
-        width: 100%;
-        /*margin-top: 0.88rem;*/
     }
     .order-box1{
         width: 100%;
@@ -162,7 +146,7 @@
         width: 0.68rem;
         height: 0.40rem;
         position: absolute;
-        top:0.28rem;
+        top:0.23rem;
         right:0.49rem;
     }
     .order-info{
@@ -190,7 +174,6 @@
         color:#555555;
         display: block;
         float:left;
-        width: 100%;
         margin:0rem 0 0.26rem 0.40rem;
     }
     .order-mitem{
@@ -198,7 +181,8 @@
         height: 1.98rem;
         overflow: hidden;
         background: #fff;
-        margin-bottom:0.17rem;
+        border-bottom: 0.01rem solid #e0e0e0;
+
     }
     .order-tu{
         width: 1.60rem;
@@ -268,7 +252,7 @@
     /*}*/
     .order-active{
         width: 100%;
-        height: 0.69rem;
+        height: 0.83rem;
         position: relative;
     }
     .time{
@@ -300,5 +284,14 @@
     }
     .order-box2{
         border:none;
+    }
+    .order-active1{
+        background: #fff;
+        height: 0.83rem;
+        margin-bottom:0.17rem;
+
+    }
+    .cancel1{
+        top:0.18rem;
     }
 </style>

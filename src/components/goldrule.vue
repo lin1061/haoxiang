@@ -1,10 +1,10 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back" @click="$router.go(-1)">
-            <span class="title">金币兑换</span>
-        </header>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back" @click="$router.go(-1)">-->
+            <!--<span class="title">金币兑换</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <span class="biaoti">金币兑换规则</span>

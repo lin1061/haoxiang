@@ -9,7 +9,7 @@
         <!--内容-->
         <main>
             <div class="good-info clearfix">
-                <swiper class="imgbox">
+                <swiper class="imgbox" height="5.07rem">
                     <img :src="goods.goods_img" class="banner">
                 </swiper>
                 <p>
@@ -67,7 +67,7 @@
                     <img src="../assets/images/ej@2x.png" class="server">
                     <span class="kefu">客服</span>
                 </div>
-                <div class="ser like">
+                <div class="ser like" @click="like">
                     <img src="../assets/images/Favourite@3x.png" class="server liketu">
                     <span class="kefu">收藏</span>
                 </div>
@@ -97,7 +97,7 @@
                         </div>
                     </div>
 
-                    <div class="ok" clearfix>选好了</div>
+                    <div class="ok" clearfix @click="gocart">选好了</div>
                 </div>
             </div>
 
@@ -107,8 +107,9 @@
 
 <script>
 
-    import { mapState } from 'vuex'
-    import { Swiper } from 'vux'
+import { mapState } from 'vuex'
+import qs from 'qs'
+import { Swiper } from 'vux'
     export default {
         name: "goodshow",
         data () {
@@ -122,13 +123,15 @@
                 style_price:"",
                 style_stock:"",
                 choose_spec:[],
+                spec_id:"",
                 img:"",
                 choose:""
             }
         },
         computed: {
             ...mapState({
-                goods_id: state => state.goods_id
+              goods_id: state => state.goods_id,
+              user_id: state => state.user_id
             }),
             // 总金额
             moneynum:function(){
@@ -171,6 +174,26 @@
                     this.goodsnum=0;
                 }
             },
+            like(){
+                this.$axios.post('/user/collection_store',
+                    qs.stringify({
+                        user_id:this.user_id,
+                        goods_id:this.goods_id
+                    })).then(res=>{
+                    console.log(res)
+                })
+            },
+            gocart(){
+                this.$axios.post('/user/shop_card',
+                    qs.stringify({
+                        goods_id:this.goods_id,
+                        num:this.goodsnum,
+                        user_id:this.user_id,
+                        spec_id:this.spec_id
+                    })).then(res=>{
+                    console.log(res)
+                })
+            },
             check(value,cellIndex,index){
                 this.names=cellIndex;
                 // console.log(this.names)
@@ -186,6 +209,7 @@
                     if(this.goods.spec_reg[i].reg_spec_str == reg_str){
                         this.style_img=this.goods.spec_reg[i].spec_img_path
                         this.style_stock=this.goods.spec_reg[i].stock
+                        this.spec_id=this.goods.spec_reg[i].spec_id
                     }
 
                 }
@@ -195,20 +219,20 @@
         }
     }
 
-    function array_search(arr,val,type) {
-        type = type==undefined?false:type;
-        console.log(arr);
-        for(var i = 0;i<arr.length;i++){
-            if(arr[i] == val)
-                return i;
-            if(type){
-                if(typeof arr[i] == 'object'){
-                    return array_search(arr[i],val,type);
-                }
+function array_search(arr,val,type) {
+    type = type==undefined?false:type;
+    console.log(arr);
+    for(var i = 0;i<arr.length;i++){
+        if(arr[i] == val)
+            return i;
+        if(type){
+            if(typeof arr[i] == 'object'){
+                 return array_search(arr[i],val,type);
             }
         }
-        return false;
     }
+    return false;
+}
 </script>
 
 <style scoped>

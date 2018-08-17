@@ -6,7 +6,7 @@
         <!--<span class="title">其他</span>-->
         <!--</header>-->
         <main>
-            <div class="list-item clearfix" v-for="item in bills">
+            <div class="list-item clearfix" v-for="item in bills" :key="item.id">
                 <div class="list-itemtop">
                     <span class="list-title1">{{item.name}}</span>
                     <span class="list-title2">{{types}}</span>
@@ -19,14 +19,14 @@
                             <img src="../assets/images/b@2x.png" alt="">
                             <span class="list-ritem1-wen">编辑</span>
                         </div>
-                        <div class="list-ritem1 ritem2">
+                        <div class="list-ritem1 ritem2" @click="del(item.id)">
                             <img src="../assets/images/s@2x.png" alt="">
                             <span class="list-ritem1-wen">删除</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <button class="anniu">
+            <button class="anniu" @click="add">
                 <span class="anniu-wenzi">添加新发票抬头</span>
             </button>
         </main>
@@ -43,7 +43,8 @@
         data(){
             return{
                 bills:[],
-                types:""
+                types:"",
+
             }
         },
         computed: {
@@ -57,17 +58,35 @@
 
             this.$axios.get('/user/invoices',{params:{user_id:this.user_id}}).then(res=>{
                 this.bills=res.data.data;
-                this.types=res.data.data.type;
                 console.log(res.data.data)
-                if(this.types=='1'){
-                    this.types="个人"
+                for(let i=0;i<res.data.data.length;i++){
+                    this.types=res.data.data[i].type;
+                    if(this.types=="1"){
+                        this.types="个人"
 
-                }else if(this.types=='2'){
-                    this.types="公司"
+                    }else if(this.types=="2"){
+                        this.types="公司"
+                    }
+                    // console.log(this.types)
+
                 }
+
+
+
 
             })
         },
+        methods:{
+            del(id){
+                console.log(id)
+                this.$axios.post('/user/invoice_delete?invoice_id='+id).then(res=>{
+                    console.log(res)
+                })
+            },
+            add(){
+                this.$router.push({name:'addbills',params:this.user_id})
+            }
+        }
 
     }
 </script>

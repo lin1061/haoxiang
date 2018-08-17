@@ -2,8 +2,8 @@
     <div id="main">
         <!--头部-->
         <!--<header>-->
-        <!--<img src="../assets/images/backWhite.png" class="back">-->
-        <!--<span class="title">确认订单</span>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">确认订单</span>-->
         <!--</header>-->
         <!--内容-->
         <main>

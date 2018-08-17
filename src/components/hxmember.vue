@@ -14,7 +14,7 @@
                 </div>
                 <span class="card-title" v-html="item.desc"></span>
                 <!--<span class="card-title card-title1">9天最高可买1000元</span>-->
-                <span class="card-title3">{{item.name}}</span>
+                <span class="card-title3">好象有货{{item.name}}</span>
                 <button class="anniu">￥{{item.price}}</button>
             </section>
         </main>
@@ -99,6 +99,9 @@
         font-size:0.36rem;
         color:#f8f8f8;
         display: block;
+        width: 45%;
+        margin:0 auto;
+        line-height: 0.60rem;
         /*font-weight: 600;*/
         padding-top: 1.54rem;
         text-align: center;
