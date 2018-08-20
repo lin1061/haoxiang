@@ -8,12 +8,11 @@
         <!--内容-->
         <main>
             <div class="huodong">
-                <swiper class="banner" height="5.07rem">
-                    <img :src="travel_goods.img_path" alt="">
-                    <div class="pager">
-                        5/5
-                    </div>
-                </swiper>
+                <Swiper class="banner" height="5.07rem"  :aspect-ratio="300/800">
+
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in travel_goods.banners" :key="index"><img :src="item"></swiper-item>
+
+                </Swiper>
                 <span class="hudong-title">{{travel_goods.name}}</span>
 
                 <div class="xiaoqu clearfix">
@@ -62,7 +61,7 @@
     import { mapState } from 'vuex'
     import Calendar from './vue-calendar-component/index';
     // import calendara from '@/components/calendara.vue'
-    import { Swiper } from 'vux'
+    import { Swiper,SwiperItem,} from 'vux'
 
     export default {
         name: "tourmore",
@@ -122,7 +121,8 @@
 
         components: {
             Calendar,
-            Swiper
+            Swiper,
+            SwiperItem,
         }
     }
 </script>

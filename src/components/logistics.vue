@@ -8,17 +8,33 @@
         <!--内容-->
         <main>
             <section class="logis-item">
-                <span>共计2个包裹</span>
+                <span>共计{{num}}个包裹</span>
             </section>
-            <div class="logis-thing clearfix">
-                <div class="imgbox ">
-                    <img src="../assets/images/tu@2x.png">
+            <div class="logis-thing clearfix" v-for="(item,index) in list">
+                <div class="item" v-for="(gitem,gindex) in item.goods">
+                    <div class="imgbox ">
+                        <img :src="gitem.img_path">
+                    </div>
+                    <div class="info ">
+                        <span class="info-title">{{types}}<span class="name">{{gitem.goods_name}}</span></span>
+                        <span class="info-state">{{status}}</span>
+                        <span class="expressno">韵达快递：{{item.order_num}}</span>
+                        <img src="../assets/images/fz_2@2x.png" class="fz">
+                    </div>
                 </div>
-                <div class="info ">
-                    <span class="info-title">[门店自营]<span class="name">三只松鼠夏威夷果100g*3 新鲜混合 最新口味</span></span>
-                    <span class="info-state">已发货</span>
-                    <span class="expressno">韵达快递：3242402002929384</span>
-                    <img src="../assets/images/fz_2@2x.png" class="fz">
+
+            </div>
+            <div class="logis-thing clearfix" v-for="item in list1">
+                <div class="item" v-for="gitem in item.goods">
+                    <div class="imgbox ">
+                        <img :src="gitem.img_path">
+                    </div>
+                    <div class="info ">
+                        <span class="info-title">{{types}}<span class="name">{{gitem.goods_name}}</span></span>
+                        <span class="info-state">{{status}}</span>
+                        <span class="expressno">韵达快递：3242402002929384</span>
+                        <img src="../assets/images/fz_2@2x.png" class="fz">
+                    </div>
                 </div>
             </div>
         </main>
@@ -26,9 +42,145 @@
 </template>
 
 <script>
-
+    import { mapState } from 'vuex'
     export default {
-        name: "logistics"
+        name: "logistics",
+        data(){
+            return{
+                list:[],
+                num:0,
+                num1:0,
+                list1:[],
+                types:"",
+                status:""
+            }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+            numtotal(){
+                return this.num+this.num1
+            }
+        },
+        mounted:function () {
+            this.$axios.get('/user/order?status=50',{params:{user_id:this.user_id}}).then(res=>{
+                this.list=res.data.data;
+                this.num=this.list.length;
+                console.log(this.list)
+                var statusIndex = 0;
+                var typesIndex = 0;
+                for(let i=0;i<res.data.data.length;i++){
+                    var types=res.data.data[i].order_type
+                    var status=this.list[i].order_status
+                    console.log(this.types)
+                    if(types=='2'){
+                        this.types[typesIndex]="门店直营";
+                        typesIndex++;
+
+                    }else if(types=='3'){
+                        this.types[typesIndex]="总仓包邮";
+                        typesIndex++;
+                    }
+                    else if(types=='4'){
+                        this.types[typesIndex]="兑换订单";
+                        typesIndex++;
+                    }
+                    else if(types=='5'){
+                        this.types[typesIndex]="特价订单";
+                        typesIndex++;
+                    }
+                    if(status=='10'){
+                        this.status[statusIndex]="待支付";
+                        statusIndex++;
+
+                    }else if(status=='20'){
+                        this.status[statusIndex]="已支付";
+                        statusIndex++;
+                    }
+                    else if(status=='30'){
+                        this.status[statusIndex]="待发货";
+                        statusIndex++;
+                    }
+                    else if(status=='40'){
+                        this.status[statusIndex]="部分发货";
+                        statusIndex++;
+                    }
+                    else if(status=='50'){
+                        this.status[statusIndex]="已发货";
+                        statusIndex++;
+                    }
+                    else if(status=='60'){
+                        this.status[statusIndex]="已完成";
+                        statusIndex++;
+                    }
+                    else if(status=='70'){
+                        this.status[statusIndex]="取消";
+                        statusIndex++;
+                    }
+
+                }
+
+            });
+            this.$axios.get('/user/order?status=40',{params:{user_id:this.user_id}}).then(res=>{
+                this.list1=res.data.data;
+                this.num1=this.list1.length;
+                console.log(this.list1)
+                var statusIndex = 0;
+                var typesIndex = 0;
+                for(let i=0;i<res.data.data.length;i++){
+                    var types=res.data.data[i].order_type
+                    var status=this.list[i].order_status
+                    console.log(this.types)
+                    if(types=='2'){
+                        this.types[typesIndex]="门店直营";
+                        typesIndex++;
+
+                    }else if(types=='3'){
+                        this.types[typesIndex]="总仓包邮";
+                        typesIndex++;
+                    }
+                    else if(types=='4'){
+                        this.types[typesIndex]="兑换订单";
+                        typesIndex++;
+                    }
+                    else if(types=='5'){
+                        this.types[typesIndex]="特价订单";
+                        typesIndex++;
+                    }
+                    if(status=='10'){
+                        this.status[statusIndex]="待支付";
+                        statusIndex++;
+
+                    }else if(status=='20'){
+                        this.status[statusIndex]="已支付";
+                        statusIndex++;
+                    }
+                    else if(status=='30'){
+                        this.status[statusIndex]="待发货";
+                        statusIndex++;
+                    }
+                    else if(status=='40'){
+                        this.status[statusIndex]="部分发货";
+                        statusIndex++;
+                    }
+                    else if(status=='50'){
+                        this.status[statusIndex]="已发货";
+                        statusIndex++;
+                    }
+                    else if(status=='60'){
+                        this.status[statusIndex]="已完成";
+                        statusIndex++;
+                    }
+                    else if(status=='70'){
+                        this.status[statusIndex]="取消";
+                        statusIndex++;
+                    }
+
+                }
+            });
+
+        }
     }
 </script>
 
@@ -42,6 +194,10 @@
         position: fixed;
         left:0;
         top:0;
+    }
+    .item{
+        width: 100%;
+        height:1.98rem;
     }
     .back{
         width: 0.34rem;
@@ -70,7 +226,8 @@
     }
     .logis-thing{
         width: 100%;
-        height: 1.98rem;
+        padding:0.40rem 0;
+        /*height: 1.98rem;*/
         background: url("../assets/images/bg_2@2x.png") no-repeat center/cover;
         overflow: hidden;
     }
@@ -99,6 +256,8 @@
     .name{
         font-size:0.26rem;
         color:#2c2c2c;
+        height: 0.50rem;
+        overflow: hidden;
     }
     .info-state{
         font-size:0.28rem;

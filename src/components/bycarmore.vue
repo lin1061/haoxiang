@@ -8,11 +8,10 @@
         <!--内容-->
         <main>
             <div class="huodong" >
-                <Swiper class="banner" height="5.07rem">
-                    <img :src="goods.img_path" alt="">
-                    <div class="pager">
-                        5/5
-                    </div>
+                <Swiper class="banner" height="5.07rem"  :aspect-ratio="300/800">
+
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in goods.banners" :key="index"><img :src="item"></swiper-item>
+
                 </Swiper>
                 <span class="hudong-title">{{goods.name}}</span>
 
@@ -54,7 +53,7 @@
 
 <script>
     import { mapState } from 'vuex'
-    import { Swiper } from 'vux'
+    import { Swiper,SwiperItem,} from 'vux'
     export default {
         name: "bycarmore",
         data(){
@@ -69,13 +68,13 @@
         },
         computed: {
             ...mapState({
-                goods_type: state => state.goods_type,
+
                 university_id:state=>state.university_id
             }),
 
         },
         mounted:function () {
-            this.$axios.get('/goods/school_shop',{params:{university_id:this.university_id,goods_type:this.goods_type}}).then(res=>{
+            this.$axios.get('/goods/school_shop?goods_type=0',{params:{university_id:this.university_id}}).then(res=>{
                 this.goods=res.data.data;
                 console.log(this.goods)
                 this.schoolname=this.goods.university.name;
@@ -102,7 +101,8 @@
             }
         },
         components: {
-            Swiper
+            Swiper,
+            SwiperItem,
         }
     }
 </script>

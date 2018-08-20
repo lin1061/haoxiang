@@ -1,10 +1,10 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header class="clearfix">
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">我的订单</span>
-        </header>
+        <!--<header class="clearfix">-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">我的订单</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <div class="nav clearfix">

@@ -31,9 +31,16 @@ const Signinfo = r => require.ensure([], () => r(require('@/components/signinfo'
 const Goldlist = r => require.ensure([], () => r(require('@/components/goldlist')), 'goldlist')
 const Goldgood = r => require.ensure([], () => r(require('@/components/goldgood')), 'goldgood')
 const Confirmorder = r => require.ensure([], () => r(require('@/components/confirmorder')), 'confirmorder')
-// const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
+const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
 const Goldorder = r => require.ensure([], () => r(require('@/components/goldorder')), 'goldorder')
 const Goldrule = r => require.ensure([], () => r(require('@/components/goldrule')), 'goldrule')
+const Membership = r => require.ensure([], () => r(require('@/components/membership')), 'membership')
+const Userprivary = r => require.ensure([], () => r(require('@/components/userprivary')), 'userprivary')
+const Usership = r => require.ensure([], () => r(require('@/components/usership')), 'usership')
+const Hxsummary = r => require.ensure([], () => r(require('@/components/hxsummary')), 'hxsummary')
+const Contact = r => require.ensure([], () => r(require('@/components/contact')), 'contact')
+const Confirmorder1 = r => require.ensure([], () => r(require('@/components/confirmorder1')), 'confirmorder1')
+
 
 Vue.use(Router)
 
@@ -219,19 +226,53 @@ export default new Router({
             name: 'confirmorder',
             component: Confirmorder
         },
-        //订单详情已支付
-        // {
-        //     path: '/ordershow1',
-        //     name: 'ordershow1',
-        //     component: Ordershow1
-        // },
+        // 订单详情已支付
+        {
+            path: '/ordershow1',
+            name: 'ordershow1',
+            component: Ordershow1
+        },
         //金币规则
         {
             path: '/goldrule',
             name: 'goldrule',
             component: Goldrule
         },
-
-
+        //会员协议
+        {
+            path: '/membership',
+            name: 'membership',
+            component: Membership
+        },
+        //用户隐私协议
+        {
+            path: '/userprivary',
+            name: 'userprivary',
+            component: Userprivary
+        },
+        //用户协议
+        {
+            path: '/usership',
+            name: 'usership',
+            component: Usership
+        },
+        //好象有货简介
+        {
+            path: '/hxsummary',
+            name: 'hxsummary',
+            component: Hxsummary
+        },
+        //联系我们
+        {
+            path: '/contact',
+            name: 'contact',
+            component: Contact
+        },
+        //购物车确认订单
+        {
+            path: '/confirmorder1',
+            name: 'confirmorder1',
+            component: Confirmorder1
+        },
     ]
 })

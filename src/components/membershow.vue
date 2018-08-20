@@ -42,13 +42,13 @@
                     <img src="../assets/images/hyd@2x.png" class="hyaddr">
                 </div>
                 <div class="gou"></div>
-                <span class="tong">我已阅读并同意<a>[会员协议]</a></span>
+                <span class="tong">我已阅读并同意<router-link to="/membership">[会员协议]</router-link></span>
             </div>
         </main>
         <!--底部-->
         <footer>
             <div class="total">
-                <button class="open">我要开卡</button>
+                <button class="open" @click="ok">我要开卡</button>
                 <span class="all2">￥120</span>
                 <span class="all">合计:</span>
             </div>
@@ -65,20 +65,31 @@
             return{
                 name:"",
                 phone:"",
-                school:""
+                school:"",
+                cartid:""
             }
         },
-        mounted:function () {
-            this.$axios.post('/user/card_store',
-                qs.stringify({
-                    user_id:"",
-                    card_id:"",
-                    name:this.name,
-                    tel:this.phone,
-                    university_id:this.school
-                })).then(res=>{
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
 
-            })
+        },
+
+        methods:{
+            ok(){
+                this.cartid=this.$route.query.cartid;
+                this.$axios.post('/user/card_store',
+                    qs.stringify({
+                        user_id:this.user_id,
+                        card_id:this.cartid,
+                        name:this.name,
+                        tel:this.phone,
+                        university_id:this.school
+                    })).then(res=>{
+
+                })
+            }
         }
     }
 </script>

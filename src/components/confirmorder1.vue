@@ -1,12 +1,12 @@
 <template>
     <div id="main">
-        <!--头部-->
+        <!--&lt;!&ndash;头部&ndash;&gt;-->
         <!--<header>-->
             <!--<img src="../assets/images/backWhite.png" class="back">-->
             <!--<span class="title">确认订单</span>-->
         <!--</header>-->
         <!--内容-->
-        <main>
+        <main class="clearfix">
             <div class="top">
                 <div class="tu">
                     <img src="../assets/images/定位.png" alt="">
@@ -18,42 +18,90 @@
                     <img src="../assets/images/导航.png" class="go go1">
                 </div>
             </div>
-            <div class="ginfo">
-                <div class="goods">
-                    <div class="gtop">
-                        <span class="gname">{{types}}</span>
-                    </div>
-                    <div class="order-mitem">
-                        <div class="order-tu">
-                            <img :src="goldgood.goods_img" alt="">
+            <div class="ginfo clearfix">
+                <div v-show="goodorder.store.length>0">
+                    <div class="goods">
+                        <div class="gtop">
+                            <span class="gname">门店自营</span>
                         </div>
-                        <span class="order-title1">{{goldgood.name}}</span>
-                        <span class="order-weight"></span>
-                        <span class="order-price">{{goldgood.exchange_gold_coin}}金币</span>
-                        <span class="order-num">x{{num}}</span>
+                        <div class="order-mitem" v-for="item in goodorder.store">
+                            <div class="order-tu">
+                                <img  :alt="item.goods.goods_img">
+                            </div>
+                            <span class="order-title1">{{item.goods.goods_name}}</span>
+                            <span class="order-weight"></span>
+                            <span class="order-price">￥65</span>
+                            <span class="order-num">x{{item.num}}</span>
+                        </div>
+                    </div>
+                    <div class="pay">
+                        <div class="order-box1 pay-title1">
+                            <span>支付方式</span>
+                            <span class="pay-title">在线支付</span>
+
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >配送</span>
+                            <span class="pay-title">{{fanshi}}</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                        </div>
+                        <!--<div class="order-box1 pay-title1 order-box2">-->
+                            <!--<span >其他</span>-->
+                            <!--<img src="../assets/images/箭头2.png" class="goto" @click="qita">-->
+                        <!--</div>-->
+                        <div class="order-box1 pay-title1 ">
+                            <span >商品总额</span>
+                            <span class="pay-title money">￥65.00</span>
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >运费</span>
+                            <span class="pay-title money">+￥3.00</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div v-show="goodorder.warehouse.length>0">
+                    <div class="goods">
+                        <div class="gtop">
+                            <span class="gname">总仓包邮</span>
+                        </div>
+                        <div class="order-mitem"  v-for="item in goodorder.warehouse">
+                            <div class="order-tu">
+                                <img :src="item.goods.goods_img" alt="">
+                            </div>
+                            <span class="order-title1">{{item.goods.goods_name}}</span>
+                            <span class="order-weight"></span>
+                            <span class="order-price">3000金币</span>
+                            <span class="order-num">x{{item.num}}</span>
+                        </div>
+                    </div>
+                    <div class="pay">
+                        <div class="order-box1 pay-title1">
+                            <span>支付方式</span>
+                            <span class="pay-title">在线支付</span>
+
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >配送</span>
+                            <span class="pay-title">{{fanshi}}</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                        </div>
+                        <div class="order-box1 pay-title1 order-box2">
+                            <span >其他</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="qita">
+                        </div>
+                        <div class="order-box1 pay-title1 ">
+                            <span >商品总额</span>
+                            <span class="pay-title money">￥65.00</span>
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >运费</span>
+                            <span class="pay-title money">+￥3.00</span>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="pay clearfix">
-
-                    <div class="order-box1 pay-title1">
-                        <span >配送</span>
-                        <span class="pay-title">{{fanshi}}</span>
-                        <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
-                    </div>
-                    <div class="order-box1 pay-title1 ">
-                        <span >商品总额</span>
-                        <span class="pay-title money">￥{{moneynum}}</span>
-                    </div>
-                    <div class="order-box1 pay-title1">
-                        <span >运费</span>
-                        <span class="pay-title money">+￥3.00</span>
-                    </div>
-                    <div class="order-box1 pay-title1 order-box2">
-                        <span >金币金额</span>
-                        <span class="pay-title money">{{goldnum}}</span>
-                    </div>
-                </div>
             </div>
             <div class="choose" v-show="showchoose">
                 <div class="fanshi">
@@ -64,10 +112,10 @@
             </div>
         </main>
         <footer>
-            <div class="hengfu" @click="kaitong">成为好象会员，享受会员特权。立即开通></div>
+            <div class="hengfu"@click="gomember">成为好象会员，本单可减<span class="yuan">20</span>元。立即开通></div>
             <div class="box">
                 <div class="lbox">
-                    <span class="ltitle">实付金币: <span class="ltitle2">{{goldnum}}</span></span>
+                    <span class="ltitle">实付金额: <span class="ltitle2">3000</span></span>
                 </div>
                 <button class="payfor">确认支付</button>
             </div>
@@ -78,45 +126,49 @@
 <script>
     import { mapState } from 'vuex'
     export default {
-        name: "goldorder",
+        name: "confirmorder",
         data(){
             return{
-                goldgood:[],
-                types:"",
-                num:1,
+                goodorder:[],
                 showchoose:false,
                 fanshi:"送货上门",
+                num:1,
+
+                user_info:[],
+                is_yellow_card:""
 
             }
         },
         computed: {
             ...mapState({
                 user_id: state => state.user_id,
+                info:state =>state.goodscard
             }),
-            moneynum(){
-                return this.num*this.goldgood.market_price
-            },
-            goldnum(){
-                return this.num*this.goldgood.exchange_gold_coin
-            }
+            // moneynum(){
+            //     return this.num*this.goldgood.market_price
+            // },
+            // goldnum(){
+            //     return this.num*this.goldgood.exchange_gold_coin
+            // }
 
         },
+        created:function(){
+            this.goodorder=this.info;
+            document.cookie==this.goodorder
+        },
         mounted:function(){
-            this.num=this.$route.query.num;
-            console.log(this.num)
-            this.goldgood=JSON.parse(localStorage.shop);
-            this.types=this.goldgood.types;
-            if(this.types=='1'){
-                this.types="门店自营"
-            }else if(this.types=="2"){
-                this.types="总仓包邮"
-            }
 
-            console.log(this.goldgood)
+
+            console.log(this.goodorder)
+
+
         },
         methods:{
             adr:function () {
                 jsObj.gps();
+            },
+            gomember(){
+                this.$router.push({name:'hxmember'})
             },
             gochoose:function () {
                 this.showchoose=!this.showchoose;
@@ -132,10 +184,9 @@
                 this.fanshi="送货上门"
                 this.showchoose=!this.showchoose;
             },
-            kaitong:function () {
-                this.$router.push({name:'hxmember'})
+            qita(){
+                this.$router.push({name:'addbills'})
             }
-
         }
     }
 </script>
@@ -176,7 +227,7 @@
         width: 100%;
         height: 0.88rem;
         background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.88rem;
+        line-height: 0.32rem;
     }
     .back{
         width: 0.34rem;
@@ -341,7 +392,7 @@
     }
     .pay{
         width: 7.04rem;
-        height: 3.33rem;
+        height: 4.03rem;
         background-size:100% 100% ;
         margin-top: 0.20rem;
         background-repeat: no-repeat;
@@ -433,6 +484,9 @@
         float: left;
         background: linear-gradient(to right, #ff1c8b , #f37404);
 
+    }
+    .yuan{
+        color:#fe555a;
     }
     .goto{
         width: 0.19rem;

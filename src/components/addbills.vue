@@ -15,8 +15,28 @@
             <!--输入发票抬头税号-->
             <div class="name billsNO clearfix">
                 <span class="michen billno">税号</span>
-                <input type="text" class="bill-name billno" placeholder="发票抬头税号" v-model="no">
+                <input type="text" class="bill-name billno" placeholder="纳税人识别号或社会统一同意代码" v-model="no">
             </div>
+            <div class="name clearfix">
+                <span class="leixing">请选择类型:</span>
+                <span class="personal">个人</span>
+                <div class="gouxuan" >
+                    <p>
+                        <span class="circle-btn"></span>
+                        <input type="radio" value="2" name="checkname" id="check" @click="porsonal">
+                        <label  class="radio"></label>
+                    </p>
+                </div>
+                <span class="personal">公司</span>
+                <div class="gouxuan" >
+                    <p>
+                        <span class="circle-btn"></span>
+                        <input type="radio" value="2" name="checkname" id="check1" @click="company">
+                        <label  class="radio"></label>
+                    </p>
+                </div>
+            </div>
+
             <button class="anniu">
                 <span class="anniu-wenzi" @click="add">添加并使用新抬头</span>
             </button>
@@ -32,7 +52,8 @@
         data(){
             return{
                 name:"",
-                no:""
+                no:"",
+                invoice_type:""
             }
         },
         computed: {
@@ -42,13 +63,22 @@
 
         },
         methods:{
+            porsonal(){
+                this.invoice_type=1;
+                console.log(1)
+            },
+            company(){
+                this.invoice_type=2;
+                console.log(2)
+            },
             add:function () {
 
                 this.$axios.post('/user/invoice_store',
                     qs.stringify({
-                        name:this.name,
-                        no:this.no,
-                        user_id:this.user_id
+                        invoice_title:this.name,
+                        invoice_tax:this.no,
+                        user_id:this.user_id,
+                        invoice_type:this.invoice_type
                     }),).then(res=>{
                     let {err_code,msg,data}=res.data;
                     console.log(res)
@@ -56,7 +86,9 @@
                         this.$router.push({name:'billslist'})
                     }
                 })
-            }
+            },
+
+
         }
     }
 </script>
@@ -131,5 +163,81 @@
         font-size:0.36rem;
         color:#ffffff;
         text-align: center;
+    }
+    .gouxuan{
+        width: 0.33rem;
+        height: 0.33rem;
+        margin-top: 0.82rem;
+        margin-left:0.30rem;
+        display: block;
+        float:left;
+        position: relative;
+
+    }
+    p{  position: relative;  }
+    .circle-btn{
+        display: inline-block;
+        position: absolute;
+        top:0.02rem;
+        border:1px solid rgb(192,192,192);
+        border-radius: 50%;
+        width: 0.32rem;
+        height: 0.32rem;
+
+    }
+    input#check[type='radio']{
+        opacity:0;
+        top:0;
+        left: -0.04rem;
+        display:inline-block ;
+        height: 0.18rem;
+        width: 0.18rem;
+        z-index: 100;
+        vertical-align: middle;
+        position:absolute;
+    }
+
+    input#check[type='radio']:checked+.radio{
+        width: 0.33rem;
+        height: 0.33rem;
+        position: absolute;
+        top:0rem;
+        right:0rem;
+        background: url('../assets/images/wc@2x.png') no-repeat center/cover;
+    }
+    input#check1[type='radio']{
+        opacity:0;
+        top:0;
+        left: -0.04rem;
+        display:inline-block ;
+        height: 0.18rem;
+        width: 0.18rem;
+        z-index: 100;
+        vertical-align: middle;
+        position:absolute;
+    }
+
+    input#check1[type='radio']:checked+.radio{
+        width: 0.33rem;
+        height: 0.33rem;
+        position: absolute;
+        top:0rem;
+        right:-0.03rem;
+        background: url('../assets/images/wc@2x.png') no-repeat center/cover;
+    }
+    .leixing{
+        font-size: 0.26rem;
+        color:#555555;
+        display: block;
+        margin-top: 0.82rem;
+        float: left;
+        font-weight: bold;
+    }
+    .personal{
+        font-size: 0.26rem;
+        color:#555555;
+        float:left;
+        margin-left:0.30rem;
+        margin-top: 0.82rem;
     }
 </style>

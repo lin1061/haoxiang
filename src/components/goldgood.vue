@@ -9,9 +9,11 @@
         <!--内容-->
         <main>
             <div class="good-info clearfix">
-                <swiper class="imgbox" height="5.04rem">
-                    <img :src="good.goods_img" class="banner">
-                </swiper>
+                <Swiper class="banner" height="5.07rem"  :aspect-ratio="300/800">
+
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in good.banners" :key="index"><img :src="item"></swiper-item>
+
+                </Swiper>
                 <p>
                 <p class="description">{{good.name}}</p>
                 </p>
@@ -20,7 +22,7 @@
                     <span class="number">已兑换:{{good.sales_volume}}件</span>
                 </div>
                 <div class="price">
-                    <span class="oldprice oldprice1">原价：￥</span>
+                    <span class="oldprice oldprice1">原价：￥{{good.market_price}}</span>
                     <img src="../assets/images/hy@2x.png"class="anniu" >
                 </div>
                 <div class="price price1">
@@ -46,32 +48,23 @@
         <!--底部-->
         <footer>
             <div class="footbox clearfix">
-                <div class="ser">
-                    <img src="../assets/images/ej@2x.png" class="server">
-                    <span class="kefu">客服</span>
-                </div>
-                <div class="ser like">
-                    <img src="../assets/images/Favourite@3x.png" class="server liketu">
-                    <span class="kefu">收藏</span>
-                </div>
-                <button class="lijishop" @click="goodshow">立即购买</button>
-                <button class="lijishop lijishop1" @click="goodshow">加入购物车</button>
+                <button class="lijishop lijishop1" @click="goodshow">立即兑换</button>
             </div>
             <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="goods clearfix">
                     <div class="ginfo">
                         <div class="goodsxtu">
-                            <img src="" alt="">
+                            <img :src="style_img" alt="">
                         </div>
-                        <span class="sum">共计: <span class="prices">￥</span></span>
-                        <span class="numbers">库存件</span>
+                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
+                        <span class="numbers">库存件{{style_stock}}</span>
                         <div class="close" @click="close">x</div>
-                        <!--<div class="group" v-for="(item,index) in good.spec_group" :key="index">-->
-                            <!--<span class="style">{{item.spec_name}}:</span>-->
-                            <!--<div class="stylebox">-->
-                                <!--<div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
+                        <div class="group" v-for="(item,index) in good.spec_group" :key="index">
+                            <span class="style">{{item.spec_name}}:</span>
+                            <div class="stylebox">
+                                <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
+                            </div>
+                        </div>
                         <div class="choose">
                             <span class="num">数量:</span>
                             <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
@@ -80,7 +73,7 @@
                         </div>
                     </div>
 
-                    <div class="ok" clearfix>选好了</div>
+                    <div class="ok" clearfix @click="goorder">选好了</div>
                 </div>
             </div>
 
@@ -89,7 +82,7 @@
 </template>
 
 <script>
-    import { Swiper } from 'vux'
+    import { Swiper,SwiperItem,} from 'vux'
     import { mapState } from 'vuex'
     export default {
         name: "goldgood",
@@ -111,7 +104,7 @@
             }
         },
         components: {
-
+            SwiperItem,
             Swiper
         },
         computed: {
@@ -119,15 +112,22 @@
                 goods_id: state => state.goods_id
             }),
             // 总金额
-            // moneynum:function(){
-            //     return this.goods.member_price * this.goodsnum
-            // }
+            moneynum:function(){
+                return this.good.exchange_gold_coin * this.goodsnum
+            }
         },
         mounted:function () {
             this.gid=this.$route.query.gid
             this.$axios.get('/user/exchange_goods_info?goods_id='+this.gid).then(res=>{
                     this.good=res.data.data;
                     console.log(this.good)
+                for (var i=0;i<this.good.spec_reg.length;i++){
+
+                    if(this.names=this.good.spec_reg[i]){
+                        this.style_img=this.good.spec_reg[i].spec_img_path
+                        this.style_stock=this.good.spec_reg[i].stock
+                    }
+                }
             })
         },
         methods:{
@@ -148,24 +148,33 @@
                     this.goodsnum=0;
                 }
             },
+            goorder(){
+                if(this.choose==""){
+
+                }else{
+                    localStorage.shop=JSON.stringify(this.good);
+                    this.$router.push({name:'goldorder',query:{num:this.goodsnum}})
+                }
+
+            },
             check(value,cellIndex,index){
-                // this.names=cellIndex;
-                // // console.log(this.names)
-                // this.choose_spec[index] = value;
-                // // console.log(this.goods.spec_reg);
-                // var reg_str = '';
-                // for(var i=0;i<this.choose_spec.length;i++){
-                //     reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
-                //     this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
-                // }
-                //
-                // for (var i=0;i<this.goods.spec_reg.length;i++){
-                //     if(this.goods.spec_reg[i].reg_spec_str == reg_str){
-                //         this.style_img=this.goods.spec_reg[i].spec_img_path
-                //         this.style_stock=this.goods.spec_reg[i].stock
-                //     }
-                //
-                // }
+                this.names=cellIndex;
+                // console.log(this.names)
+                this.choose_spec[index] = value;
+                // console.log(this.goods.spec_reg);
+                var reg_str = '';
+                for(var i=0;i<this.choose_spec.length;i++){
+                    reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
+                    this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
+                }
+                console.log(this.good.spec_reg)
+                for (var i=0;i<this.good.spec_reg.length;i++){
+                    if(this.good.spec_reg[i].reg_spec_str == reg_str){
+                        this.style_img=this.good.spec_reg[i].spec_img_path
+                        this.style_stock=this.good.spec_reg[i].stock
+                    }
+
+                }
 
             },
         }
@@ -492,22 +501,18 @@
         height: 0.38rem;
     }
     .lijishop{
-        width: 2.14rem;
+        width: 100%;
         height: 100%;
         background: linear-gradient(to right, #ff1c8b , #f37404);
         display: block;
         float:left;
         border: none;
         outline: none;
-        margin-left: 0.56rem;
         font-size:0.36rem;
         text-align: center;
         color:#fff;
     }
-    .lijishop1{
-        width: 2.43rem;
-        margin-left: 0;
-    }
+
     .goods{
         width: 100%;
         /*height: 8.6rem;*/

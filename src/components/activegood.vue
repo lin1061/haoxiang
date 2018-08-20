@@ -9,8 +9,10 @@
         <!--内容-->
         <main>
             <div class="good-info clearfix">
-                <Swiper class="imgbox" height="5.04rem" >
-                    <img :src="item" class="banner" v-for="item in active.banner_img">
+                <Swiper class="banner" height="5.07rem"  :aspect-ratio="300/800">
+
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in active.banner_img" :key="index"><img :src="item"></swiper-item>
+
                 </Swiper>
                 <p>
                 <p class="description">{{active.name}}</p>
@@ -25,7 +27,7 @@
                 </div>
                 <div class="price price1">
                     <span class="oldprice oldprice1">已选：</span>
-                    <span class="newprice newprice1">原味，100g</span>
+                    <span class="newprice newprice1">{{choose1}}</span>
                     <img src="../assets/images/ddd@2x.png"class="anniu anniu1" @click="goodshow">
                 </div>
                 <ul class="fuwu">
@@ -82,7 +84,7 @@
 
 <script>
     import { mapState } from 'vuex'
-    import { Swiper } from 'vux'
+    import { Swiper,SwiperItem} from 'vux'
     export default {
         name: "activegood",
         data () {
@@ -95,7 +97,7 @@
                 style_img:"",
                 style_price:"",
                 style_stock:"",
-
+                choose1:"",
                 choose:[]
             }
         },
@@ -137,6 +139,7 @@
             },
             check(item){
                 console.log(item)
+                this.choose1=item.goods_spec_name;
                 this.style_img=item.goods_spec_img_path;
                 this.style_stock=item.goods_spec_stock;
                 this.style_price=item.goods_spec_price;
@@ -145,7 +148,8 @@
 
         },
         components: {
-            Swiper
+            Swiper,
+            SwiperItem
         }
     }
 </script>

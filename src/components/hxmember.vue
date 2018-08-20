@@ -8,7 +8,7 @@
         <!--内容-->
         <main>
             <!--会员卡-->
-            <section class="card clearfix" v-for="item in list">
+            <router-link :to="{name:'membershow',query:{cartid:item.id}}" class="card clearfix" v-for="item in list" :key="item.id">
                 <div class="card-rtop clearfix">
                     {{item.days}}天
                 </div>
@@ -16,7 +16,7 @@
                 <!--<span class="card-title card-title1">9天最高可买1000元</span>-->
                 <span class="card-title3">好象有货{{item.name}}</span>
                 <button class="anniu">￥{{item.price}}</button>
-            </section>
+            </router-link>
         </main>
     </div>
 </template>

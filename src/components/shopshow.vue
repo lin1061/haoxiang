@@ -11,27 +11,25 @@
             <div class="shop clearfix">
                 <div class="shop_jieshao">
                     <span class="shop-name">{{shop.name}}</span>
-                    <span class="shop-juli">320m</span>
+                    <!--<span class="shop-juli">320m</span>-->
                 </div>
 
                 <span class="shop-time">{{shop.start_time}}-{{shop.end_time}}</span>
                 <span class="shop-time shop-jia">￥{{shop.consumption}}/人</span>
 
-                <div class="tushow" v-for="item in shop.banner">
-                    <img :src="item.img_path">
-                </div>
+
+                <Swiper class="tushow" height="5.07rem"  :aspect-ratio="300/800">
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in shop.banners" :key="index"><img :src="item"></swiper-item>
+                </Swiper>
+
                 <div class="tushow-addr clearfix">
                     <img class="aimg" src="../assets/images/ad@2x.png">
                     <span class="diwei diwei1">{{shop.address}}</span>
-                    <a :tel="shop.contact" >
-                        <img src="../assets/images/dh@2x.png" class="pimg">
-                    </a>
-
+                    <a href="" class="pimg tel" @click="tel"></a>
                 </div>
                 <span class="shop-title1">出示好象会员卡，专享以下:</span>
-                <span class="shop-title1 shop-title2">199元小焗龙虾两人套餐</span>
                 <div class="tushow-addr">
-                    <span class="diwei shop-title3">全场菜品8.5折</span>
+                    <span class="diwei shop-title3">{{shop.slogan}}</span>
                     <img src="../assets/images/hy@2x.png" class="pimg pimg1">
                 </div>
             </div>
@@ -43,35 +41,53 @@
                     <span class="caipin-name">{{item.name}}</span>
                 </div>
             </section>
-            <div class="imgbox">
-                <img src="http://pcvkprs2t.bkt.clouddn.com/member/images/background/banner@2x.png">
+            <div class="imgbox" @click="willmember">
+                <img src="https://static.hxyouhuo.com/member/images/background/banner@2x.png">
             </div>
         </main>
     </div>
 </template>
 
 <script>
+    import { Swiper,SwiperItem,} from 'vux'
     import { mapState } from 'vuex'
     export default {
         name: "shopshow",
         data(){
             return{
                 shop:[],
+                tel:""
             }
         },
         computed: {
             ...mapState({
                 business_id: state => state.business_id,
                 longitude: state => state.longitude,
-                laitude:state=>state.laitude
+                latitude:state=>state.latitude
             }),
 
+        },
+        components: {
+            Swiper,
+            SwiperItem,
         },
         mounted:function () {
             this.$axios.get('/business/detail',{params:{business_id:this.business_id,longitude:this.longitude,latitude:this.latitude}}).then(res=>{
                 console.log(res.data.data);
                 this.shop=res.data.data;
             })
+        },
+        methods:{
+            willmember(){
+                this.$router.push({name:'hxmember'})
+            },
+            tel(){
+                let tel=document.getElementsByClassName("tel");
+                let a='tel:'+this.shop.contact;
+                console.log(a)
+                tel.href=a;
+                console.log(tel.href)
+            }
         }
     }
 </script>
@@ -189,6 +205,8 @@
         display: block;
         float:right;
         margin:0.21rem 0.48rem 0 0;
+        background-size: 0.36rem 0.36rem;
+        background: url("../assets/images/dh@2x.png") no-repeat center/cover;
     }
     .shop-title1{
         font-size:0.24rem;
