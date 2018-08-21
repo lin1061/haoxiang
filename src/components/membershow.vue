@@ -26,10 +26,6 @@
                     <span class="tetitle tetitle1">直营商品</span>
                 </div>
             </div>
-            <span class="hy-title">办卡须知</span>
-            <div class="tequan clearfix">
-
-            </div>
             <span class="hy-title">持卡人信息</span>
             <div class="tequan tequan1">
                 <div class="name clearfix">
@@ -46,7 +42,7 @@
                     <img src="../assets/images/hyd@2x.png" class="hyaddr">
                 </div>
                 <div class="gou"></div>
-                <span class="tong">我已阅读并同意<a>[会员协议]</a></span>
+                <span class="tong">我已阅读并同意<router-link to="/membership">[会员协议]</router-link></span>
             </div>
         </main>
         <!--底部-->
@@ -61,6 +57,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     import qs from 'qs'
     export default {
         name: "membershow",

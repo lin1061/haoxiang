@@ -1,118 +1,368 @@
 <template>
     <div id="main" class="shopcart">
+    <div v-if="cart.store.length>0 || cart.warehouse.length>0 ">
         <main>
-          	<div class="shopcart-itme">
+        	<!-- 门店直营 -->
+        	<div v-if="typeof(cart.store) != 'undefined' || typeof(cart.warehouse) != 'undefined'">
+        		<div class="eit" v-if="eit" @click="eitcard">编辑</div>
+          		<div class="eit" v-else @click="successcard">完成</div>
+        	</div>
+        	
+          	<div class="shopcart-itme" v-if="cart.store.length>0">
           		<div class="shopcart-title border-1px">
-          			<div class="seller-checkbox checked"></div>
-          			<div class="seller-name">门店自营</div>
-          			<div class="seller-del"></div>
+          			<div class="seller-checkbox" :class="{'checked':goodscart.store.length == cart.store.length}" @click="allgoodsrow(1)"></div>
+          			<div class="seller-name" >门店直营</div>
+          			<!-- <div class="seller-name">总仓包邮</div> -->
+          			
           		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
+          		<div class="shopcart-cont border-1px" v-for="(item,index) in cart.store" :key=index>
+          			<div class="seller-checkbox" :class="{'checked':goodscart.store.indexOf(item.goods.goods_id)
+          			>=0}" @click="onegoods(1,item.goods.goods_id,index)"></div>
           			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
+          				<img :src="item.goods.goods_img">
           			</div>
           			<div class="shopcart-info">
           				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
+          					<div class="n1">{{item.goods.goods_name}}</div>
+          					<!--<div class="n2"></div>-->
           				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
+          				<div class="shopcart-info-pro">原价:{{item.goods.market_price}}</div>
+          				<div class="shopcart-info-rmb">会员价¥{{item.goods.shop_price}}</div>
           				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
-          				</div>	
-          			</div>
-          		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
-          			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
-          			</div>
-          			<div class="shopcart-info">
-          				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
-          				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
-          				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
+          					<span class="minus" @click="minus(item.id,index,1)"></span>
+							<div class="goos-num">{{item.num}}</div>
+          					<span class="add" @click="add(item.id,index,1)"></span>
           				</div>	
           			</div>
           		</div>
           	</div>
-          	<div class="shopcart-itme">
+          	<!-- 总仓包邮 -->
+          	<div class="shopcart-itme"  v-if="cart.warehouse.length>0">
           		<div class="shopcart-title border-1px">
-          			<div class="seller-checkbox checked"></div>
-          			<div class="seller-name">重仓邮寄</div>
-          			<div class="seller-del"></div>
+          			<div class="seller-checkbox" :class="{'checked':goodscart.warehouse.length == cart.warehouse.length}" @click.stop="allgoodsrow(2)"></div>
+          			<!-- <div class="seller-name" >门店直营</div> -->
+          			<div class="seller-name">总仓包邮</div>
           		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
+          		<div class="shopcart-cont border-1px" v-for="(item,index) in cart.warehouse" :key=index>
+          			<div class="seller-checkbox" :class="{'checked':goodscart.warehouse.indexOf(item.goods.goods_id)
+          			>=0}" @click="onegoods(2,item.goods.goods_id,index)"></div>
           			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
+          				<img :src="item.goods.goods_img">
           			</div>
           			<div class="shopcart-info">
           				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
+          					<div class="n1">{{item.goods.goods_name}}</div>
           				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
+          				<div class="shopcart-info-pro">原价:{{item.goods.market_price}}</div>
+          				<div class="shopcart-info-rmb">会员价¥{{item.goods.shop_price}}</div>
           				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
-          				</div>	
-          			</div>
-          		</div>
-          		<div class="shopcart-cont border-1px">
-          			<div class="seller-checkbox"></div>
-          			<div class="shopcart-thumb">
-          				<img src="../assets/images/banner2@2x.png">
-          			</div>
-          			<div class="shopcart-info">
-          				<div class="shopcart-info-name">
-          					<div class="n1">这是标题这是标题这是标题这是标题这是标题</div>
-          					<div class="n2"></div>
-          				</div>
-          				<div class="shopcart-info-pro">10g</div>
-          				<div class="shopcart-info-rmb">¥65</div>
-          				<div class="shopcart-num">
-          					<span class="minus"></span>
-          					<input class="goos-num" type="text" name="" value="1" readonly="readonly">
-          					<span class="add"></span>
+          					<span class="minus" @click="minus(item.id,index,2)"></span>
+							<div class="goos-num">{{item.num}}</div>
+          					<span class="add" @click="add(item.id,index,2)"></span>
           				</div>	
           			</div>
           		</div>
           	</div>
         </main>
         <footer class="footer">
-        	<div class="footer-vip">成为好象会员，享受会员特权。立即开通></div>
-        	<div class="footer-cont">
-        		<div class="seller-checkbox checked">全选</div>
+        	<router-link :to="{path:'/hxmember',query:{'user_id':user_id,'token':token}}" class="footer-vip">成为好象会员，享受会员特权。立即开通></router-link>
+        	<div class="footer-cont" v-if="eit">
+        		<div class="seller-checkbox" :class="{'checked':allcheck}" @click.stop="AllEhecked">全选</div>
         		<div class="footer-num">
-        			<p class="num1"><label>合计：</label><span>¥ 130</span></p>
+        			<p class="num1"><label>合计：</label><span>¥ {{contmoney}}</span></p>
         			<p class="num2">不含运费</p>
         		</div>
-        		<div class="footer-btn">去结算(3)</div>
+        		<div class="footer-btn" @click="cartgoodsinfo">去结算({{goodsnum}})</div>
+        	</div>
+        	<div class="footer-cont" v-if="!eit">
+        		<div class="seller-checkbox" :class="{'checked':allcheck}" @click.stop="AllEhecked">全选</div>
+        		<div class="footer-num"></div>
+        		<div class="footer-btn" @click="deletgoods">删除</div>
         	</div>
         </footer>
+        </div>
+        <err v-else></err>
     </div>
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import err from '@/assets/err'
     export default {
-        name: "shopcart"
+        name: "shopcart",
+		data(){
+            return{
+                cart:[],
+				types:"",
+				num:0,
+				shop_id:"",
+				// contmoney:0,//总金额
+				storecheck:true,//自营选中
+				warehousecheck:true,//包邮选中
+				eit:true,//默认编辑
+				goodscart:{store:[],warehouse:[]},
+				successcart:{},//确定购物车
+				is_yellow_card:0//默认不是黄卡会员
+			}
+		},
+		components: {
+		    err
+		},
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                token: state => state.token,
+            }),
+            // 去结算数量
+            goodsnum(){
+            	return this.goodscart.store.length + this.goodscart.warehouse.length
+            },
+            // 全选
+            allcheck(){
+            	return this.goodscart.store.length == this.cart.store.length && this.goodscart.warehouse.length == this.cart.warehouse.length
+            },
+            // 计算订单总金额
+			contmoney(){
+				    let NUM=0;
+					let that = this
+					this.cart.store.forEach(function(v){
+						if(that.goodscart.store.indexOf(v.goods.goods_id) >= 0){
+							// 如果是会员用会员价计算
+							if(that.is_yellow_card == 1){
+								NUM += v.num*v.goods.shop_price;
+							}else {
+								NUM += v.num*v.goods.market_price;
+							}
+							
+						}
+						// 
+					})
+					this.cart.warehouse.forEach(function(v){
+						if(that.goodscart.warehouse.indexOf(v.goods.goods_id) >= 0){
+							// 如果是会员用会员价计算
+							if(that.is_yellow_card == 1){
+								NUM += v.num*v.goods.shop_price;
+							}else {
+								NUM += v.num*v.goods.market_price;
+							}
+						}
+					})
+					return NUM
+			},
+        },
+        created(){
+        	this.init();
+        },
+		methods:{
+			init(){
+				// 获取用户跟人信息判断会员
+				this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
+					if(res.data.err_code == 0){
+					    let myinfo =res.data.data.user_info.is_yellow_card;
+					    this.is_yellow_card = myinfo
+				    }
+				})
+				this.$axios.get('/user/shop_card',{params:{user_id:this.user_id}}).then(res=>{
+					if(res.data.err_code == 0){
+					    let cartdata =res.data.data;
+					    if(typeof(cartdata.store) == 'undefined'){
+					    	cartdata.store = [];
+					    }
+					    if(typeof(cartdata.warehouse) == 'undefined'){
+					    	cartdata.warehouse = [];
+					    }
+					    this.cart = cartdata;
+					    this.goodscart.store = cartdata.store.map((val) =>{
+					    	return val.goods.goods_id;
+					    });
+					    this.goodscart.warehouse = cartdata.warehouse.map((val) =>{
+					    	return val.goods.goods_id;
+					    });
+				    }
+				})
+			},
+            add(id,index,type){
+            	// type1=>门店直营,2=>总仓包邮
+            	// id 购物车id
+            	if(type == 1){
+            		let Nums = this.cart.store[index].num;
+					this.$axios.get('/user/shop_card_num',
+						{params:{shop_card_id:id,num:Nums+1}}).then(res=>{
+							// 从新计算总金额
+							if(res.data.err_code == 0){
+								this.cart.store[index].num++;
+							}
+					})
+            	}else{
+            		let Nums = this.cart.warehouse[index].num;
+					this.$axios.get('/user/shop_card_num',
+						{params:{shop_card_id:id,num:Nums+1}}).then(res=>{
+							// 从新计算总金额
+							if(res.data.err_code == 0){
+								this.cart.warehouse[index].num++;
+							}
+					})
+            	}
+				
+				
+			},
+			del(){
+                this.$axios.get('/user/delete_shop_card',{params:{shop_card_id:this.shop_id}}).then(res=>{
+					console.log(res)
+				})
+			},
+			minus(id,index,type){
+					
+                // type1=>门店直营,2=>总仓包邮
+            	// id 购物车id
+            	if(type == 1){
+            		let Nums = this.cart.store[index].num;
+            		if(Nums == 1) return;
+					this.$axios.get('/user/shop_card_num',
+						{params:{shop_card_id:id,num:Nums-1}}).then(res=>{
+							// 从新计算总金额
+							if(res.data.err_code == 0){
+								this.cart.store[index].num--;
+							}
+					})
+            	}else{
+            		let Nums = this.cart.warehouse[index].num;
+            		if(Nums == 1) return;
+					this.$axios.get('/user/shop_card_num',
+						{params:{shop_card_id:id,num:Nums-1}}).then(res=>{
+							// 从新计算总金额
+							if(res.data.err_code == 0){
+								this.cart.warehouse[index].num--;
+							}
+					})
+            	}
+			},
+			// 全选
+			AllEhecked(){
+				
+					if(this.goodscart.store.length == this.cart.store.length && this.goodscart.warehouse.length == this.cart.warehouse.length){
+						this.goodscart.store = []
+						this.goodscart.warehouse = []
+					}else{
+						this.goodscart.store = this.cart.store.map((val) =>{
+					    	return val.goods.goods_id;
+					    });
+					    this.goodscart.warehouse = this.cart.warehouse.map((val) =>{
+					    	return val.goods.goods_id;
+					    });
+					}
+				
+			},
+			
+			// 选中直营或者包邮
+			allgoodsrow(type){
+				if(type == 1){
+					if(this.goodscart.store.length == this.cart.store.length){
+						this.goodscart.store = []
+					}else{
+						this.goodscart.store = this.cart.store.map((val) =>{
+					    	return val.goods.goods_id;
+					    });
+					}
+				}
+				if(type == 2){
+					if(this.goodscart.warehouse.length == this.cart.warehouse.length){
+						this.goodscart.warehouse = []
+					}else{
+						this.goodscart.warehouse = this.cart.warehouse.map((val) =>{
+					    	return val.goods.goods_id;
+					    });
+					}
+				}
+			},
+			// 选择单独商品
+			onegoods(type,id,index){
+				// type  1=>门店直营,2=>总仓包邮
+				// index选中位置
+				if(type == 1){
+					let idIndex = this.goodscart.store.indexOf(id)
+				    if (idIndex >= 0) {//如果已经包含就去除
+				        this.goodscart.store.splice(idIndex, 1)
+				    } else {//如果没有包含就添加
+				        this.goodscart.store.push(id)
+				     }
+			    }else{
+			    	let idIndex = this.goodscart.warehouse.indexOf(id)
+				    if (idIndex >= 0) {//如果已经包含就去除
+				        this.goodscart.warehouse.splice(index, 1)
+				    } else {//如果没有包含就添加
+				        this.goodscart.warehouse.push(id)
+				     }
+			    }
+			},
+			// 编辑购物车
+			eitcard(){
+				this.eit = false;
+			},
+			// 完成购物车
+			successcard(){
+				this.eit = true;
+			},
+			// 统计购物车选中
+			cartgoodsinfo(){
+				let store=[];
+				let warehouse= [];
+				let that = this
+				this.cart.store.forEach(function(v){
+					if(that.goodscart.store.indexOf(v.goods.goods_id) >= 0){
+						store.push(v)
+					}
+					// 
+				})
+				this.cart.warehouse.forEach(function(v){
+					if(that.goodscart.warehouse.indexOf(v.goods.goods_id) >= 0){
+						warehouse.push(v)
+					}
+				})
+				that.successcart.store = store;
+				that.successcart.warehouse = warehouse;
+				this.$store.commit('setgoodsinfo',that.successcart)
+			},
+			// 删除购物车
+			deletgoods(){
+				this.cartgoodsinfo()
+				let that = this;
+				if(this.successcart.store.length >0){
+					
+					this.successcart.store.map(v=>{
+						that.deletgoodsapi(v.id)
+					})
+				}
+				if(this.successcart.warehouse.length >0){
+					this.successcart.warehouse.map(v=>{
+						that.deletgoodsapi(v.id)
+					})
+				}
+			},
+			deletgoodsapi(id){
+				// 购物车id
+				this.$axios.get('/user/delete_shop_card',{params:{'shop_card_id':id}}).then(res=>{
+				    console.log(res)
+				    if(res.data.err_code == 0){
+				    	this.successcard()
+				    	this.init();
+				    }
+				})
+			}
+			// 
+		}
     }
 </script>
 
-<style lang="less" scoped>
+<style lang="less"  scoped>
+.eit{
+	font-size: 12px;
+	color: #868686;
+	position: absolute;
+	top:10px;
+	right: 5px;
+	z-index: 99;
+}
 	.border-1px{
 		&:after{
     		content: "";
@@ -134,7 +384,7 @@
 		}
 		.shopcart-itme{
 			background: #fff;
-			margin-top: 0.15rem;
+			/*margin-top: 0.15rem;*/
 		}
 	    .shopcart-title{
 	    	position: relative;
@@ -207,6 +457,7 @@
 	    		position: absolute;
 	    		right: 0;
 	    		bottom: 0;
+
 	    		height: 0.4rem;
 	    		font-size: 0;
 	    		span{
@@ -216,8 +467,9 @@
 	    	}
 	    	.goos-num{
 	    		display: inline-block;
-	    		font-size: 0.26rem;
+	    		font-size: 0.28rem;
 	    		color: #323a45;
+				padding-top: 0.04rem;
 	    		width: 0.4rem;
 	    		text-align: center;
 	    		height: 0.4rem;
@@ -243,6 +495,7 @@
 	    		text-align: center;
 	    		line-height: 0.4rem;
 	    		background: #b5b6b7;
+	    		display:block;
 	    	}
 	    	.footer-cont{
 	    		height: 1rem;

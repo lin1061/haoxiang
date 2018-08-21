@@ -12,9 +12,9 @@
                 <div class="card-rtop clearfix">
                     {{item.days}}天
                 </div>
-                <span class="card-title">{{item.desc}}</span>
+                <span class="card-title" v-html="item.desc"></span>
                 <!--<span class="card-title card-title1">9天最高可买1000元</span>-->
-                <span class="card-title3">{{item.name}}</span>
+                <span class="card-title3">好象有货{{item.name}}</span>
                 <button class="anniu">￥{{item.price}}</button>
             </section>
         </main>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "hxmember",
         data(){
@@ -29,8 +30,14 @@
                 list:[]
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+
+        },
         mounted:function () {
-            this.$axios.get('/cards').then(res=>{
+            this.$axios.get('/cards',{params:{user_id:this.user_id}}).then(res=>{
                 this.list=res.data.data;
                 console.log(res.data.data)
             })
@@ -92,6 +99,9 @@
         font-size:0.36rem;
         color:#f8f8f8;
         display: block;
+        width: 45%;
+        margin:0 auto;
+        line-height: 0.60rem;
         /*font-weight: 600;*/
         padding-top: 1.54rem;
         text-align: center;

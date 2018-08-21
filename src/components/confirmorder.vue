@@ -1,10 +1,10 @@
 <template>
     <div id="main">
-        <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">确认订单</span>
-        </header>
+        <!--&lt;!&ndash;头部&ndash;&gt;-->
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">确认订单</span>-->
+        <!--</header>-->
         <!--内容-->
         <main class="clearfix">
             <div class="top">
@@ -13,7 +13,7 @@
                 </div>
                 <div class="adr">
                     <span class="name">四川省成都市武侯区四川大学望江校区</span>
-                    <img src="../assets/images/箭头.png" class="go">
+                    <img src="../assets/images/箭头.png" class="go" @click="adr">
                     <span class="name name1">自提地址:四川省成都市武侯区四川大学望江校区</span>
                     <img src="../assets/images/导航.png" class="go go1">
                 </div>
@@ -132,7 +132,17 @@
 
 <script>
     export default {
-        name: "confirmorder"
+        name: "confirmorder",
+        data(){
+            return{
+
+            }
+        },
+        methods:{
+            adr:function () {
+                jsObj.gps();
+            }
+        }
     }
 </script>
 

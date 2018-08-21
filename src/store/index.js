@@ -6,9 +6,15 @@ Vue.use(Vuex)
 const state = {
 	isLoading: true,
     goods_id:"",//商品id
-    token:"",
-    user_id:"",
+    token:"",  //token
+    user_id:"", //用户id
     university_id:"",//高校id
+    activity_id:"",  //活动id
+    business_id:"",  //商家id
+    longitude:"",  //当前定位经度
+    laitude:"",    //当前定位纬度
+    goods_type:"",  //
+    goodscard:{}//购物车数据
 }
 
 const actions = {
@@ -25,6 +31,15 @@ const mutations = {
         state.token = app.token
         state.user_id = app.user_id
         state.university_id = app.university_id
+        state.activity_id = app.activity_id
+        state.business_id = app.business_id
+        state.longitude = app.longitude
+        state.laitude = app.laitude
+        state.goods_type = app.goods_type
+    },
+    // 设置购物车数据
+    setgoodsinfo:function(state,info){
+        state.goodscard = info
     }
 }
 

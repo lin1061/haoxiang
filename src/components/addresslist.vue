@@ -24,6 +24,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "addresslist",
         data(){
@@ -31,19 +32,28 @@
                 adr:[]
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+
+            }),
+
+        },
         mounted:function () {
-            let token=JSON.parse(localStorage.getItem('user')).token;
+
             this.$axios.get('/user/addresses',
-                { headers: {
-                        'Authorization': 'Bearer ' + token,
-                    }}).then(res=>{
+                {params:{user_id:this.user_id}},
+                ).then(res=>{
                 this.adr=res.data.data;
-                console.log(res.data.data)
+                console.log(res)
+
             })
+
         },
         methods:{
             add:function () {
                 this.$router.push({name:'shouhuoadd'})
+
             }
         }
     }

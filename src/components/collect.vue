@@ -1,11 +1,11 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">收藏</span>
-            <span class="share" @click="change">编辑</span>
-        </header>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">收藏</span>-->
+            <!--<span class="share" @click="change">编辑</span>-->
+        <!--</header>-->
         <!--内容-->
         <main>
             <div class="order-mitem clearfix" v-for="item in collect">
@@ -40,6 +40,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "collect",
         data(){
@@ -49,17 +50,17 @@
                 num:0
             }
         },
-        mounted:function () {
-            let token=JSON.parse(localStorage.getItem('user')).token;
-            this.$axios.get('/user/collections',
-                {
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
 
-                    }
-                }
+        },
+        mounted:function () {
+            this.$axios.get('/user/collections',{params:{user_id:this.user_id}}
             ).then(res=>{
                 this.collect=res.data.data;
+                console.log(res.data.data)
             })
         },
         computed:{

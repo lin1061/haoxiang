@@ -9,22 +9,22 @@
         <main>
             <div class="inputbox clearfix">
                 <span class="shouman">收件人</span>
-                <input type="text" class="name" placeholder="请输入收件人姓名">
+                <input type="text" class="name" placeholder="请输入收件人姓名" v-model="name">
             </div>
             <div class="inputbox clearfix">
                 <span class="shouman">联系电话</span>
-                <input type="text" class="name" placeholder="请输入联系电话">
+                <input type="text" class="name" placeholder="请输入联系电话" v-model="phone">
             </div>
             <div class="inputbox clearfix">
                 <span class="shouman">地区</span>
                 <input type="text" class="name" placeholder="请选择所在区域">
-                <img src="../assets/images/ad@2x.png" class="addre">
+                <img src="../assets/images/ad@2x.png" class="addre" @click="school" v-model="area">
             </div>
             <div class="inputbox clearfix">
                 <span class="shouman">详细地址</span>
-                <input type="text" class="name" placeholder="请填写详细地址">
+                <input type="text" class="name" placeholder="请填写详细地址" v-model="adr">
             </div>
-            <button class="anniu">
+            <button class="anniu" @click="add">
                 <span class="anniu-wenzi">确认新增</span>
             </button>
         </main>
@@ -32,8 +32,41 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import qs from 'qs'
     export default {
-        name: "shouhuoadd"
+        name: "shouhuoadd",
+        data(){
+            return{
+                name:"",
+                phone:"",
+                area:"",
+                adr:""
+            }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+
+        },
+        methods:{
+            school(){
+                jsObj.GPS();
+            },
+            add(){
+                this.$axios.post('/user/address',
+                    qs.stringify({
+                        name:this.name,
+                        phone:this.phone,
+                        university_address:this.area,
+                        address:this.adr,
+                        user_id:this.user_id
+                    }),).then(res=>{
+                        console.log(res)
+                })
+            }
+        }
     }
 </script>
 

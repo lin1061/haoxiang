@@ -30,7 +30,7 @@
                     <div class="pay-check" >
                         <p>
                             <span class="circle-btn"></span>
-                            <input type="radio" value="1" name="country" class="radio" checked>
+                            <input type="radio" value="1" name="a" class="radio" checked>
                             <label for="a" class="radio"></label>
                         </p>
                     </div>
@@ -43,7 +43,7 @@
                     <div class="pay-check clearfix">
                         <p>
                             <span class="circle-btn"></span>
-                            <input type="radio" value="2" name="country" class="radio">
+                            <input type="radio" value="2" name="b" class="radio">
                             <label for="b" class="radio"></label>
                         </p>
                     </div>
@@ -55,7 +55,7 @@
                     <div class="pay-check">
                         <p>
                             <span class="circle-btn"></span>
-                            <input type="radio" value="3" name="country" class="radio">
+                            <input type="radio" value="3" name="c" class="radio">
                             <label for="c" class="radio"></label>
                         </p>
                     </div>

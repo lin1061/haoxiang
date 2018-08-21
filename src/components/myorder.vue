@@ -8,128 +8,221 @@
         <!--内容-->
         <main>
             <div class="nav clearfix">
-                <div class="nav-item">
+                <router-link :to="{path:'/myorder/1',query:{'user_id':user_id,'token':token}}" class="nav-item">
                     <span>全部</span>
                     <img src="../assets/images/d@2x.png" alt="" class="xian">
-                    <div class="lan"></div>
-                </div>
-                <div class="nav-item">
+                    <div class="lan" v-show="order_status == ''"></div>
+                    <div class="lan lan1"></div>
+                </router-link>
+                <router-link :to="{path:'/myorder/10',query:{'user_id':user_id,'token':token}}" class="nav-item">
                     <span>待支付</span>
                     <img src="../assets/images/d@2x.png" alt="" class="xian">
-                </div>
-                <div class="nav-item">
+                    <div class="lan" v-show="order_status == 10"></div>
+                    <div class="lan lan1"></div>
+                </router-link>
+                <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token}}" class="nav-item">
                     <span>待收货</span>
                     <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
-                </div>
-                <div class="nav-item">
+                    <div class="lan" v-show="order_status == 20"></div>
+                    <div class="lan lan1"></div>
+                </router-link>
+                <router-link :to="{path:'/myorder/60',query:{'user_id':user_id,'token':token}}" class="nav-item">
                     <span>已完成</span>
-                </div>
+                    <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
+                    <div class="lan" v-show="order_status == 60"></div>
+                    <div class="lan lan1"></div>
+                </router-link>
             </div>
-            <div class="order">
-                <div class="order-item clearfix">
+            <div class="order" v-if="list.store.length>0||list.warehouse.length>0">
+                <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token}}" class="order-item clearfix" v-for="item in list.store" :key="item.id">
                     <div class="order-top">
                         <span>门店自营</span>
                     </div>
                     <div class="order-titem">
-                        <span class="order-no">订单号：39839053</span>
-                        <span class="order-state">待支付</span>
+                        <span class="order-no">订单号：{{item.order_num}}</span>
+                        <span class="order-state">{{item.status}}</span>
                     </div>
-                    <div class="order-mitem">
+                    <div class="order-mitem" v-for="gitem in item.goods">
                         <div class="order-tu">
-                            <img src="../assets/images/tu@2x.png" alt="">
+                            <img :src="gitem.img_path" alt="">
                         </div>
-                        <span class="order-title1">三只松鼠夏威夷果 100g*3 新鲜混合 最新口味</span>
+                        <span class="order-title1">{{gitem.goods_name}}</span>
                         <span class="order-weight">100g</span>
-                        <span class="order-price">￥65</span>
-                        <span class="order-num">x1</span>
+                        <span class="order-price">￥{{gitem.price}}</span>
+                        <span class="order-num">x{{gitem.quantity}}</span>
                     </div>
                     <div class="order-bitem1 order-bitem2">
-                        <span class="order-total">合计：￥65.00（运费：0）</span>
+                        <span class="order-total">合计：￥{{item.total_money}}（运费：0）</span>
                     </div>
                     <div class="order-active">
-                        <span class="time">自动取消: 14:29</span>
-                        <img src="../assets/images/qx@2x.png" alt="" class="cancel">
-                        <img src="../assets/images/zf@2x.png" alt="" class="cancel pay">
+                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">                        
+                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10">
+                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
+                        <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
                     </div>
-                </div>
-            </div>
-            <div class="order">
-                <div class="order-item clearfix">
+                </router-link>
+                <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token}}" class="order-item clearfix" v-for="item in list.warehouse" :key="item.id">
                     <div class="order-top">
-                        <span>总仓邮寄</span>
+                        <span>总仓包邮</span>
                     </div>
                     <div class="order-titem">
-                        <span class="order-no">订单号：39839053</span>
-                        <span class="order-state">待收货</span>
+                        <span class="order-no">订单号：{{item.order_num}}</span>
+                        <span class="order-state">{{item.status}}</span>
                     </div>
-                    <div class="order-mitem">
+                    <div class="order-mitem" v-for="gitem in item.goods">
                         <div class="order-tu">
-                            <img src="../assets/images/tu@2x.png" alt="">
+                            <img :src="gitem.img_path" alt="">
                         </div>
-                        <span class="order-title1">三只松鼠夏威夷果 100g*3 新鲜混合 最新口味</span>
+                        <span class="order-title1">{{gitem.goods_name}}</span>
                         <span class="order-weight">100g</span>
-                        <span class="order-price">￥65</span>
-                        <span class="order-num">x1</span>
-                    </div>
-                    <div class="order-mitem">
-                        <div class="order-tu">
-                            <img src="../assets/images/tu@2x.png" alt="">
-                        </div>
-                        <span class="order-title1">三只松鼠夏威夷果 100g*3 新鲜混合 最新口味</span>
-                        <span class="order-weight">100g</span>
-                        <span class="order-price">￥65</span>
-                        <span class="order-num">x1</span>
+                        <span class="order-price">￥{{gitem.price}}</span>
+                        <span class="order-num">x{{gitem.quantity}}</span>
                     </div>
                     <div class="order-bitem1 order-bitem2">
-                        <span class="order-total">合计：￥65.00（运费：0）</span>
+                        <span class="order-total">合计：￥{{item.total_money}}（运费：0）</span>
                     </div>
                     <div class="order-active">
-                        <img src="../assets/images/wl@2x.png" alt="" class="cancel">
-                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay">
+                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">                        
+                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10">
+                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
+                        <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
                     </div>
-                </div>
+                </router-link>
             </div>
-            <div class="order">
-                <div class="order-item">
-                    <div class="order-titem">
-                        <span class="order-no">订单号：39839053</span>
-                        <span class="order-state">待收货</span>
-                    </div>
-                    <div class="order-mitem">
-                        <div class="order-tu">
-                            <img src="../assets/images/tu@2x.png" alt="">
-                        </div>
-                        <span class="order-title1">三只松鼠夏威夷果 100g*3 新鲜混合 最新口味</span>
-                        <span class="order-weight">100g</span>
-                        <span class="order-price">￥65</span>
-                        <span class="order-num">x1</span>
-                    </div>
-                    <div class="order-bitem1 order-bitem2">
-                        <span class="order-total">合计：￥65.00（运费：0）</span>
-                    </div>
-                    <div class="order-active">
-                        <img src="../assets/images/sc@2x.png" alt="" class="cancel">
-                        <img src="../assets/images/zc@2x.png" alt="" class="cancel pay">
-                    </div>
-                </div>
-            </div>
+            <errinfo v-else></errinfo>
+            <toast v-model="s"  type="text" :time="800" is-show-mask text="入库成功" position="bottom"></toast >
         </main>
     </div>
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import { Toast } from 'vux'
+    import errinfo from "@/assets/errinfo";
     export default {
         name: "myorder",
         data(){
             return{
-                list:[]
+                list:{store:[],warehouse:[]},
+                types:"",
+                status:"",
+                order_status:"",
+                s:false
             }
         },
-        mounted:function(){
-            this.$axios.get('/user/order').then(res=>{
-                this.list=res.data.data;
-            })
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                token: state => state.token,
+            }),
 
+        },
+        components: {
+            errinfo,
+            Toast
+        },
+        watch:{
+            $route:function(){
+                let status = this.$route.params.id == 1?"":this.$route.params.id;
+                this.order_status = status;
+                this.getorderInfo();
+            }
+            
+        },
+        created:function(){
+            let status = this.$route.params.id == 1?"":this.$route.params.id;
+            this.order_status = status;
+            this.getorderInfo();
+        },
+        methods:{
+            // 调用接口
+            getorderInfo(){
+                // order_status为空默认查询所有订单 10待支付,20待发货,40部分发货,50已发货,60已完成,70取消
+                let status = this.order_status || "";
+                this.$axios.get('/user/order',{params:{user_id:this.user_id,status:status}}).then(res=>{
+                    let info =res.data.data;
+                    let store = info.store || []//门店自营
+                    let warehouse = info.warehouse || []//总仓包邮
+                    this.list.store = store.map((v)=>{
+                        if(v.order_status == 10){
+                            v.status = '待支付'
+                        }
+                        if(v.order_status == 20){
+                            v.status = '已支付'
+                        }
+                        if(v.order_status == 30){
+                            v.status = '待发货'
+                        }
+                        if(v.order_status == 40){
+                            v.status = '部分发货'
+                        }
+                        if(v.order_status == 50){
+                            v.status = '已发货'
+                        }
+                        if(v.order_status == 60){
+                            v.status = '已完成'
+                        }
+                        if(v.order_status == 70){
+                            v.status = '取消'
+                        }
+                        return v;
+                    })
+                    this.list.store = warehouse.map((v)=>{
+                        if(v.order_status == '10'){
+                            v.status = '待支付'
+                        }
+                        if(v.order_status == '20'){
+                            v.status = '已支付'
+                        }
+                        if(v.order_status == '30'){
+                            v.status = '待发货'
+                        }
+                        if(v.order_status == '40'){
+                            v.status = '部分发货'
+                        }
+                        if(v.order_status == '50'){
+                            v.status = '已发货'
+                        }
+                        if(v.order_status == '60'){
+                            v.status = '已完成'
+                        }
+                        if(v.order_status == '70'){
+                            v.status = '取消'
+                        }
+                        return v;
+                    })
+                    console.log(this.list)
+                })
+            },
+            // 物流信息
+            logistics(){
+                this.$router.push({name:'logistics'})
+            },
+            // 立即支付跳转app支付
+            appPAY(id,pay){
+                // 订单id  pay金额
+            },
+            //确认收货
+            succseegoods(id){
+                // id 订单id
+                this.$axios.get('/user/change_order_status',{params:{order_id:id,status:60}}).then(res=>{
+                    let info =res.data;
+                    if(info.err_code == 0){
+                        this.getorderInfo();
+                    }
+                })
+            },
+            // 再次购买入购物车
+            addgoods(id){
+                // 商品id
+                this.$axios.get('/user/shop_card',{params:{user_id:this.user_id,num:1,goods_id:id}}).then(res=>{
+                    let info =res.data;
+                    if(info.err_code == 0){
+                        //成功加入购物车
+                        this.s = true;
+                    }
+                })
+            }
         }
     }
 </script>
@@ -155,6 +248,13 @@
         color:#fff;
         margin-left:2.20rem;
     }
+    .nav-item:hover .lan1{
+        display: block;
+    }
+    .lan1{
+        display: none;
+    }
+
     main{
         width: 100%;
         /*margin-top: 0.88rem;*/
@@ -164,6 +264,9 @@
         height: 0.83rem;
         border-bottom:0.01rem solid #d4d7da;
         background: #fff;
+        white-space: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
     .nav-item{
         width: 25vw;
@@ -173,6 +276,9 @@
         line-height: 0.83rem;
         font-size:0.26rem;
         position: relative;
+        display: inline-block;
+        vertical-align: top;
+        color: #555
     }
     .xian{
         width: 0.02rem;

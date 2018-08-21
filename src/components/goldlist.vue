@@ -1,14 +1,14 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">金币商城</span>
-            <router-link to="/goldrule">
-                <span class="share">编辑</span>
-            </router-link>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">金币商城</span>-->
+            <!--<router-link to="/goldrule">-->
+                <!--<span class="share">编辑</span>-->
+            <!--</router-link>-->
 
-        </header>
+        <!--</header>-->
         <main>
             <ul class="yx">
                 <router-link :to="{name:'goldgood',query:{gid:item.goods_id}}" v-for="item in list" :key="item.goods_id">
@@ -35,14 +35,10 @@
                 list:[]
             }
         },
+
         mounted:function () {
-            let token=JSON.parse(localStorage.getItem('user')).token;
-          this.$axios.get('/user/exchanges',
-              {
-                  headers: {
-                      'Authorization': 'Bearer ' + token,
-                  }
-              }).then(res=>{
+
+          this.$axios.get('/user/exchanges',).then(res=>{
                   this.list=res.data.data;
                 console.log(res)
           })
@@ -112,10 +108,13 @@
         padding-left: 0.21rem;
     }
     .yx-gname{
-        font-size:0.22rem;
-        color:#2c2c2c;
+        font-size: 0.22rem;
+        color: #2c2c2c;
         display: block;
-        padding-top: 0.12rem;
+        width: 90%;
+        height: 0.75rem;
+        overflow: hidden;
+        padding-top: 0.12rem
     }
     .yx-newprice{
         font-size:0.26rem;
@@ -146,8 +145,8 @@
         padding-top: 0.13rem;
         margin-right: 0.12rem;
     }
-    .yx li:nth-child(2n){
-        float: right;
+    .yx li:nth-child(2n+1){
+        float: left;
         border-left:0.02rem solid #e5e5e5;
     }
 </style>

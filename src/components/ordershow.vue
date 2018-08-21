@@ -1,13 +1,7 @@
 <template>
     <div id="main">
-        <!--头部-->
-        <!--<header>-->
-        <!--<img src="../assets/images/backWhite.png" class="back">-->
-        <!--<span class="title">订单详情</span>-->
-        <!--</header>-->
-        <!--内容-->
         <main>
-            <div class="order-box1">
+            <div class="order-box1" v-if="order.order_status == 10">
                 <span>待支付</span>
             </div>
             <div class="order-box1">
@@ -59,19 +53,20 @@
                     <span class="pay-title">{{order.pay_at}}</span>
                 </div>
                 <div class="order-active clearfix">
-                    <span class="time">自动取消: 14:29</span>
-                    <img src="../assets/images/qx@2x.png" alt="" class="cancel">
-                    <img src="../assets/images/zf@2x.png" alt="" class="cancel pay">
+                    <span class="time" v-if="order.order_status == 10">自动取消: 14:29</span>
+                    <img src="../assets/images/qx@2x.png" alt="" class="cancel" v-if="order.order_status == 10" @click="succseegoods(order.id)">
+                    <img src="../assets/images/zf@2x.png" alt="" class="cancel pay" v-if="order.order_status == 10" @click="appPAY(order.id,order.total_money)">
                 </div>
             </div>
-            <div class="imgbox">
+            <router-link :to="{path:'/hxmember',query:{'token':token,'user_id':user_id}}" class="imgbox">
                 <img src="../assets/images/banner@2x.png">
-            </div>
+            </router-link>
         </main>
     </div>
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "ordershow",
         data(){
@@ -84,10 +79,19 @@
 
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                token: state => state.token,
+                activity_id:state=>state.activity_id
+            }),
+
+        },
         mounted:function () {
             this.oid=this.$route.query.oid;
             this.$axios.get('/user/order_detail?order_id='+this.oid).then(res=>{
                 this.order=res.data.data;
+                console.log(res)
                 this.info=this.order.address;
                 this.order_pay=this.order.pay_type;
                 if(this.order_pay=="1"){
@@ -107,7 +111,21 @@
             copy(){
                 let num=document.querySelector(".orderno");
                 console.log(num.innerText)
-            }
+            },
+            //取消订单
+            succseegoods(id){
+                // id 订单id
+                this.$axios.get('/user/change_order_status',{params:{order_id:id,status:70}}).then(res=>{
+                    let info =res.data;
+                    if(info.err_code == 0){
+                        window.history.back()
+                    }
+                })
+            },
+            // 立即支付跳转app支付
+            appPAY(id,pay){
+                 // 订单id  pay金额
+            },
         }
 
     }

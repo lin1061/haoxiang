@@ -4,10 +4,10 @@
             <!--会员卡-->
             <section class="card">
                 <div class="card-rtop">
-                    9天
+                    {{state}}
                 </div>
-                <span class="card-title">7744-0494-9480-954</span>
-                <div class="tiaoma"></div>
+                <span class="card-title">{{member.series_number }}</span>
+                <div class="tiaoma" v-html="member.bar_pic"></div>
                 <span class="card-title3">好象有货体验卡</span>
                 <span class="card-title4">线下消费时，请出示此卡享受优惠</span>
             </section>
@@ -16,8 +16,38 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
-        name: "membermotion2"
+        name: "membermotion2",
+        data(){
+            return{
+                member:[],
+                state:"",
+
+
+            }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+
+        },
+        mounted:function () {
+            this.$axios.get('/user/card',{params:{user_id:this.user_id}}).then(res=>{
+                this.member=res.data.data;
+                console.log(res.data.data)
+                // console.log(this.member)
+                this.state=res.data.data.status;
+                if(this.state=="0"){
+                    this.state="已过期"
+
+                }else if(this.state=="1"){
+                    this.state=this.member.rest_days+"天"
+
+                }
+            })
+        }
     }
 </script>
 

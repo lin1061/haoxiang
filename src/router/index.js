@@ -31,9 +31,14 @@ const Signinfo = r => require.ensure([], () => r(require('@/components/signinfo'
 const Goldlist = r => require.ensure([], () => r(require('@/components/goldlist')), 'goldlist')
 const Goldgood = r => require.ensure([], () => r(require('@/components/goldgood')), 'goldgood')
 const Confirmorder = r => require.ensure([], () => r(require('@/components/confirmorder')), 'confirmorder')
-// const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
+const Ordershow1 = r => require.ensure([], () => r(require('@/components/ordershow1')), 'ordershow1')
 const Goldorder = r => require.ensure([], () => r(require('@/components/goldorder')), 'goldorder')
 const Goldrule = r => require.ensure([], () => r(require('@/components/goldrule')), 'goldrule')
+const Membership = r => require.ensure([], () => r(require('@/components/membership')), 'membership')
+const Userprivary = r => require.ensure([], () => r(require('@/components/userprivary')), 'userprivary')
+const Usership = r => require.ensure([], () => r(require('@/components/usership')), 'usership')
+
+// const myorderchiled = r => require.ensure([], () => r(require('@/components/myorderchiled')), 'myorderchiled')
 
 Vue.use(Router)
 
@@ -53,9 +58,9 @@ export default new Router({
             component: Billslist
         },//我的订单页面
         {
-            path: '/myorder',
+            path: '/myorder/:id',
             name: 'myorder',
-            component: Myorder
+            component: Myorder,
         },
         //订单详情页面
         {
@@ -219,19 +224,35 @@ export default new Router({
             name: 'confirmorder',
             component: Confirmorder
         },
-        //订单详情已支付
-        // {
-        //     path: '/ordershow1',
-        //     name: 'ordershow1',
-        //     component: Ordershow1
-        // },
+        // 订单详情已支付
+        {
+            path: '/ordershow1',
+            name: 'ordershow1',
+            component: Ordershow1
+        },
         //金币规则
         {
             path: '/goldrule',
             name: 'goldrule',
             component: Goldrule
         },
-
-
+        //会员协议
+        {
+            path: '/membership',
+            name: 'membership',
+            component: Membership
+        },
+        //用户隐私协议
+        {
+            path: '/userprivary',
+            name: 'userprivary',
+            component: Userprivary
+        },
+        //用户协议
+        {
+            path: '/usership',
+            name: 'usership',
+            component: Usership
+        },
     ]
 })

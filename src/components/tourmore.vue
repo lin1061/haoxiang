@@ -19,7 +19,7 @@
                 <div class="xiaoqu clearfix">
                     <span class="price">市场价:￥{{travel_goods.original_price}}/人</span>
                     <span class="addr">当前校区:{{schoolname}}</span>
-                    <img src="../assets/images/wz@2x.png" class="wz">
+                    <img src="../assets/images/wz@2x.png" class="wz" @click="addr">
                 </div>
                 <div class="xiaoqu clearfix">
                     <span class="huiprice">会员价:￥2405.00/人</span>
@@ -59,18 +59,11 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     import Calendar from './vue-calendar-component/index';
     // import calendara from '@/components/calendara.vue'
     import { Swiper } from 'vux'
-    const imgList = [
-        'http://placeholder.qiniudn.com/800x300/FF3B3B/ffffff',
-        'http://placeholder.qiniudn.com/800x300/FFEF7D/ffffff',
-        'http://placeholder.qiniudn.com/800x300/8AEEB1/ffffff'
-    ]
-    const demoList = imgList.map((one, index) => ({
-        url: 'javascript:',
-        img: one
-    }))
+
     export default {
         name: "tourmore",
         data(){
@@ -80,11 +73,17 @@
                 travel_goods:[],
                 data:"",
                 schoolname:"",
-                demo03_list: demoList,
+
             }
         },
-        created:function () {
-            this.$axios.get('/goods/travel_goods_info?goods_id=2').then(res=>{
+        computed: {
+            ...mapState({
+                goods_id: state => state.goods_id,
+            }),
+
+        },
+        mounted:function () {
+            this.$axios.get('/goods/travel_goods_info',{params:{goods_id:this.goods_id}}).then(res=>{
                 this.travel_goods=res.data.data;
                 this.schoolname=this.travel_goods.university.name;
 
@@ -109,6 +108,9 @@
             },
             add(){
                 this.num++;
+            },
+            addr(){
+                jsObj.gps();
             },
             reduce(){
                 this.num--;

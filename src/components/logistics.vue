@@ -10,11 +10,11 @@
             <section class="logis-item">
                 <span>共计2个包裹</span>
             </section>
-            <div class="logis-thing">
-                <div class="imgbox clearfix">
+            <div class="logis-thing clearfix">
+                <div class="imgbox ">
                     <img src="../assets/images/tu@2x.png">
                 </div>
-                <div class="info clearfix">
+                <div class="info ">
                     <span class="info-title">[门店自营]<span class="name">三只松鼠夏威夷果100g*3 新鲜混合 最新口味</span></span>
                     <span class="info-state">已发货</span>
                     <span class="expressno">韵达快递：3242402002929384</span>
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+
     export default {
         name: "logistics"
     }
@@ -76,7 +77,11 @@
     .imgbox{
         width: 1.59rem;
         height: 1.59rem;
-        margin:0.19rem 0.24rem 0 0.58rem;
+        margin:0.19rem 0.24rem 0 0.48rem;
+        float:left;
+    }
+    .info{
+        width: 65%;
         float:left;
     }
     .imgbox img{
