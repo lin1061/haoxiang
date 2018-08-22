@@ -97,8 +97,8 @@
         bottom:0;
     }
     .bg{
-        width: 6.3em;
-        height: 6.02em;
+        width: 6.3rem;
+        height: 6.02rem;
         background: url("../assets/images/Group2@2x.png") no-repeat center;
         background-size:100% 100%;
         margin:0 auto;

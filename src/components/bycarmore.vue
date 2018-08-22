@@ -8,11 +8,10 @@
         <!--内容-->
         <main>
             <div class="huodong" >
-                <Swiper class="banner" height="5.07rem">
-                    <img :src="goods.img_path" alt="">
-                    <div class="pager">
-                        5/5
-                    </div>
+                <Swiper class="banner" height="5.07rem"  :aspect-ratio="300/800">
+
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in goods.banners" :key="index"><img :src="item"></swiper-item>
+
                 </Swiper>
                 <span class="hudong-title">{{goods.name}}</span>
 
@@ -54,7 +53,7 @@
 
 <script>
     import { mapState } from 'vuex'
-    import { Swiper } from 'vux'
+    import { Swiper,SwiperItem,} from 'vux'
     export default {
         name: "bycarmore",
         data(){
@@ -69,13 +68,13 @@
         },
         computed: {
             ...mapState({
-                goods_type: state => state.goods_type,
+
                 university_id:state=>state.university_id
             }),
 
         },
         mounted:function () {
-            this.$axios.get('/goods/school_shop',{params:{university_id:this.university_id,goods_type:this.goods_type}}).then(res=>{
+            this.$axios.get('/goods/school_shop?goods_type=0',{params:{university_id:this.university_id}}).then(res=>{
                 this.goods=res.data.data;
                 console.log(this.goods)
                 this.schoolname=this.goods.university.name;
@@ -98,11 +97,12 @@
             },
             // 调用原生定位方法
             addr(){
-                jsObj.gps();
+                jsObj.GPS()
             }
         },
         components: {
-            Swiper
+            Swiper,
+            SwiperItem,
         }
     }
 </script>
@@ -353,17 +353,13 @@
         font-weight: bold;
     }
     .close{
-        width: 0.39rem;
-        height: 0.39rem;
-        border:0.02rem solid #a2a2a2;
-        border-radius: 50%;
+        width: 0.40rem;
+        height: 0.40rem;
         position: absolute;
-        top:0.37rem;
-        right:0.42rem;
-        font-size:0.16rem;
-        text-align: center;
-        line-height: 0.39rem;
-        color:#a2a2a2;
+        top:0.34rem;
+        right:0.40rem;
+        background-size: 0.39rem 0.39rem;
+        background: url("../assets/images/close.png") no-repeat center/cover;
     }
     .zhezhao{
         width: 100vw;

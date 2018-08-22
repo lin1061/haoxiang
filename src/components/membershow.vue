@@ -39,7 +39,7 @@
                 <div class="name school clearfix">
                     <span class="hy-name">学校</span>
                     <input type="text" class="namekuan" placeholder="请确保所选校区无误" v-model="school">
-                    <img src="../assets/images/hyd@2x.png" class="hyaddr">
+                    <img src="../assets/images/hyd@2x.png" class="hyaddr" @click="adr">
                 </div>
                 <div class="gou"></div>
                 <span class="tong">我已阅读并同意<router-link to="/membership">[会员协议]</router-link></span>
@@ -48,7 +48,7 @@
         <!--底部-->
         <footer>
             <div class="total">
-                <button class="open">我要开卡</button>
+                <button class="open" @click="ok">我要开卡</button>
                 <span class="all2">￥120</span>
                 <span class="all">合计:</span>
             </div>
@@ -65,20 +65,34 @@
             return{
                 name:"",
                 phone:"",
-                school:""
+                school:"",
+                cartid:""
             }
         },
-        mounted:function () {
-            this.$axios.post('/user/card_store',
-                qs.stringify({
-                    user_id:"",
-                    card_id:"",
-                    name:this.name,
-                    tel:this.phone,
-                    university_id:this.school
-                })).then(res=>{
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
 
-            })
+        },
+
+        methods:{
+            ok(){
+                this.cartid=this.$route.query.cartid;
+                this.$axios.post('/user/card_store',
+                    qs.stringify({
+                        user_id:this.user_id,
+                        card_id:this.cartid,
+                        name:this.name,
+                        tel:this.phone,
+                        university_id:this.school
+                    })).then(res=>{
+
+                })
+            },
+            adr(){
+                jsObj.GPS()
+            }
         }
     }
 </script>
@@ -87,25 +101,7 @@
     body{
         background: #f5f5f5;
     }
-    header{
-        width: 100%;
-        height: 0.88rem;
-        background:  linear-gradient(to right, #ff1c8b , #f37404);
-        line-height: 0.50rem;
-        position: fixed;
-        top:0;
-        left:0;
-    }
-    .back{
-        width: 0.34rem;
-        height: 0.24rem;
-        margin-left:0.32rem;
-    }
-    .title{
-        font-size:0.30rem;
-        color:#fff;
-        margin-left:2.20rem;
-    }
+
     main{
         width: 100%;
         /*margin-top: 0.88rem;*/
@@ -221,7 +217,7 @@
     .total{
         width: 100%;
         height: 0.98rem;
-        position: fixed;
+        position: absolute;
         left:0;
         bottom:0;
         background: #fff;

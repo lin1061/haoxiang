@@ -1,10 +1,10 @@
 <template>
     <div id="main">
         <!--头部-->
-        <header>
-            <img src="../assets/images/backWhite.png" class="back">
-            <span class="title">我的订单</span>
-        </header>
+        <!--<header>-->
+            <!--<img src="../assets/images/backWhite.png" class="back">-->
+            <!--<span class="title">我的订单</span>-->
+        <!--</header>-->
         <main>
             <span class="sign">报名信息</span>
             <div class="info">
@@ -30,12 +30,12 @@
                     <div class="pay-check" >
                         <p>
                             <span class="circle-btn"></span>
-                            <input type="radio" value="1" name="a" class="radio" checked>
+                            <input type="radio" value="1" name="a" class="radio">
                             <label for="a" class="radio"></label>
                         </p>
                     </div>
                 </div>
-                <div class="pay-item clearfix">
+                <div class="pay-item clearfix pay-item1">
                     <img src="../assets/images/pay2.png" alt="" class="pay-img">
                     <span class="pay-title">支付宝</span>
                     <span class="pay-title2">推荐有支付宝账号的用户使用</span>
@@ -48,18 +48,18 @@
                         </p>
                     </div>
                 </div>
-                <div class="pay-item pay-item1 clearfix">
-                    <img src="../assets/images/pay3.png" alt="" class="pay-img">
-                    <span class="pay-title">支付宝</span>
-                    <span class="pay-title2">推荐有支付宝账号的用户使用</span>
-                    <div class="pay-check">
-                        <p>
-                            <span class="circle-btn"></span>
-                            <input type="radio" value="3" name="c" class="radio">
-                            <label for="c" class="radio"></label>
-                        </p>
-                    </div>
-                </div>
+                <!--<div class="pay-item pay-item1 clearfix">-->
+                    <!--<img src="../assets/images/pay3.png" alt="" class="pay-img">-->
+                    <!--<span class="pay-title">支付宝</span>-->
+                    <!--<span class="pay-title2">推荐有支付宝账号的用户使用</span>-->
+                    <!--<div class="pay-check">-->
+                        <!--<p>-->
+                            <!--<span class="circle-btn"></span>-->
+                            <!--<input type="radio" value="3" name="c" class="radio">-->
+                            <!--<label for="c" class="radio"></label>-->
+                        <!--</p>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
 
 

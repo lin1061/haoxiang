@@ -12,9 +12,10 @@ const state = {
     activity_id:"",  //活动id
     business_id:"",  //商家id
     longitude:"",  //当前定位经度
-    laitude:"",    //当前定位纬度
-    goods_type:"",  //
-    goodscard:{}//购物车数据
+    latitude:"",    //当前定位纬度
+    device:"",  //接受微信
+    status:""  //订单状态
+
 }
 
 const actions = {
@@ -34,17 +35,25 @@ const mutations = {
         state.activity_id = app.activity_id
         state.business_id = app.business_id
         state.longitude = app.longitude
-        state.laitude = app.laitude
-        state.goods_type = app.goods_type
+        state.latitude = app.latitude
+        state.device=app.device
+        state.status=app.status
+
     },
-    // 设置购物车数据
-    setgoodsinfo:function(state,info){
-        state.goodscard = info
+    //设置购物车数据
+    setgoodsinfo:function (state,info) {
+
+        var info1=JSON.stringify(info)
+        state.goodscard = info1
+
+        window.localStorage.setItem('order', state.goodscard);
     }
+
 }
 
 export default new Vuex.Store({
 	state,
 	actions,
 	mutations
+
 })

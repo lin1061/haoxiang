@@ -21,51 +21,53 @@
             <div class="ginfo">
                 <div class="goods">
                     <div class="gtop">
-                        <span class="gname">门店自营</span>
+                        <span class="gname">{{types}}</span>
                     </div>
                     <div class="order-mitem">
                         <div class="order-tu">
-                            <img src="../assets/images/tu@2x.png" alt="">
+                            <img :src="goldgood.goods_img" alt="">
                         </div>
-                        <span class="order-title1">三只松鼠夏威夷果 100g*3 新鲜混合 最新口味</span>
+                        <span class="order-title1">{{goldgood.name}}</span>
                         <span class="order-weight"></span>
-                        <span class="order-price">3000金币</span>
-                        <span class="order-num">x2</span>
+                        <span class="order-price">{{goldgood.exchange_gold_coin}}金币</span>
+                        <span class="order-num">x{{num}}</span>
                     </div>
                 </div>
 
-                <div class="pay">
-                    <div class="order-box1 pay-title1">
-                        <span>支付方式</span>
-                        <span class="pay-title">在线支付</span>
-                        <img src="../assets/images/箭头2.png" class="goto">
-                    </div>
+                <div class="pay clearfix">
+
                     <div class="order-box1 pay-title1">
                         <span >配送</span>
-                        <span class="pay-title">送货上门</span>
-                        <img src="../assets/images/箭头2.png" class="goto">
+                        <span class="pay-title">{{fanshi}}</span>
+                        <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
                     </div>
                     <div class="order-box1 pay-title1 ">
                         <span >商品总额</span>
-                        <span class="pay-title money">￥65.00</span>
+                        <span class="pay-title money">￥{{moneynum}}</span>
                     </div>
                     <div class="order-box1 pay-title1">
                         <span >运费</span>
-                        <span class="pay-title money">+￥0.00</span>
+                        <span class="pay-title money">+￥3.00</span>
                     </div>
                     <div class="order-box1 pay-title1 order-box2">
                         <span >金币金额</span>
-                        <span class="pay-title money">￥65.00</span>
+                        <span class="pay-title money">{{goldnum}}</span>
                     </div>
                 </div>
             </div>
+            <div class="choose" v-show="showchoose">
+                <div class="fanshi">
+                    <div class="ziti" @click="ziti">门店自提</div>
+                    <div class="ziti ziti1" @click="songhuo">送货上门</div>
+                </div>
 
+            </div>
         </main>
         <footer>
-            <div class="hengfu">成为好象会员，享受会员特权。立即开通></div>
+            <div class="hengfu" @click="kaitong">成为好象会员，享受会员特权。立即开通></div>
             <div class="box">
                 <div class="lbox">
-                    <span class="ltitle">实付金币: <span class="ltitle2">3000</span></span>
+                    <span class="ltitle">实付金币: <span class="ltitle2">{{goldnum}}</span></span>
                 </div>
                 <button class="payfor">确认支付</button>
             </div>
@@ -74,24 +76,101 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "goldorder",
         data(){
             return{
+                goldgood:[],
+                types:"",
+                num:1,
+                showchoose:false,
+                fanshi:"送货上门",
 
             }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+            }),
+            moneynum(){
+                return this.num*this.goldgood.market_price
+            },
+            goldnum(){
+                return this.num*this.goldgood.exchange_gold_coin
+            }
+
+        },
+        mounted:function(){
+            this.num=this.$route.query.num;
+            console.log(this.num)
+            this.goldgood=JSON.parse(localStorage.shop);
+            this.types=this.goldgood.types;
+            if(this.types=='1'){
+                this.types="门店自营"
+            }else if(this.types=="2"){
+                this.types="总仓包邮"
+            }
+
+            console.log(this.goldgood)
         },
         methods:{
             adr:function () {
                 jsObj.gps();
+            },
+            gochoose:function () {
+                this.showchoose=!this.showchoose;
+
+            },
+            ziti:function () {
+                let ti=document.querySelector(".ziti");
+                this.fanshi="门店自提"
+                this.showchoose=!this.showchoose;
+            },
+            songhuo:function () {
+                let song=document.querySelector(".ziti1");
+                this.fanshi="送货上门"
+                this.showchoose=!this.showchoose;
+            },
+            kaitong:function () {
+                this.$router.push({name:'hxmember'})
             }
+
         }
     }
 </script>
 
 <style scoped>
+    .fanshi{
+        width: 100%;
+        height: 3.0rem;
+        background: #fff;
+        position: absolute;
+        bottom:0;
+        left:0;
+    }
     body{
         background: #f5f5f5;
+    }
+    .ziti{
+        font-size: 0.32rem;
+        text-align: center;
+        color:#555555;
+        width: 100%;
+        height: 1.5rem;
+        line-height: 1.5rem;
+    }
+    .ziti:hover{
+        color:#f9444d;
+    }
+    .choose{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
+        z-index: 44;
     }
     header{
         width: 100%;
@@ -262,7 +341,7 @@
     }
     .pay{
         width: 7.04rem;
-        height: 4.03rem;
+        height: 3.33rem;
         background-size:100% 100% ;
         margin-top: 0.20rem;
         background-repeat: no-repeat;

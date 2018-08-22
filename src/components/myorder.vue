@@ -6,33 +6,33 @@
         <!--<span class="title">我的订单</span>-->
         <!--</header>-->
         <!--内容-->
+        <div class="nav clearfix">
+            <router-link :to="{path:'/myorder/1',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+                <span>全部</span>
+                <img src="../assets/images/d@2x.png" alt="" class="xian">
+                <div class="lan" v-show="order_status == ''"></div>
+                <div class="lan lan1"></div>
+            </router-link>
+            <router-link :to="{path:'/myorder/10',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+                <span>待支付</span>
+                <img src="../assets/images/d@2x.png" alt="" class="xian">
+                <div class="lan" v-show="order_status == 10"></div>
+                <div class="lan lan1"></div>
+            </router-link>
+            <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+                <span>待收货</span>
+                <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
+                <div class="lan" v-show="order_status == 20"></div>
+                <div class="lan lan1"></div>
+            </router-link>
+            <router-link :to="{path:'/myorder/60',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+                <span>已完成</span>
+                <div class="lan" v-show="order_status == 60"></div>
+                <div class="lan lan1"></div>
+            </router-link>
+        </div>
         <main>
-            <div class="nav clearfix">
-                <router-link :to="{path:'/myorder/1',query:{'user_id':user_id,'token':token}}" class="nav-item">
-                    <span>全部</span>
-                    <img src="../assets/images/d@2x.png" alt="" class="xian">
-                    <div class="lan" v-show="order_status == ''"></div>
-                    <div class="lan lan1"></div>
-                </router-link>
-                <router-link :to="{path:'/myorder/10',query:{'user_id':user_id,'token':token}}" class="nav-item">
-                    <span>待支付</span>
-                    <img src="../assets/images/d@2x.png" alt="" class="xian">
-                    <div class="lan" v-show="order_status == 10"></div>
-                    <div class="lan lan1"></div>
-                </router-link>
-                <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token}}" class="nav-item">
-                    <span>待收货</span>
-                    <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
-                    <div class="lan" v-show="order_status == 20"></div>
-                    <div class="lan lan1"></div>
-                </router-link>
-                <router-link :to="{path:'/myorder/60',query:{'user_id':user_id,'token':token}}" class="nav-item">
-                    <span>已完成</span>
-                    <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
-                    <div class="lan" v-show="order_status == 60"></div>
-                    <div class="lan lan1"></div>
-                </router-link>
-            </div>
+
             <div class="order" v-if="list.store.length>0||list.warehouse.length>0">
                 <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token}}" class="order-item clearfix" v-for="item in list.store" :key="item.id">
                     <div class="order-top">
@@ -55,7 +55,7 @@
                         <span class="order-total">合计：￥{{item.total_money}}（运费：0）</span>
                     </div>
                     <div class="order-active">
-                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">                        
+                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">
                         <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10">
                         <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
                         <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
@@ -82,7 +82,7 @@
                         <span class="order-total">合计：￥{{item.total_money}}（运费：0）</span>
                     </div>
                     <div class="order-active">
-                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">                        
+                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">
                         <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10">
                         <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
                         <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
@@ -127,7 +127,7 @@
                 this.order_status = status;
                 this.getorderInfo();
             }
-            
+
         },
         created:function(){
             let status = this.$route.params.id == 1?"":this.$route.params.id;
@@ -141,6 +141,7 @@
                 let status = this.order_status || "";
                 this.$axios.get('/user/order',{params:{user_id:this.user_id,status:status}}).then(res=>{
                     let info =res.data.data;
+                    console.log(info)
                     let store = info.store || []//门店自营
                     let warehouse = info.warehouse || []//总仓包邮
                     this.list.store = store.map((v)=>{
@@ -212,6 +213,9 @@
                     }
                 })
             },
+            flushCom:function(){
+                this.$router.go(0);
+            },
             // 再次购买入购物车
             addgoods(id){
                 // 商品id
@@ -257,16 +261,17 @@
 
     main{
         width: 100%;
-        /*margin-top: 0.88rem;*/
+        margin-top: 0.80rem;
     }
     .nav{
         width: 100%;
         height: 0.83rem;
         border-bottom:0.01rem solid #d4d7da;
         background: #fff;
-        white-space: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
+        position: fixed;
+        top:0;
+        left:0;
+        z-index:999;
     }
     .nav-item{
         width: 25vw;

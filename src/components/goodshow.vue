@@ -9,13 +9,15 @@
         <!--内容-->
         <main>
             <div class="good-info clearfix">
-                <swiper class="imgbox" height="5.07rem">
-                    <img :src="goods.goods_img" class="banner">
-                </swiper>
-                <p>
-                    <span class="good-form">[门店自营]</span>
-                <p class="description">{{goods.name}}</p>
-                </p>
+                <Swiper class="banner" height="5.07rem"  :aspect-ratio="300/800">
+
+                    <swiper-item class="swiper-demo-img" v-for="(item, index) in goods.banners" :key="index"><img :src="item"></swiper-item>
+
+                </Swiper>
+                <div>
+                    <span class="good-form">[{{types}}]</span>
+                    <p class="description">{{goods.name}}</p>
+                </div>
                 <div class="price">
                     <span class="oldprice">￥{{goods.member_price}}</span>
                     <span class="newprice">已省:￥{{save_price}}</span>
@@ -23,7 +25,7 @@
                 </div>
                 <div class="price">
                     <span class="oldprice oldprice1">原价：￥{{goods.market_price}}</span>
-                    <img src="../assets/images/hy@2x.png"class="anniu" >
+                    <img src="../assets/images/hy@2x.png"class="anniu" @click="willmember">
                 </div>
                 <div class="price price1">
                     <span class="oldprice oldprice1">已选：</span>
@@ -44,36 +46,39 @@
             </section>
             <!--优选好货-->
             <ul class="yx clearfix">
-                <div class="youxuan">优选好货</div>
-                <li class="yx-item" v-for="item in goods.about_recommend">
+                <div class="youxuan">为你推荐</div>
+                <router-link style="text-decoration: none" :to="{path:'/goodshow',query:{goods_id:item.goods_id}}" class="yx-item" v-for="item in goods.about_recommend" :key="item.goods_id" @click.native="flushCom">
                     <div class="box">
                         <img :src="item.goods_img" class="goodstu">
                     </div>
                     <div class="yx-ginfo clearfix">
-                        <span class="yx-gname">{{item.goods_name}}</span>
+                        <span class="yx-gname" style="text-decoration: none;">{{item.goods_name}}</span>
                         <span class="yx-newprice">￥{{item.shop_price}}</span>
                         <span class="yx-shen">已省:10元</span>
                         <span class="yx-oldprice">原价:￥{{item.market_price}}元</span>
                     </div>
-                </li>
+                </router-link>
 
             </ul>
         </main>
-
+        <toast v-model="s"  type="text" :time="800" is-show-mask text="收藏成功" position="top"></toast >
+        <toast v-model="sh"  type="text" :time="800" is-show-mask text="添加成功" position="top"></toast >
+        <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选择属性" position="bottom"></toast >
         <!--底部-->
-        <footer>
+        <footer>t
             <div class="footbox clearfix">
-                <div class="ser">
+                <div class="ser" @click="kefu">
                     <img src="../assets/images/ej@2x.png" class="server">
                     <span class="kefu">客服</span>
                 </div>
                 <div class="ser like" @click="like">
-                    <img src="../assets/images/Favourite@3x.png" class="server liketu">
+                    <div  class="server liketu" :class="{'check':goodid.indexOf(goods.goods_id)>=0}" @click="onegoods(goods.goods_id)"></div>
                     <span class="kefu">收藏</span>
                 </div>
-                <button class="lijishop" @click="goodshow">立即购买</button>
-                <button class="lijishop lijishop1" @click="goodshow">加入购物车</button>
+                <button class="lijishop" @click="goodshow">加入购物车</button>
+                <button class="lijishop lijishop1" @click="goodshow1">立即购买</button>
             </div>
+
             <div class="zhezhao" v-show="showbox" @touchmove.prevent>
                 <div class="goods clearfix">
                     <div class="ginfo">
@@ -82,7 +87,7 @@
                         </div>
                         <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
                         <span class="numbers">库存{{style_stock}}件</span>
-                        <div class="close" @click="close">x</div>
+                        <div class="close" @click="close"></div>
                         <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
                             <span class="style">{{item.spec_name}}:</span>
                             <div class="stylebox">
@@ -100,38 +105,78 @@
                     <div class="ok" clearfix @click="gocart">选好了</div>
                 </div>
             </div>
+            <div class="zhezhao" v-show="showbox1" @touchmove.prevent>
+                <div class="goods clearfix">
+                    <div class="ginfo">
+                        <div class="goodsxtu">
+                            <img :src="style_img" alt="">
+                        </div>
+                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
+                        <span class="numbers">库存{{style_stock}}件</span>
+                        <div class="close" @click="close1"></div>
+                        <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
+                            <span class="style">{{item.spec_name}}:</span>
+                            <div class="stylebox">
+                                <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
+                            </div>
+                        </div>
+                        <div class="choose">
+                            <span class="num">数量:</span>
+                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                            <span class="numadd">{{goodsnum}}</span>
+                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                        </div>
+                    </div>
+
+                    <div class="ok" clearfix @click="gocart1">选好了</div>
+                </div>
+            </div>
 
         </footer>
     </div>
 </template>
 
 <script>
+    import { Swiper,SwiperItem,} from 'vux'
+    import { mapState } from 'vuex'
+    import { Toast } from 'vux'
+    import qs from 'qs'
 
-import { mapState } from 'vuex'
-import qs from 'qs'
-import { Swiper } from 'vux'
     export default {
         name: "goodshow",
         data () {
             return {
                 showbox:false,
+                showbox1:false,
                 goodsnum:1,
                 goods:[],
                 names:"",
-                save_price:"",
+                save_price:0,
                 style_img:"",
-                style_price:"",
+                style_price:0,
                 style_stock:"",
                 choose_spec:[],
                 spec_id:"",
                 img:"",
-                choose:""
+                choose:"",
+                types:"",
+                s:false,
+                sh:false,
+                sx:false,
+                goodid:[]
+
             }
         },
+
         computed: {
             ...mapState({
               goods_id: state => state.goods_id,
-              user_id: state => state.user_id
+              user_id: state => state.user_id,
+              device:state =>state.device,
+              token:state =>state.token,
+              device:state =>state.device,
+              university_id:state=>state.university_id
+
             }),
             // 总金额
             moneynum:function(){
@@ -139,9 +184,19 @@ import { Swiper } from 'vux'
             }
         },
         mounted:function(){
-            this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id}}).then(res=>{
-                // console.log(res.data.data);
+
+            this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id,user_id:this.user_id,token:this.token}}).then(res=>{
+                console.log(res.data.data);
                 this.goods=res.data.data;
+                this.types=this.goods.types;
+                this.style_img=this.goods.goods_img;
+                if(this.types=='1'){
+                    this.types="门店自营"
+                }else if(this.types=='2'){
+                    this.types="总仓包邮"
+                }
+                // console.log(this.goods)
+                console.log(this.goods.spec_reg.length)
                 this.save_price=this.goods.market_price-this.goods.member_price;
                 for (var i=0;i<this.goods.spec_reg.length;i++){
 
@@ -152,14 +207,27 @@ import { Swiper } from 'vux'
                 }
             })
         },
-        components: {
 
-            Swiper
+        components: {
+            Swiper,
+            SwiperItem,
+            Toast
         },
         methods:{
             goodshow(){
                 this.showbox=!this.showbox;
 
+            },
+            onegoods(id){
+                let idIndex = this.goodid.indexOf(id)
+                if (idIndex >= 0) {//如果已经包含就去除
+                    this.goodid.splice(idIndex, 1)
+                } else {//如果没有包含就添加
+                    this.this.goodid.push(id)
+                }
+            },
+            goodshow1(){
+                this.showbox1=!this.showbox1;
             },
             close(){
                 this.showbox=false;
@@ -170,29 +238,43 @@ import { Swiper } from 'vux'
             },
             reduce(){
                 this.goodsnum--;
-                if(this.goodsnum<=0){
-                    this.goodsnum=0;
+                if(this.goodsnum<=1){
+                    this.goodsnum=1;
                 }
             },
             like(){
                 this.$axios.post('/user/collection_store',
                     qs.stringify({
                         user_id:this.user_id,
-                        goods_id:this.goods_id
+                        goods_id:this.goods_id,
+                        token:this.token,
+                        university_id:this.university_id
+
                     })).then(res=>{
+                    if(res.data.err_code == 0){
+                        //成功加入购物车
+                        this.s = true;
+                    }
                     console.log(res)
                 })
             },
-            gocart(){
-                this.$axios.post('/user/shop_card',
-                    qs.stringify({
-                        goods_id:this.goods_id,
-                        num:this.goodsnum,
-                        user_id:this.user_id,
-                        spec_id:this.spec_id
-                    })).then(res=>{
-                    console.log(res)
-                })
+            flushCom:function(){
+                this.$router.go(0);
+            },
+            kefu(){
+                if(this.device){
+                    wx.miniProgram.navigateTo({url: '/pages/call/main'})
+                }else{
+                    jsObj.GotoService();
+                }
+
+            },
+            close1(){
+                this.showbox1=!this.showbox1
+            },
+
+            willmember(){
+                this.$router.push({name:'hxmember'})
             },
             check(value,cellIndex,index){
                 this.names=cellIndex;
@@ -200,6 +282,7 @@ import { Swiper } from 'vux'
                 this.choose_spec[index] = value;
                 // console.log(this.goods.spec_reg);
                 var reg_str = '';
+                // console.log(this.choose_spec.length)
                 for(var i=0;i<this.choose_spec.length;i++){
                     reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
                     this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
@@ -213,6 +296,70 @@ import { Swiper } from 'vux'
                     }
 
                 }
+
+            },
+            gocart(){
+                console.log(this.types)
+                if(this.types=="门店自营"){
+                    this.$axios.post('/user/shop_card',
+                        qs.stringify({
+                            goods_id:this.goods_id,
+                            num:this.goodsnum,
+                            user_id:this.user_id,
+                            spec_id:this.spec_id
+                        })).then(res=>{
+                        if(res.data.err_code == 0){
+                            //成功加入购物车
+                            this.sh = true;
+                        }
+                        // console.log(res)
+                    })
+                    localStorage.good=JSON.stringify(this.goods);
+                }else if(this.types=="总仓包邮"){
+                    if(this.choose==""){
+                        this.sx = true;
+                    }else{
+                        this.$axios.post('/user/shop_card',
+                            qs.stringify({
+                                goods_id:this.goods_id,
+                                num:this.goodsnum,
+                                user_id:this.user_id,
+                                spec_id:this.spec_id
+                            })).then(res=>{
+                            if(res.data.err_code == 0){
+                                //成功加入购物车
+                                this.sh = true;
+                            }
+                            // console.log(res)
+                        })
+                        localStorage.good=JSON.stringify(this.goods);
+
+                    }
+                }
+
+
+
+
+            },
+            gocart1(){
+                if(this.types=="门店自营"){
+                    localStorage.good=JSON.stringify(this.goods);
+                    this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id}})
+                }else if(this.types=="总仓包邮"){
+                    if(this.choose==""){
+                        this.sx = true;
+                    }else{
+
+                        localStorage.good=JSON.stringify(this.goods);
+                        this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id}})
+                    }
+                }
+
+
+
+
+
+
 
             },
 
@@ -303,6 +450,11 @@ function array_search(arr,val,type) {
     .banner{
         width: 100%;
         height: 5.04rem;
+        overflow: hidden;
+    }
+    .banner img{
+        width: 100%;
+        height: 100%;
     }
     .love{
         width: 0.35rem;
@@ -318,6 +470,7 @@ function array_search(arr,val,type) {
         padding-top:0.34rem;
         display: block;
         float:left;
+        line-height: 0.60rem;
     }
     .description{
         font-size:0.32rem;
@@ -443,15 +596,17 @@ function array_search(arr,val,type) {
         width: 3.745rem;
         /*height: 4.30rem;*/
         float:left;
+        border-bottom: 0.02rem solid #e5e5e5;
+
     }
-    .yx li:nth-child(2n+1){
+    .yx .yx-item:nth-child(2n+1){
         float: left;
         border-left:0.02rem solid #e5e5e5;
     }
     .box{
         width: 100%;
-        /*height: 3.07rem;*/
-        border-bottom:0.01rem solid #e5e5e5;
+        height: 3.07rem;
+        border-bottom:0.02rem solid #e5e5e5;
         position: relative;
     }
     .box img{
@@ -544,6 +699,7 @@ function array_search(arr,val,type) {
         line-height: 0.22rem;
         display: block;
         padding-top: 0.10rem;
+
     }
     .like{
         width: 0.48rem;
@@ -552,6 +708,13 @@ function array_search(arr,val,type) {
     .liketu{
         width: 0.48rem;
         height: 0.38rem;
+        background: url("../assets/images/Favourite@3x.png") no-repeat ;
+        background-size: 0.48rem 0.38rem;
+    }
+    .liketu.check{
+
+        background: url("../assets/images/Favourite_2@2x.png") no-repeat ;
+        background-size: 0.48rem 0.38rem;
     }
     .lijishop{
         width: 2.14rem;
@@ -609,17 +772,13 @@ function array_search(arr,val,type) {
         left:2.95rem;
     }
     .close{
-        width: 0.39rem;
-        height: 0.39rem;
+        width: 0.40rem;
+        height: 0.40rem;
         position: absolute;
         top:0.34rem;
         right:0.40rem;
-        border:0.02rem solid #a2a2a2;
-        border-radius: 50%;
-        text-align: center;
-        font-size:0.18rem;
-        line-height: 0.39rem;
-        color:#a2a2a2;
+        background-size: 0.39rem 0.39rem;
+        background: url("../assets/images/close.png") no-repeat center/cover;
     }
     .style{
         font-size:0.28rem;

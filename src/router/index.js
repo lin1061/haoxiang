@@ -37,8 +37,12 @@ const Goldrule = r => require.ensure([], () => r(require('@/components/goldrule'
 const Membership = r => require.ensure([], () => r(require('@/components/membership')), 'membership')
 const Userprivary = r => require.ensure([], () => r(require('@/components/userprivary')), 'userprivary')
 const Usership = r => require.ensure([], () => r(require('@/components/usership')), 'usership')
+const Hxsummary = r => require.ensure([], () => r(require('@/components/hxsummary')), 'hxsummary')
+const Contact = r => require.ensure([], () => r(require('@/components/contact')), 'contact')
+const Confirmorder1 = r => require.ensure([], () => r(require('@/components/confirmorder1')), 'confirmorder1')
+const Paysuccess = r => require.ensure([], () => r(require('@/components/paysuccess')), 'paysuccess')
+const Payfailed = r => require.ensure([], () => r(require('@/components/payfail')), 'payfail')
 
-// const myorderchiled = r => require.ensure([], () => r(require('@/components/myorderchiled')), 'myorderchiled')
 
 Vue.use(Router)
 
@@ -60,7 +64,7 @@ export default new Router({
         {
             path: '/myorder/:id',
             name: 'myorder',
-            component: Myorder,
+            component: Myorder
         },
         //订单详情页面
         {
@@ -253,6 +257,36 @@ export default new Router({
             path: '/usership',
             name: 'usership',
             component: Usership
+        },
+        //好象有货简介
+        {
+            path: '/hxsummary',
+            name: 'hxsummary',
+            component: Hxsummary
+        },
+        //联系我们
+        {
+            path: '/contact',
+            name: 'contact',
+            component: Contact
+        },
+        //购物车确认订单
+        {
+            path: '/confirmorder1',
+            name: 'confirmorder1',
+            component: Confirmorder1
+        },
+        //订单支付成功页面
+        {
+            path: '/paysuccess',
+            name: 'paysuccess',
+            component: Paysuccess
+        },
+        //订单支付失败页面
+        {
+            path: '/payfail',
+            name: 'payfail',
+            component: Payfailed
         },
     ]
 })

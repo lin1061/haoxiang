@@ -39,9 +39,16 @@ body{
   text-decoration-line: none ;
   font-style: normal;
   list-style: none;
+
   -webkit-tap-highlight-color:rgba(0,0,0,0) ;
   box-sizing: border-box;
 }
+a{
+  border:none;
+  border-color: #fff;
+  text-decoration: none;
+}
+
 .clearfix:after
 {
   content:".";

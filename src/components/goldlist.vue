@@ -11,7 +11,7 @@
         <!--</header>-->
         <main>
             <ul class="yx">
-                <router-link :to="{name:'goldgood',query:{gid:item.goods_id}}" v-for="item in list" :key="item.goods_id">
+                <router-link :to="{name:'goldgood',query:{goods_id:item.goods_id,token:header}}" v-for="item in list" :key="item.goods_id">
                 <li class="yx-item">
                     <div class="box">
                         <img :src="item.goods_img" class="goodstu">
@@ -28,17 +28,25 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "goldlist",
         data(){
             return{
-                list:[]
+                list:[],
+                header:''
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                token:state=>state.token
+            }),
 
+        },
         mounted:function () {
-
-          this.$axios.get('/user/exchanges',).then(res=>{
+            this.header=this.token;
+          this.$axios.get('/user/exchanges',{params:{user_id:this.user_id}}).then(res=>{
                   this.list=res.data.data;
                 console.log(res)
           })

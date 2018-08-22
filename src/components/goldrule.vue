@@ -59,7 +59,7 @@
         display: block;
         font-weight: bold;
         padding-top: 0.35rem;
-        padding-left:0.50rem;
+        text-align: center;
     }
     .jianshu{
         font-size:0.26rem;

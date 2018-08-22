@@ -6,10 +6,10 @@
         <!--<span class="title">其他</span>-->
         <!--</header>-->
         <main>
-            <div class="list-item clearfix" v-for="item in bills" :key="item.id">
+            <div class="list-item clearfix" v-for="(item,index) in bills" :key="item.id">
                 <div class="list-itemtop">
                     <span class="list-title1">{{item.name}}</span>
-                    <span class="list-title2">{{types}}</span>
+                    <span class="list-title2">{{types[index]}}</span>
                     <span class="list-title2 list-title3">{{item.tax_number}}</span>
                 </div>
                 <div class="list-itembottom clearfix">
@@ -43,7 +43,7 @@
         data(){
             return{
                 bills:[],
-                types:"",
+                types:[],
 
             }
         },
@@ -53,21 +53,27 @@
 
             }),
 
+
         },
         mounted:function () {
 
             this.$axios.get('/user/invoices',{params:{user_id:this.user_id}}).then(res=>{
                 this.bills=res.data.data;
                 console.log(res.data.data)
-                for(let i=0;i<res.data.data.length;i++){
-                    this.types=res.data.data[i].type;
-                    if(this.types=="1"){
-                        this.types="个人"
 
-                    }else if(this.types=="2"){
-                        this.types="公司"
-                    }
+                var typesIndex = 0;
+                for(let i=0;i<res.data.data.length;i++){
+                    var types=res.data.data[i].type;
+                    console.log(types)
                     // console.log(this.types)
+                    if(types == '1'){
+                        this.types[typesIndex] ="个人";
+                        typesIndex++;
+
+                    }else if(types == '2'){
+                        this.types[typesIndex]="公司";
+                        typesIndex++;
+                    }
 
                 }
 
@@ -81,7 +87,9 @@
                 console.log(id)
                 this.$axios.post('/user/invoice_delete?invoice_id='+id).then(res=>{
                     console.log(res)
-                })
+                });
+
+
             },
             add(){
                 this.$router.push({name:'addbills',params:this.user_id})
