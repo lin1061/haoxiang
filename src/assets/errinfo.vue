@@ -22,7 +22,7 @@ export default {
 	width:5.15rem;
 	height: 3.52rem;
 	display: inline-block;
-	margin-top: 3rem; 
+	margin-top: 4rem;
 	margin-left: 1.17rem;
 }
 .err .p1{

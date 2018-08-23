@@ -21,8 +21,8 @@
                     <img src="../assets/images/wz@2x.png" class="wz" @click="addr">
                 </div>
                 <div class="xiaoqu clearfix">
-                    <span class="huiprice">会员价:￥2405.00/人</span>
-                    <span class="chajia">已省{{travel_goods.earnest_money}}元</span>
+                    <span class="huiprice">会员价:￥{{travel_goods.membership_price}}/人</span>
+                    <span class="chajia">已省{{savemoney}}元</span>
                     <span class="numb">销量:{{travel_goods.sales_volume}}件</span>
                 </div>
                 <span class="huititle">已选: <span class="schools">{{data}}</span></span>
@@ -33,23 +33,21 @@
         </main>
         <footer>
             <button class="yuyue" @click="yuyue">立即预约</button>
-            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
-                <div class="yuyuemore">
-                    <span class="yudate">请选择出游日期</span>
-                    <div class="close" @click="close">X</div>
-                    <div class="canl">
-                        <!--<calendara-->
-                        <!--:start-date="new Date(2015,7)">-->
-                        <!--</calendara>-->
-                        <Calendar
-                                v-on:choseDay="clickDay"
-                                v-on:changeMonth="changeDate">
-                        </Calendar>
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
+                <div class="yuyuemore"@click="choosebox">
+                    <span class="huititle1">会员价:￥{{original_price}}<span class="shijia">市场价:<span class="oldjia">￥{{membership_price}}/人</span></span></span>
+
+                    <span class="style ">类型:</span>
+                    <div class="stylebox clearfix" >
+                        <button class="style1" v-for="(item,index) in travel_goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
+
                     </div>
-                    <div class="ok">
-                        <span>定金: <span class="jiage">￥130元</span></span>
-                        <button class="yuprice">立即预约</button>
-                    </div>
+                    <div class="close" @click="close"></div>
+                    <span class="num">数量:</span>
+                    <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                    <span class="numadd">{{num}}</span>
+                    <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                    <div class="ok" @click="payfor">立即预约</div>
                 </div>
             </div>
 
@@ -68,23 +66,38 @@
         data(){
             return{
                 showbox:false,
-                num:0,
+                num:1,
                 travel_goods:[],
                 data:"",
                 schoolname:"",
+                name:"",
+                original_price:0.00,
+                membership_price:0.00,
+                choose:"",
+                spec_id:""
 
             }
         },
         computed: {
             ...mapState({
-                goods_id: state => state.goods_id,
+                user_id:state=>state.user_id,
+                token:state=>state.token,
+                device:state =>state.device,
+                university_id:state=>state.university_id,
+                goods_id:state=>state.goods_id
             }),
+            savemoney(){
+                return this.travel_goods.original_price-this.travel_goods.membership_price
+            }
 
         },
         mounted:function () {
             this.$axios.get('/goods/travel_goods_info',{params:{goods_id:this.goods_id}}).then(res=>{
                 this.travel_goods=res.data.data;
+                console.log(this.travel_goods)
                 this.schoolname=this.travel_goods.university.name;
+                this.original_price=this.travel_goods.goods_spec[0].original_price;
+                this.membership_price=this.travel_goods.goods_spec[0].membership_price;
 
             })
         },
@@ -95,15 +108,12 @@
             yuyue(){
                 this.showbox=!this.showbox;
             },
-            clickDay(data) {
-                console.log(data)
-                this.data=data; //选中某天
-            },
-            changeDate(data) {
-                console.log(data); //左右点击切换月份
-            },
-            clickToday(data) {
-                console.log(data); //跳到了本月
+            check(item,index){
+                // this.goodsname=item.name;
+                this.original_price=item.original_price;
+                this.membership_price=item.membership_price;
+                this.choose=item.name;
+                this.spec_id=item.spec_id;
             },
             add(){
                 this.num++;
@@ -113,10 +123,27 @@
             },
             reduce(){
                 this.num--;
-                if(this.num<=0){
-                    this.num=0;
+                if(this.num<=1){
+                    this.num=1;
                 }
-            }
+            },
+
+            payfor(){
+                this.name=this.data+this.travel_goods.name
+                console.log(this.name)
+                if(this.choose==""){
+                    this.sx=true;
+                }else{
+                    localStorage.schoolgood=JSON.stringify(this.travel_goods);
+                    this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                }
+            },
+            zhezhao(){
+                this.showbox=false;
+            },
+            choosebox(){
+                this.showbox=true;
+            },
         },
 
         components: {
@@ -352,10 +379,7 @@
         color:#fff;
         margin-left:0.35rem;
     }
-    .jiage{
-        fonnt-size:0.32rem;
-        color:#f9444d;
-    }
+
     .zhezhao{
         width: 100vw;
         height: 100vh;
@@ -364,15 +388,114 @@
         top:0;
         left:0;
     }
-    .list-paddingleft-2{
+
+    .yuyuemore{
         width: 100%;
-        height: 100%;
+        height: 4.77rem;
+        background: #fff;
+        position: fixed;
+        left:0;
+        bottom:0;
     }
-    .canl{
-        margin-top: 0.30rem;
-        padding-left: 0.30rem;
+    .huititle1{
+        font-size:0.28rem;
+        color:#f9444d;
+        font-weight: bold;
+        display: block;
+        padding-top:0.39rem;
+        padding-left:0.51rem;
     }
-    .wh_content_all{
-        background-color: #fff;
+    .shijia{
+        font-size:0.24rem;
+        color:#8a959e;
+    }
+    .oldjia{
+        text-decoration: line-through;
+    }
+    .style{
+        font-size:0.28rem;
+        color:#a2a2a2;
+        padding-left: 0.53rem;
+        display: block;
+        padding-top: 0.51rem;
+    }
+    .style1{
+        width: auto;
+        height: 0.63rem;
+        padding:0 0.20rem;
+        background: url("../assets/images/gg@2x.png") no-repeat center/cover;
+        font-size:0.26rem;
+        color:#555555;
+        text-align: center;
+        line-height: 0.63rem;
+        margin:0.28rem 0.18rem 0 0.53rem;
+        float:left;
+        border:none;
+        outline: none;
+    }
+    .style2{
+        margin-left:0;
+    }
+    .stylebox{
+        width: 100%;
+        height: auto;
+        float: left;
+    }
+    .num{
+        display: block;
+        font-size:0.28rem;
+        color:#555555;
+        margin:0.40rem 0 0 0.53rem;
+        float: left;
+    }
+    .ok{
+        width: 100%;
+        height: 1.02rem;
+        background: linear-gradient(to right, #ff1c8b , #f37404);
+        font-size:0.36rem;
+        color:#fff;
+        position: absolute;
+        left:0;
+        bottom:0;
+        text-align: center;
+        line-height: 1.02rem;
+    }
+    .jh{
+        width: 0.36rem;
+        height: 0.36rem;
+        display: block;
+        position: absolute;
+        right:1.41rem;
+        bottom:1.55rem;
+    }
+    .numadd{
+        font-size:0.28rem;
+        color:#555555;
+        position: absolute;
+        right:0.97rem;
+        bottom:1.58rem;
+    }
+    .jhh {
+        right: 0.41rem;
+    }
+    .style1:hover{
+        color:#f9444d;
+    }
+    .close{
+        width: 0.40rem;
+        height: 0.40rem;
+        position: absolute;
+        top:0.34rem;
+        right:0.40rem;
+        background-size: 0.39rem 0.39rem;
+        background: url("../assets/images/close.png") no-repeat center/cover;
+    }
+    .zhezhao{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
     }
 </style>

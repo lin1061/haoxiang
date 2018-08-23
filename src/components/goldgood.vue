@@ -72,8 +72,9 @@
                             <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
                         </div>
                     </div>
-
-                    <div class="ok" clearfix @click="goorder">选好了</div>
+                    <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
+                    <toast v-model="s"  type="text" :time="800" is-show-mask text="金币不足" position="bottom"></toast >
+                    <div class="ok" clearfix @click="goorder">立即兑换</div>
                 </div>
             </div>
 
@@ -84,6 +85,7 @@
 <script>
     import { Swiper,SwiperItem,} from 'vux'
     import { mapState } from 'vuex'
+    import { Toast } from 'vux'
     export default {
         name: "goldgood",
         data(){
@@ -100,16 +102,27 @@
                 img:"",
                 choose:"",
                 goodsnum:1,
-                token:''
+                token:'',
+                user_id:"",
+                university_id:"",
+                sx:false,
+                type:"",
+                model_id:"",
+                gold_coin:"",
+                icon:"",
+                s:false
 
             }
         },
         components: {
             SwiperItem,
-            Swiper
+            Swiper,
+            Toast
         },
         computed: {
             ...mapState({
+                goods_id: state => state.goods_id,
+                device:state =>state.device,
 
 
             }),
@@ -119,11 +132,16 @@
             }
         },
         mounted:function () {
+            this.university_id=this.$route.query.university_id
+            this.user_id=this.$route.query.user_id;
             this.gid=this.$route.query.goods_id;
             this.token=this.$route.query.token;
+
             this.$axios.get('/user/exchange_goods_info',{params:{goods_id:this.gid,token:this.token}}).then(res=>{
                     this.good=res.data.data;
-                    console.log(this.good)
+                    this.icon=this.good.exchange_gold_coin;
+                    // console.log(this.good)
+                    this.type=this.good.types;
                 this.style_img=this.good.goods_img;
                 for (var i=0;i<this.good.spec_reg.length;i++){
 
@@ -153,12 +171,29 @@
                 }
             },
             goorder(){
-                if(this.choose==""){
 
+                this.$axios.get('/user/get_info/'+this.user_id).then((res)=>{
+                    if(res.data.err_code == 0){
+                        this.gold_coin=res.data.data.user_info.gold_coin;
+                    }
+                })
+                if(this.gold_coin>=this.icon){
+                    if(this.type==1){
+                        localStorage.shop=JSON.stringify(this.good);
+                        this.$router.push({name:'goldorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,goods_id:this.goods_id,university_id:this.university_id,model_id:this.model_id}})
+                    }else if(this.type==2){
+                        if(this.choose==""){
+                            this.sx=true
+                        }else{
+                            localStorage.shop=JSON.stringify(this.good);
+                            this.$router.push({name:'goldorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,goods_id:this.goods_id,university_id:this.university_id,model_id:this.model_id}})
+                        }
+                    }
                 }else{
-                    localStorage.shop=JSON.stringify(this.good);
-                    this.$router.push({name:'goldorder',query:{num:this.goodsnum}})
+                    this.s=true;
                 }
+
+
 
             },
             willmember(){
@@ -178,7 +213,8 @@
                 for (var i=0;i<this.good.spec_reg.length;i++){
                     if(this.good.spec_reg[i].reg_spec_str == reg_str){
                         this.style_img=this.good.spec_reg[i].spec_img_path
-                        this.style_stock=this.good.spec_reg[i].stock
+                        this.style_stock=this.good.spec_reg[i].stock;
+                        this.model_id=this.good.spec_reg[i].spec_id
                     }
 
                 }

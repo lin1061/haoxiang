@@ -59,20 +59,34 @@
                     <span class="pay-title">{{order.pay_at}}</span>
                 </div>
                 <div class="order-active clearfix">
-                    <span class="time">自动取消: 14:29</span>
-                    <img src="../assets/images/qx@2x.png" alt="" class="cancel">
+                    <!--<span class="time">自动取消: 14:29</span>-->
+                    <img src="../assets/images/qx@2x.png" alt="" class="cancel"  @click="cancel">
                     <img src="../assets/images/zf@2x.png" alt="" class="cancel pay">
                 </div>
             </div>
-            <div class="imgbox">
+
+            <toast v-model="s"  type="text" :time="800" is-show-mask text="复制成功" position="bottom"></toast >
+            <div class="imgbox" @click="gomember">
                 <img src="../assets/images/banner@2x.png">
             </div>
+
         </main>
+        <div class="choose" v-show="showchoose">
+            <div class="fanshi">
+                <div class="ziti ziti2 noto" >提示</div>
+                <div class="ziti" >确定要删除么？</div>
+
+                <div class="ziti ziti1 ziti3" @click="canto">取消</div>
+                <div class="ziti ziti1 okto"  @click="canto">确定</div>
+            </div>
+
+        </div>
     </div>
 </template>
 
 <script>
     import { mapState } from 'vuex'
+    import { Toast } from 'vux'
     export default {
         name: "ordershow",
         data(){
@@ -82,6 +96,8 @@
                 order_pay:"",
                 distribution:"",
                 info:[],
+                s:false,
+                showchoose:false
 
             }
         },
@@ -112,10 +128,24 @@
                 }
             })
         },
+        components: {
+            Toast
+        },
         methods:{
             copy(){
                 let num=document.querySelector(".orderno");
                 console.log(num.innerText)
+                this.s=true;
+
+            },
+            gomember(){
+                this.$router.push({name:'hxmember'})
+            },
+            cancel(){
+                this.showchoose=true;
+            },
+            canto(){
+                this.showchoose=false;
             }
         }
 
@@ -123,6 +153,66 @@
 </script>
 
 <style scoped>
+
+    .fanshi{
+        width: 5.53rem;
+        height: 3.43rem;
+        background: #fff;
+        position: absolute;
+        bottom:0;
+        left:0;
+        top:0;
+        right:0;
+        margin:auto;
+        border-radius: 0.20rem;
+    }
+    .ziti2{
+        color:#cccccc;
+        font-size: 0.28rem;
+        line-height: 0.30rem;
+    }
+    body{
+        background: #f5f5f5;
+    }
+    .ziti{
+        font-size: 0.32rem;
+        text-align: center;
+        color:#555555;
+        width: 100%;
+        height: 1.0rem;
+        line-height: 1.0rem;
+    }
+    .ziti1:hover{
+         color:#f9444d;
+     }
+    .ziti3{
+        color:#cccccc;
+    }
+    .choose{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
+        z-index: 44;
+    }
+    .ziti1{
+        width: 50%;
+        float:left;
+
+    }
+    .noto{
+        color:#cccccc;
+        font-size: 0.28rem;
+    }
+    .okto{
+        color:#f9444d;
+    }
+    #main{
+        overflow: hidden;
+        overflow-x: hidden;
+    }
     header{
         width: 100%;
         height: 0.88rem;
@@ -301,4 +391,6 @@
     .order-box2{
         border:none;
     }
+
+
 </style>

@@ -10,70 +10,97 @@
             <div class="info">
                 <div class="info-item clearfix">
                     <span class="name">姓名</span>
-                    <span class="name1">张三</span>
+                    <input class="name1" placeholder="请输入报名姓名" v-model="username">
                 </div>
                 <div class="info-item clearfix">
                     <span class="name">电话</span>
-                    <span class="name1">1385964556</span>
+                    <input class="name1" placeholder="请输入报名电话" v-model="tel">
                 </div>
                 <div class="info-item info-item1 clearfix">
                     <span class="name">类型</span>
-                    <span class="name1">日本留学-东京大学</span>
+                    <span class="name1">{{name}}</span>
                 </div>
             </div>
-            <span class="money">应付金额：<span class="money1">65元</span></span>
-            <div class="paybox">
-                <div class="pay-item clearfix">
-                    <img src="../assets/images/pay1.png" alt="" class="pay-img">
-                    <span class="pay-title">支付宝</span>
-                    <span class="pay-title2">推荐有支付宝账号的用户使用</span>
-                    <div class="pay-check" >
-                        <p>
-                            <span class="circle-btn"></span>
-                            <input type="radio" value="1" name="a" class="radio">
-                            <label for="a" class="radio"></label>
-                        </p>
-                    </div>
-                </div>
-                <div class="pay-item clearfix pay-item1">
-                    <img src="../assets/images/pay2.png" alt="" class="pay-img">
-                    <span class="pay-title">支付宝</span>
-                    <span class="pay-title2">推荐有支付宝账号的用户使用</span>
 
-                    <div class="pay-check clearfix">
-                        <p>
-                            <span class="circle-btn"></span>
-                            <input type="radio" value="2" name="b" class="radio">
-                            <label for="b" class="radio"></label>
-                        </p>
-                    </div>
-                </div>
-                <!--<div class="pay-item pay-item1 clearfix">-->
-                    <!--<img src="../assets/images/pay3.png" alt="" class="pay-img">-->
-                    <!--<span class="pay-title">支付宝</span>-->
-                    <!--<span class="pay-title2">推荐有支付宝账号的用户使用</span>-->
-                    <!--<div class="pay-check">-->
-                        <!--<p>-->
-                            <!--<span class="circle-btn"></span>-->
-                            <!--<input type="radio" value="3" name="c" class="radio">-->
-                            <!--<label for="c" class="radio"></label>-->
-                        <!--</p>-->
-                    <!--</div>-->
-                <!--</div>-->
-            </div>
 
 
 
         </main>
         <footer>
-            <button class="anniu">使用支付宝支付：￥65.00</button>
+            <button class="anniu" @click="payfor">应付定金：￥{{money}}</button>
         </footer>
     </div>
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
-        name: "signinfo"
+        name: "signinfo",
+        data(){
+            return {
+                uid:"",
+                university_id:"",
+                is_yellow_card:"",
+                name:"",
+                tel:"",
+                username:"",
+                spec_id:"",
+                goods_id:"",
+                goodorder:"",
+                order_id:[]
+
+            }
+        },
+        computed:{
+            ...mapState({
+
+                device:state =>state.device
+            }),
+
+        },
+        created:function () {
+            this.uid=this.$route.query.user_id;
+            this.name=this.$route.query.name;
+            this.goods_id=this.$route.query.goods_id;
+            this.spec_id=this.$route.query.spec_id;
+            this.university_id=this.$route.query.university_id;
+
+            this.token=this.$route.query.token;
+            this.goodorder=JSON.parse(localStorage.schoolgood);
+            this.money=this.goodorder.earnest_money;
+            // console.log(this.goodorder)
+            this.$axios.get('/user/get_info/'+this.uid).then(res=>{
+                this.user_info=res.data.data.user_info;
+                // console.log(this.user_info)
+
+            })
+
+        },
+        methods:{
+            payfor(){
+                this.$axios.get('/order/campus_create', {
+                    params:
+                        {user_id:this.uid,
+                            university_id:this.university_id,
+                            name:this.name,
+                            tel:this.tel,
+                            spec_id:this.spec_id,
+                            goods_id:this.goods_id
+                        }}).then(res=>{
+                    console.log(res)
+                    if(res.data.err_code==0){
+                        this.order_id.push(res.data.data.order.campus_goods_id)
+                        if(this.device){
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=C'+'&pay='+this.money})
+                        }else{
+                            console.log(this.money)
+                            jsObj.GotoPay(this.order_id,'C',this.money)
+                        }
+                    }
+                })
+            }
+        }
+
     }
 </script>
 
@@ -131,8 +158,13 @@
         font-size:0.28rem;
         color:#a2a2a2;
         float:right;
-        padding-top: 0.50rem;
         display: block;
+        width: 5.00rem;
+        height: 0.59rem;
+        margin-top: 0.40rem;
+        text-align: right;
+        outline: none;
+        border:none;
     }
     .info-item1{
         border:none;

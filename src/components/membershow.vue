@@ -36,9 +36,9 @@
                     <span class="hy-name phone">电话</span>
                     <input type="text" class="namekuan" placeholder="请确保手机号无误" v-model="phone">
                 </div>
-                <div class="name school clearfix">
+                <div class="name school clearfix" @click="adr">
                     <span class="hy-name">学校</span>
-                    <input type="text" class="namekuan" placeholder="请确保所选校区无误" v-model="school">
+                    <div  class="namekuan"></div>
                     <img src="../assets/images/hyd@2x.png" class="hyaddr" @click="adr">
                 </div>
                 <div class="gou"></div>
@@ -49,7 +49,7 @@
         <footer>
             <div class="total">
                 <button class="open" @click="ok">我要开卡</button>
-                <span class="all2">￥120</span>
+                <span class="all2">￥{{price}}</span>
                 <span class="all">合计:</span>
             </div>
         </footer>
@@ -66,33 +66,60 @@
                 name:"",
                 phone:"",
                 school:"",
-                cartid:""
+                cartid:"",
+                user_id:"",
+                university_id:"",
+                price:0.00,
+                token:"",
+                order_id:[]
             }
         },
         computed: {
             ...mapState({
-                user_id: state => state.user_id,
+                device:state => state.device,
+
             }),
 
         },
-
+        mounted:function(){
+            this.cartid=this.$route.query.cartid;
+            this.user_id=this.$route.query.user_id;
+            this.university_id=this.$route.query.university_id;
+            this.price=this.$route.query.money;
+            // console.log(this.price)
+            this.token=this.$route.query.token
+        },
         methods:{
             ok(){
-                this.cartid=this.$route.query.cartid;
+
                 this.$axios.post('/user/card_store',
                     qs.stringify({
                         user_id:this.user_id,
                         card_id:this.cartid,
                         name:this.name,
                         tel:this.phone,
-                        university_id:this.school
+                        token:this.token,
+                        university_id:this.university_id
                     })).then(res=>{
 
+                    console.log(this.order_id)
+                    if(res.data.err_code==0){
+
+                        // console.log(this.price)
+                        this.order_id=res.data.data;
+                        if(this.device){
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=M'+'&pay='+this.price})
+                        }else{
+
+                            jsObj.GotoPay(this.order_id,'M',this.price)
+                        }
+
+                    }
                 })
             },
-            adr(){
+            adr:function () {
                 jsObj.GPS()
-            }
+            },
         }
     }
 </script>
@@ -217,7 +244,7 @@
     .total{
         width: 100%;
         height: 0.98rem;
-        position: absolute;
+        position: fixed;
         left:0;
         bottom:0;
         background: #fff;

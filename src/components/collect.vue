@@ -129,7 +129,8 @@
                 this.$axios.post('/user/collection_delete',
                     qs.stringify({
                         user_id:this.user_id,
-                        goods_id:this.good_id
+                        goods_id:this.good_id,
+                        university_id:this.university_id
                     })
                     ).then(res=>{
                         console.log(res)

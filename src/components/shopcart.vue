@@ -55,7 +55,7 @@
 						<div class="shopcart-info">
 							<router-link :to="{name:'goodshow',query:{goods_id:item.goods.goods_id}}">
 								<div class="shopcart-info-name" >
-									<div class="n1"><span style="text-decoration:none">{{item.goods.goods_name}}</span></div>
+									<div class="n1"><span style="text-decoration:none;color:#555555;">{{item.goods.goods_name}}</span></div>
 								</div>
 								<div class="shopcart-info-pro">原价:{{item.goods.market_price}}</div>
 								<div class="shopcart-info-rmb">会员价¥{{item.goods.shop_price}}</div>
@@ -101,7 +101,7 @@
             return{
                 cart:[],
                 types:"",
-                num:0,
+                num:0.00,
                 shop_id:"",
                 // contmoney:0,//总金额
                 storecheck:true,//自营选中
@@ -133,7 +133,7 @@
             },
             // 计算订单总金额
             contmoney(){
-                let NUM=0;
+                let NUM=0.00;
                 let that = this
                 this.cart.store.forEach(function(v){
                     if(that.goodscart.store.indexOf(v.goods.goods_id) >= 0){
@@ -152,9 +152,11 @@
                         // 如果是会员用会员价计算
                         if(that.is_yellow_card == 1){
                             NUM += v.num*v.goods.shop_price;
+
                         }else {
                             NUM += v.num*v.goods.market_price;
                         }
+
                     }
                 })
                 return NUM
@@ -177,7 +179,7 @@
                 // if(this.is_yellow_card==0){
                 //     this.showbox=!this.showbox;
                 // }
-                this.$axios.get('/user/shop_card',{params:{user_id:this.user_id}}).then(res=>{
+                this.$axios.get('/user/shop_card',{params:{user_id:this.user_id,university_id:this.university_id}}).then(res=>{
                     if(res.data.err_code == 0){
                         let cartdata =res.data.data;
                         if(typeof(cartdata.store) == 'undefined'){

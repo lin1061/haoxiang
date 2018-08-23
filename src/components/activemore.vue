@@ -12,7 +12,6 @@
             <span class="jianshu">{{active.title}}</span>
             <span class="jianshu">有效期：{{active.end_time}}</span>
             <div class="content">
-                <img :src="active.img_path" alt="">
                 <p v-html="active.describe" class="describe"></p>
             </div>
             <button class="join">立即参与</button>
@@ -55,6 +54,12 @@
         position: fixed;
         left:0;
         top:0;
+    }
+    .content p img{
+        width: 7.0rem!important;
+        height: auto!important;
+        display: block!important;
+        margin: 0 auto!important;
     }
     .back{
         width: 0.34rem;

@@ -416,7 +416,7 @@
                     if(res.data.err_code==0){
                             this.order_id=res.data.data;
                         if(this.device){
-                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'&pay='+this.moneymore})
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.moneymore})
                         }else{
                             jsObj.GotoPay(this.order_id,'G',this.moneymore)
                         }

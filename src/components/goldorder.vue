@@ -12,10 +12,10 @@
                     <img src="../assets/images/定位.png" alt="">
                 </div>
                 <div class="adr">
-                    <span class="name">四川省成都市武侯区四川大学望江校区</span>
+                    <span class="name">{{address}}</span>
                     <img src="../assets/images/箭头.png" class="go" @click="adr">
-                    <span class="name name1">自提地址:四川省成都市武侯区四川大学望江校区</span>
-                    <img src="../assets/images/导航.png" class="go go1">
+                    <span class="name name1">自提地址:{{school.address}}</span>
+                    <img src="../assets/images/导航.png" class="go go1" @click="daohang">
                 </div>
             </div>
             <div class="ginfo">
@@ -47,7 +47,7 @@
                     </div>
                     <div class="order-box1 pay-title1">
                         <span >运费</span>
-                        <span class="pay-title money">+￥3.00</span>
+                        <span class="pay-title money">￥{{freight}}</span>
                     </div>
                     <div class="order-box1 pay-title1 order-box2">
                         <span >金币金额</span>
@@ -64,12 +64,12 @@
             </div>
         </main>
         <footer>
-            <div class="hengfu" @click="kaitong">成为好象会员，享受会员特权。立即开通></div>
+            <div class="hengfu" @click="kaitong" v-show="s">成为好象会员，享受会员特权。立即开通></div>
             <div class="box">
                 <div class="lbox">
                     <span class="ltitle">实付金币: <span class="ltitle2">{{goldnum}}</span></span>
                 </div>
-                <button class="payfor">确认支付</button>
+                <button class="payfor" @click="payfor">确认支付</button>
             </div>
         </footer>
     </div>
@@ -77,6 +77,7 @@
 
 <script>
     import { mapState } from 'vuex'
+    import qs from 'qs'
     export default {
         name: "goldorder",
         data(){
@@ -86,37 +87,139 @@
                 num:1,
                 showchoose:false,
                 fanshi:"送货上门",
-
+                is_yellow_card:"",
+                price:"",
+                freight:3,
+                address:"",
+                goods_list:[],
+                school:[],
+                goods_type:"",
+                delivery_model:1,
+                showbox:false,
+                university_id:'',
+                order_type:'',
+                order_id:[],
+                money1:0,
+                address_id:'',
+                moneymore:0.00,
+                is_cart:0,
+                user_id:"",
+                goods_id:"",
+                token:"",
+                model_id:"",
+                user_info:"",
+                is_yellow_card:"",
+                s:false,
+                price:""
             }
         },
         computed: {
             ...mapState({
-                user_id: state => state.user_id,
+
             }),
             moneynum(){
-                return this.num*this.goldgood.market_price
+                return this.num*this.price;
             },
             goldnum(){
                 return this.num*this.goldgood.exchange_gold_coin
             }
 
         },
+        created:function(){
+            this.user_id=this.$route.query.user_id;
+            this.goods_id=this.$route.query.goods_id;
+            this.token=this.$route.query.token;
+            this.model_id=this.$route.query.model_id;
+            this.university_id=this.$route.query.university_id;
+            //小程序跳转过来获取收获地址
+            if(this.$route.query.address){
+                this.address = this.$route.query.address
+            }else {
+                // 查询默认地址
+                this.defaultaddress()
+            }
+        },
         mounted:function(){
             this.num=this.$route.query.num;
             console.log(this.num)
             this.goldgood=JSON.parse(localStorage.shop);
+            this.price=this.goldgood.market_price;
+            console.log(this.price)
             this.types=this.goldgood.types;
             if(this.types=='1'){
                 this.types="门店自营"
+                this.model_id=0;
             }else if(this.types=="2"){
                 this.types="总仓包邮"
             }
+            this.$axios.get('/university_address',{params:{university_id:this.university_id}}).then(res=>{
+                // console.log(res)
+                this.school=res.data.data;
+                console.log(this.school)
+            })
+            this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
+                this.user_info=res.data.data.user_info;
+                this.is_yellow_card=this.user_info.is_yellow_card;
+                if(this.is_yellow_card=='0'){
+                        this.s=true;
+                }else if(this.is_yellow_card=='1'){
+                    this.s=false;
+
+                }
+                console.log(res.data.data.user_info)
+            })
 
             console.log(this.goldgood)
         },
         methods:{
+            // 查询用户默认收货地址
+            defaultaddress(){
+                this.$axios.get('/user/addresses?user_id='+this.user_id).then((res)=>{
+                    if(res.data.err_code == 0){
+                        if(res.data.data.length<=0){
+                            this.address = "请添加收货方式";
+                        }else {
+                            res.data.data.forEach((val,index)=>{
+                                if(val.is_default == 1){
+                                    // 有默认收货地址
+                                    let str = val.university_address+val.address
+                                    this.address = str
+                                    this.address_id=val.address_id
+                                    return false
+                                }else {
+                                    // 没有默认值返回第一个收货地址
+                                    let str =   res.data.data[0].university_address+res.data.data[0].address
+                                    this.address = str;
+                                    this.address_id=val.address_id
+                                    return false
+                                }
+                            });
+
+                        }
+
+                    }
+                })
+            },
             adr:function () {
-                jsObj.gps();
+                if(this.device){
+                    wx.miniProgram.navigateTo({url: '/pages/address/main?address=1'})
+                    this.address=this.route.query.address;
+                }else{
+                    jsObj.GotoAddress();
+                }
+            },
+            daohang(){
+
+                if(this.device){
+                    wx.openLocation({
+                        latitude: this.school.latitude,
+                        longitude: this.school.longitude,
+                        scale: 28,
+                        name:this.school.addresss
+                    });
+                }else{
+                    jsObj.GotoPoi(this.school.addresss,this.school.latitude,this.school.longitude)
+                }
             },
             gochoose:function () {
                 this.showchoose=!this.showchoose;
@@ -124,16 +227,42 @@
             },
             ziti:function () {
                 let ti=document.querySelector(".ziti");
-                this.fanshi="门店自提"
+                this.fanshi="门店自提";
+                this.freight=0;
+                this.delivery_model=2;
                 this.showchoose=!this.showchoose;
             },
             songhuo:function () {
                 let song=document.querySelector(".ziti1");
-                this.fanshi="送货上门"
+                this.fanshi="送货上门";
+                this.freight=3;
+                this.delivery_model=1;
                 this.showchoose=!this.showchoose;
             },
             kaitong:function () {
                 this.$router.push({name:'hxmember'})
+            },
+            payfor(){
+                this.$axios.post('/user/exchange_order',
+                    qs.stringify({
+                        goods_id:this.goods_id,
+                        goods_number:this.num,
+                        user_id:this.user_id,
+                        address_id:this.address_id,
+                        delivery_model:this.delivery_model,
+                        trans_fee:this.freight,
+                        model_id:this.model_id
+
+                    })).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.order_id=res.data.data;
+                        if(this.device){
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.moneymore})
+                        }else{
+                            jsObj.GotoPay(this.order_id,'G',this.moneymore)
+                        }
+                    }}
+              )
             }
 
         }

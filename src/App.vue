@@ -65,6 +65,7 @@ a{
 img{
   width: 100%;
   border: 0;
-  display: inline-block;
+  display: block;
+  margin: 0 auto;
 }
 </style>

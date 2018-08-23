@@ -11,7 +11,7 @@
         <!--</header>-->
         <main>
             <ul class="yx">
-                <router-link :to="{name:'goldgood',query:{goods_id:item.goods_id,token:header}}" v-for="item in list" :key="item.goods_id">
+                <router-link :to="{name:'goldgood',query:{goods_id:item.goods_id,token:header,user_id:user_id,university_id:university_id}}" v-for="item in list" :key="item.goods_id">
                 <li class="yx-item">
                     <div class="box">
                         <img :src="item.goods_img" class="goodstu">
@@ -40,7 +40,8 @@
         computed: {
             ...mapState({
                 user_id: state => state.user_id,
-                token:state=>state.token
+                token:state=>state.token,
+                university_id:state=>state.university_id
             }),
 
         },
@@ -91,11 +92,12 @@
         width: 3.745rem;
         height: 4.30rem;
         float:left;
+        border-bottom: 0.02rem solid #e5e5e5;
     }
     .box{
         width: 100%;
         height: 3.07rem;
-        border-bottom:0.01rem solid #e5e5e5;
+
         position: relative;
     }
     .box img{
@@ -114,6 +116,7 @@
         height: 1.22rem;
         background: #fff;
         padding-left: 0.21rem;
+        border-bottom:0.02rem solid #e5e5e5;
     }
     .yx-gname{
         font-size: 0.22rem;

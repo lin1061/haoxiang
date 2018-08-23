@@ -12,52 +12,92 @@
                     <img src="../assets/images/定位.png" alt="">
                 </div>
                 <div class="adr">
-                    <span class="name">四川省成都市武侯区四川大学望江校区</span>
+                    <span class="name">{{address}}</span>
                     <img src="../assets/images/箭头.png" class="go" @click="adr">
-                    <span class="name name1">自提地址:四川省成都市武侯区四川大学望江校区</span>
+                    <span class="name name1">自提地址:{{school.address}}</span>
                     <img src="../assets/images/导航.png" class="go go1">
                 </div>
             </div>
             <div class="ginfo clearfix">
-                <div class="goods">
-                    <div class="gtop">
-                        <span class="gname">{{types}}</span>
-                    </div>
-                    <div class="order-mitem">
-                        <div class="order-tu">
-                            <img :src="goodorder.goods_img" alt="">
+                <div v-show="types=='门店自营'">
+                    <div class="goods">
+                        <div class="gtop">
+                            <span class="gname">{{types}}</span>
                         </div>
-                        <span class="order-title1">{{goodorder.name}}</span>
-                        <span class="order-weight"></span>
-                        <span class="order-price">￥{{price}}</span>
-                        <span class="order-num">x{{num}}</span>
+                        <div class="order-mitem">
+                            <div class="order-tu">
+                                <img :src="goodorder.goods_img" alt="">
+                            </div>
+                            <span class="order-title1">{{goodorder.name}}</span>
+                            <span class="order-weight"></span>
+                            <span class="order-price">￥{{price}}</span>
+                            <span class="order-num">x{{num}}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="pay">
-                    <div class="order-box1 pay-title1">
-                        <span>支付方式</span>
-                        <span class="pay-title">{{pay}}</span>
-                        <!--<img src="../assets/images/箭头2.png" class="goto">-->
-                    </div>
-                    <div class="order-box1 pay-title1">
-                        <span >配送</span>
-                        <span class="pay-title">{{fanshi}}</span>
-                        <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
-                    </div>
-                    <div class="order-box1 pay-title1 order-box2">
-                        <span >其他</span>
-                        <img src="../assets/images/箭头2.png" class="goto" @click="qita">
-                    </div>
-                    <div class="order-box1 pay-title1 ">
-                        <span >商品总额</span>
-                        <span class="pay-title money">￥{{moneynum}}</span>
-                    </div>
-                    <div class="order-box1 pay-title1">
-                        <span >运费</span>
-                        <span class="pay-title money">￥{{freight}}</span>
-                    </div>
+                    <div class="pay">
+                        <div class="order-box1 pay-title1">
+                            <span>支付方式</span>
+                            <span class="pay-title">{{pay}}</span>
+                            <!--<img src="../assets/images/箭头2.png" class="goto">-->
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >配送</span>
+                            <span class="pay-title">{{fanshi}}</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                        </div>
+                        <div class="order-box1 pay-title1 ">
+                            <span >商品总额</span>
+                            <span class="pay-title money">￥{{moneynum}}</span>
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >运费</span>
+                            <span class="pay-title money">￥{{freight}}</span>
+                        </div>
 
+                    </div>
                 </div>
+                <div v-show="types=='总仓包邮'">
+                    <div class="goods">
+                        <div class="gtop">
+                            <span class="gname">{{types}}</span>
+                        </div>
+                        <div class="order-mitem">
+                            <div class="order-tu">
+                                <img :src="goodorder.goods_img" alt="">
+                            </div>
+                            <span class="order-title1">{{goodorder.name}}</span>
+                            <span class="order-weight"></span>
+                            <span class="order-price">￥{{price}}</span>
+                            <span class="order-num">x{{num}}</span>
+                        </div>
+                    </div>
+                    <div class="pay">
+                        <div class="order-box1 pay-title1">
+                            <span>支付方式</span>
+                            <span class="pay-title">{{pay}}</span>
+                            <!--<img src="../assets/images/箭头2.png" class="goto">-->
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >配送</span>
+                            <span class="pay-title">{{fanshi}}</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                        </div>
+                        <div class="order-box1 pay-title1 order-box2">
+                            <span >其他</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="qita">
+                        </div>
+                        <div class="order-box1 pay-title1 ">
+                            <span >商品总额</span>
+                            <span class="pay-title money">￥{{moneynum}}</span>
+                        </div>
+                        <div class="order-box1 pay-title1">
+                            <span >运费</span>
+                            <span class="pay-title money">￥{{freight}}</span>
+                        </div>
+
+                    </div>
+                </div>
+
 
             </div>
             <div class="choose" v-show="showchoose">
@@ -69,7 +109,7 @@
             </div>
         </main>
         <footer>
-            <div class="hengfu"@click="gomember">成为好象会员，本单可减<span class="yuan">20</span>元。立即开通></div>
+            <div class="hengfu"@click="gomember" v-show="s">成为好象会员，本单可减<span class="yuan">20</span>元。立即开通></div>
             <div class="box">
                 <div class="lbox">
                     <span class="ltitle">实付金额: <span class="ltitle2">{{totalmoney}}</span></span>
@@ -82,13 +122,14 @@
 
 <script>
     import { mapState } from 'vuex'
+    import qs from 'qs'
     export default {
         name: "confirmorder",
         data(){
             return{
                 goodorder:[],
                 showchoose:false,
-                fanshi:"",
+                fanshi:"送货上门",
                 num:1,
                 types:"",
                 pay:"在线支付",
@@ -96,7 +137,23 @@
                 is_yellow_card:"",
                 price:"",
                 moneynum:"",
-                freight:3
+                freight:3,
+                address:"",
+                goods_list:[],
+                school:[],
+                goods_type:"",
+                delivery_model:"",
+                showbox:false,
+                university_id:'',
+                order_type:'',
+                order_id:[],
+                money1:0,
+                spec_id:"",
+                address_id:'',
+                moneymore:0.00,
+                is_cart:0,
+                s:false,
+
 
             }
         },
@@ -106,16 +163,31 @@
                 device:state =>state.device
             }),
             totalmoney(){
-                return this.moneynum+this.freight;
+                return this.moneymore=this.moneynum+this.freight;
             }
 
+        },
+        created:function(){
+            this.university_id=this.$route.query.university_id;
+            this.spec_id=this.$route.query.spec_id;
+            //小程序跳转过来获取收获地址
+            if(this.$route.query.address){
+                this.address = this.$route.query.address
+            }else {
+                // 查询默认地址
+                this.defaultaddress()
+            }
         },
         mounted:function(){
             this.num=this.$route.query.num;
             console.log(this.num)
             this.goodorder=JSON.parse(localStorage.good);
             this.types=this.goodorder.types;
-
+            this.$axios.get('/university_address',{params:{university_id:this.university_id}}).then(res=>{
+                // console.log(res)
+                this.school=res.data.data;
+                console.log(this.school)
+            })
             if(this.types=='1'){
                 this.types="门店自营"
 
@@ -128,17 +200,69 @@
                 if(this.is_yellow_card=='0'){
                     this.price=this.goodorder.market_price;
                     this.moneynum=this.num*this.price
+
                 }else if(this.is_yellow_card=='1'){
                     this.price=this.goodorder.member_price;
-                    this.moneynum=this.num*this.price
+                    this.moneynum=this.num*this.price;
+                    this.s=true;
                 }
                 console.log(res.data.data.user_info)
             })
         },
         methods:{
-            adr:function () {
-                jsObj.gps();
+            // 查询用户默认收货地址
+            defaultaddress(){
+                this.$axios.get('/user/addresses?user_id='+this.user_id).then((res)=>{
+                    if(res.data.err_code == 0){
+                        if(res.data.data.length<=0){
+                            this.address = "请添加收货方式";
+                        }else {
+                            res.data.data.forEach((val,index)=>{
+                                if(val.is_default == 1){
+                                    // 有默认收货地址
+                                    let str = val.university_address+val.address
+                                    this.address = str
+                                    this.address_id=val.address_id
+                                    return false
+                                }else {
+                                    // 没有默认值返回第一个收货地址
+                                    let str =   res.data.data[0].university_address+res.data.data[0].address
+                                    this.address = str;
+                                    this.address_id=val.address_id
+                                    return false
+                                }
+                            });
+
+                        }
+
+                    }
+                })
             },
+            adr:function () {
+                if(this.device){
+                    wx.miniProgram.navigateTo({url: '/pages/address/main?address=1'})
+                    this.address=this.route.query.address;
+                }else{
+                    jsObj.GotoAddress();
+                }
+
+
+
+            },
+            daohang(){
+
+                if(this.device){
+                    wx.openLocation({
+                        latitude: this.school.latitude,
+                        longitude: this.school.longitude,
+                        scale: 28,
+                        name:this.school.addresss
+                    });
+                }else{
+                    jsObj.GotoPoi(this.school.addresss,this.school.latitude,this.school.longitude)
+                }
+            },
+
             gomember(){
                 this.$router.push({name:'hxmember'})
             },
@@ -162,10 +286,66 @@
                 this.$router.push({name:'addbills'})
             },
             payfor(){
-                if(this.device='weixin'){
-                    wx.miniProgram.navigateTo({url: '/pages/call/main'})
+                let _data = this.goodorder;
+                let _goods_type2 = {goods_type:0,goods_info:[],delivery_model:0,trans_fee:0,invoice_id:0};
+                let _goods_type1 = {goods_type:0,goods_info:[],delivery_model:0,trans_fee:0,invoice_id:1};
+                let _goods_info = {};
+                let  _goods_list = [];
+                if(_data.types=="2"){
+                    _goods_type2.goods_type = 2;
+                    // if(this.fanshi="")
+                        _goods_info.id = _data.id;
+                        _goods_info.number = this.num;
+                        _goods_info.model_id = this.spec_id;
+
+                    _goods_type2.goods_info.push(_goods_info);
+                    if(this.fanshi=='送货上门'){
+                        _goods_type2.delivery_model = 1;
+                        _goods_type2.trans_fee = 3;
+                    }else{
+                        _goods_type2.delivery_model = 2;
+                        _goods_type2.trans_fee = 0;
+                    }
+                    _goods_list.push(_goods_type2);
                 }
-                this.axois.post().then()
+                if(_data.types=="1"){
+                    _goods_info = {};
+                    _goods_type1.goods_type = 1;
+
+                        _goods_info.id = _data.id;
+                        _goods_info.number = this.num;
+                        _goods_info.model_id = 0;
+
+                    _goods_type1.goods_info.push(_goods_info);
+                    if(this.fanshi=='送货上门'){
+                        _goods_type2.delivery_model = 1;
+                        _goods_type2.trans_fee = 3;
+                    }else{
+                        _goods_type2.delivery_model = 2;
+                        _goods_type2.trans_fee = 0;
+                    }
+                    _goods_list.push(_goods_type1);
+                }
+                console.log(_goods_list);
+                this.$axios.post("/user/order_create",
+                    qs.stringify({
+                        goods_list:_goods_list,
+                        address_id:this.address_id,
+                        university_id:this.university_id,
+                        is_cart:this.is_cart,
+
+                    })).then(res=>{
+                    console.log(res)
+                    if(res.data.err_code==0){
+                        this.order_id=res.data.data;
+                        if(this.device){
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'&pay='+this.moneymore})
+                        }else{
+                            jsObj.GotoPay(this.order_id,'G',this.moneymore)
+                        }
+
+                    }
+                })
             }
 
         }

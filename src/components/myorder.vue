@@ -7,25 +7,25 @@
         <!--</header>-->
         <!--内容-->
         <div class="nav clearfix">
-            <router-link :to="{path:'/myorder/1',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+            <router-link :to="{path:'/myorder/1',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
                 <span>全部</span>
                 <img src="../assets/images/d@2x.png" alt="" class="xian">
                 <div class="lan" v-show="order_status == ''"></div>
                 <div class="lan lan1"></div>
             </router-link>
-            <router-link :to="{path:'/myorder/10',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+            <router-link :to="{path:'/myorder/10',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
                 <span>待支付</span>
                 <img src="../assets/images/d@2x.png" alt="" class="xian">
                 <div class="lan" v-show="order_status == 10"></div>
                 <div class="lan lan1"></div>
             </router-link>
-            <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+            <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
                 <span>待收货</span>
                 <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
                 <div class="lan" v-show="order_status == 20"></div>
                 <div class="lan lan1"></div>
             </router-link>
-            <router-link :to="{path:'/myorder/60',query:{'user_id':user_id,'token':token}}" class="nav-item"  @click.native="flushCom">
+            <router-link :to="{path:'/myorder/60',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
                 <span>已完成</span>
                 <div class="lan" v-show="order_status == 60"></div>
                 <div class="lan lan1"></div>
@@ -83,7 +83,7 @@
                     </div>
                     <div class="order-active">
                         <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">
-                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10">
+                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10" @click.prevent="waitpaygoods(item.id)">
                         <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
                         <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
                     </div>
@@ -114,6 +114,7 @@
             ...mapState({
                 user_id: state => state.user_id,
                 token: state => state.token,
+                university_id:state=>state.university_id
             }),
 
         },
@@ -139,7 +140,7 @@
             getorderInfo(){
                 // order_status为空默认查询所有订单 10待支付,20待发货,40部分发货,50已发货,60已完成,70取消
                 let status = this.order_status || "";
-                this.$axios.get('/user/order',{params:{user_id:this.user_id,status:status}}).then(res=>{
+                this.$axios.get('/user/order',{params:{user_id:this.user_id,university_id:this.university_id,status:status}}).then(res=>{
                     let info =res.data.data;
                     console.log(info)
                     let store = info.store || []//门店自营
@@ -168,7 +169,7 @@
                         }
                         return v;
                     })
-                    this.list.store = warehouse.map((v)=>{
+                    this.list.warehouse = warehouse.map((v)=>{
                         if(v.order_status == '10'){
                             v.status = '待支付'
                         }
@@ -213,13 +214,24 @@
                     }
                 })
             },
+            //待付款
+            waitpaygoods(id){
+                // id 订单id
+                this.$axios.get('/user/change_order_status',{params:{order_id:id,status:10}}).then(res=>{
+                    let info =res.data;
+                    if(info.err_code == 0){
+                        this.getorderInfo();
+                    }
+                })
+            },
+
             flushCom:function(){
                 this.$router.go(0);
             },
             // 再次购买入购物车
             addgoods(id){
                 // 商品id
-                this.$axios.get('/user/shop_card',{params:{user_id:this.user_id,num:1,goods_id:id}}).then(res=>{
+                this.$axios.get('/user/shop_card',{params:{user_id:this.user_id,num:1,university_id:this.university_id,goods_id:id}}).then(res=>{
                     let info =res.data;
                     if(info.err_code == 0){
                         //成功加入购物车

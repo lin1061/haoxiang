@@ -3,6 +3,7 @@
   .wh_item_date:hover {
     background: #f9444d;
     cursor: pointer;
+    color:#fff;
   }
 }
 * {
@@ -126,6 +127,7 @@ wh_content_item_tag {
 .wh_content_item .wh_isToday {
   background: #f9444d;
   border-radius: 100px;
+  color:#fff;
 }
 .wh_content_item .wh_chose_day {
   background: #e0e0e0;

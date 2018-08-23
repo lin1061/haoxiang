@@ -41,12 +41,12 @@
                         <button class="style1" v-for="(item,index) in goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
 
                     </div>
-                    <div class="close" @click="close">X</div>
+                    <div class="close" @click="close"></div>
                     <span class="num">数量:</span>
                     <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
                     <span class="numadd">{{num}}</span>
                     <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
-                    <div class="ok">立即预约</div>
+                    <div class="ok" @click="payfor">立即预约</div>
                 </div>
             </div>
 
@@ -62,25 +62,36 @@
         data(){
             return{
                 showbox:false,
-                num:0,
+                num:1,
                 goods:[],
                 goodsname:"",
                 schoolname:"",
                 original_price:"",
                 membership_price:"",
                 name:"",
+                s:false,
+                choose:"",
+                goods_id:"",
+                sx:false,
+                spec_id:"",
+
 
             }
         },
         computed: {
             ...mapState({
+                user_id:state=>state.user_id,
+                token:state=>state.token,
+                device:state =>state.device,
                 university_id:state=>state.university_id
             }),
 
         },
         mounted:function () {
-            this.$axios.get('/goods/school_shop?goods_type=2',{params:{university_id:this.university_id}}).then(res=>{
+            this.$axios.get('/goods/school_shop?goods_type=2',{params:{university_id:this.university_id,user_id:this.user_id,token:this.token}}).then(res=>{
                 this.goods=res.data.data;
+                console.log(this.goods)
+                this.goods_id=this.goods.id;
                 this.schoolname=this.goods.university.name;
                 this.original_price=this.goods.goods_spec[0].original_price;
                 this.membership_price=this.goods.goods_spec[0].membership_price;
@@ -98,6 +109,8 @@
                 this.goodsname=item.name;
                 this.original_price=item.original_price;
                 this.membership_price=item.membership_price;
+                this.choose=item.name;
+                this.spec_id=item.spec_id;
             },
             add(){
                 this.num++;
@@ -107,8 +120,17 @@
             },
             reduce(){
                 this.num--;
-                if(this.num<=0){
-                    this.num=0;
+                if(this.num<=1){
+                    this.num=1;
+                }
+            },
+            payfor(){
+                this.name=this.goods.name+this.goodsname;
+                if(this.choose==""){
+                    this.sx=true;
+                }else{
+                    localStorage.schoolgood=JSON.stringify(this.goods);
+                    this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
                 }
             }
         },

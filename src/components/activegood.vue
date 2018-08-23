@@ -23,7 +23,7 @@
                 </div>
                 <div class="price">
                     <span class="oldprice oldprice1">原价：￥{{active.original_price}}</span>
-                    <img src="../assets/images/hy@2x.png"class="anniu" >
+                    <img src="../assets/images/hy@2x.png"class="anniu" @click="willmember">
                 </div>
                 <div class="price price1">
                     <span class="oldprice oldprice1">已选：</span>
@@ -43,10 +43,12 @@
 
                 </div>
             </section>
+            <toast v-model="s"  type="text" :time="800" is-show-mask text="您还不是会员" position="bottom"></toast >
         </main>
 
         <!--底部-->
         <footer>
+
             <div class="footbox clearfix">
                 <button class="lijishop" @click="goodshow">立即参加</button>
             </div>
@@ -74,7 +76,7 @@
                         </div>
                     </div>
 
-                    <div class="ok" clearfix>选好了</div>
+                    <div class="ok" clearfix @click="join">选好了</div>
                 </div>
             </div>
 
@@ -85,6 +87,7 @@
 <script>
     import { mapState } from 'vuex'
     import { Swiper,SwiperItem} from 'vux'
+    import { Toast } from 'vux'
     export default {
         name: "activegood",
         data () {
@@ -98,7 +101,8 @@
                 style_price:"",
                 style_stock:"",
                 choose1:"",
-                choose:[]
+                choose:[],
+                s:false
             }
         },
         computed: {
@@ -115,6 +119,7 @@
             this.$axios.get('/find/activity_detail',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
                 console.log(res.data.data);
                 this.active=res.data.data;
+                this.style_img=this.active.img_path;
 
             })
         },
@@ -137,19 +142,37 @@
                     this.goodsnum=1;
                 }
             },
+            willmember(){
+              this.$router.push({name:'hxmember'})
+            },
             check(item){
                 console.log(item)
                 this.choose1=item.goods_spec_name;
                 this.style_img=item.goods_spec_img_path;
                 this.style_stock=item.goods_spec_stock;
                 this.style_price=item.goods_spec_price;
+            },
+            join(){
+                this.$axios.get('/user/get_info/',{params:{user_id:this.user_id}}).then(res=>{
+                    this.user_info=res.data.data.user_info;
+
+                    this.is_yellow_card=this.user_info.is_yellow_card;
+
+                    if(this.is_yellow_card=='0'){
+                        this.s=true
+                    }else if(this.is_yellow_card=='1'){
+                        this.$router.push({name:''})
+                    }
+                    console.log(res.data.data.user_info)
+                })
             }
 
 
         },
         components: {
             Swiper,
-            SwiperItem
+            SwiperItem,
+            Toast
         }
     }
 </script>
@@ -436,17 +459,13 @@
         left:2.95rem;
     }
     .close{
-        width: 0.39rem;
-        height: 0.39rem;
+        width: 0.40rem;
+        height: 0.40rem;
         position: absolute;
         top:0.34rem;
         right:0.40rem;
-        border:0.02rem solid #a2a2a2;
-        border-radius: 50%;
-        text-align: center;
-        font-size:0.18rem;
-        line-height: 0.39rem;
-        color:#a2a2a2;
+        background-size: 0.39rem 0.39rem;
+        background: url("../assets/images/close.png") no-repeat center/cover;
     }
     .style{
         font-size:0.28rem;

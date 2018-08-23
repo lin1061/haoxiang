@@ -61,18 +61,19 @@
 
             </ul>
         </main>
-        <toast v-model="s"  type="text" :time="800" is-show-mask text="收藏成功" position="top"></toast >
-        <toast v-model="sh"  type="text" :time="800" is-show-mask text="添加成功" position="top"></toast >
-        <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选择属性" position="bottom"></toast >
+        <toast v-model="s"  type="text" :time="800" is-show-mask text="收藏成功" position="bottom"></toast >
+        <toast v-model="sq"  type="text" :time="800" is-show-mask text="取消收藏" position="bottom"></toast >
+        <toast v-model="sh"  type="text" :time="800" is-show-mask text="添加成功" position="bottom"></toast >
+        <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
         <!--底部-->
-        <footer>t
+        <footer>
             <div class="footbox clearfix">
                 <div class="ser" @click="kefu">
                     <img src="../assets/images/ej@2x.png" class="server">
                     <span class="kefu">客服</span>
                 </div>
-                <div class="ser like" @click="like">
-                    <div  class="server liketu" :class="{'check':goodid.indexOf(goods.goods_id)>=0}" @click="onegoods(goods.goods_id)"></div>
+                <div class="ser like" >
+                    <div  class="server liketu" :class="{'check':goodid.indexOf(goods.id)>=0}"  @click="like(goods.id)"></div>
                     <span class="kefu">收藏</span>
                 </div>
                 <button class="lijishop" @click="goodshow">加入购物车</button>
@@ -163,7 +164,8 @@
                 s:false,
                 sh:false,
                 sx:false,
-                goodid:[]
+                goodid:[],
+                sq:false
 
             }
         },
@@ -185,27 +187,29 @@
         },
         mounted:function(){
 
-            this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id,user_id:this.user_id,token:this.token}}).then(res=>{
-                console.log(res.data.data);
-                this.goods=res.data.data;
-                this.types=this.goods.types;
-                this.style_img=this.goods.goods_img;
-                if(this.types=='1'){
-                    this.types="门店自营"
-                }else if(this.types=='2'){
-                    this.types="总仓包邮"
-                }
-                // console.log(this.goods)
-                console.log(this.goods.spec_reg.length)
-                this.save_price=this.goods.market_price-this.goods.member_price;
-                for (var i=0;i<this.goods.spec_reg.length;i++){
-
-                    if(this.names=this.goods.spec_reg[i]){
-                        this.style_img=this.goods.spec_reg[i].spec_img_path
-                        this.style_stock=this.goods.spec_reg[i].stock
+                this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id,user_id:this.user_id,token:this.token}}).then(res=>{
+                    console.log(res.data.data);
+                    this.goods=res.data.data;
+                    this.types=this.goods.types;
+                    this.style_img=this.goods.goods_img;
+                    if(this.types=='1'){
+                        this.types="门店自营"
+                    }else if(this.types=='2'){
+                        this.types="总仓包邮"
                     }
-                }
-            })
+                    console.log(this.goods)
+                    // console.log(this.goods.spec_reg.length)
+                    this.save_price=this.goods.market_price-this.goods.member_price;
+                    for (var i=0;i<this.goods.spec_reg.length;i++){
+
+                        if(this.names=this.goods.spec_reg[i]){
+                            this.style_img=this.goods.spec_reg[i].spec_img_path
+                            this.style_stock=this.goods.spec_reg[i].stock
+                        }
+                    }
+                })
+
+
         },
 
         components: {
@@ -219,12 +223,7 @@
 
             },
             onegoods(id){
-                let idIndex = this.goodid.indexOf(id)
-                if (idIndex >= 0) {//如果已经包含就去除
-                    this.goodid.splice(idIndex, 1)
-                } else {//如果没有包含就添加
-                    this.this.goodid.push(id)
-                }
+
             },
             goodshow1(){
                 this.showbox1=!this.showbox1;
@@ -242,7 +241,7 @@
                     this.goodsnum=1;
                 }
             },
-            like(){
+            like(id){
                 this.$axios.post('/user/collection_store',
                     qs.stringify({
                         user_id:this.user_id,
@@ -254,8 +253,17 @@
                     if(res.data.err_code == 0){
                         //成功加入购物车
                         this.s = true;
+
                     }
-                    console.log(res)
+                    let idIndex = this.goodid.indexOf(id)
+                    if (idIndex >= 0) {//如果已经包含就去除
+                        this.goodid.splice(idIndex, 1)
+                        this.sq=true;
+                    } else {//如果没有包含就添加
+                        this.goodid.push(id)
+                    }
+                    console.log(this.goodid)
+                    // console.log(res)
                 })
             },
             flushCom:function(){
@@ -293,6 +301,7 @@
                         this.style_img=this.goods.spec_reg[i].spec_img_path
                         this.style_stock=this.goods.spec_reg[i].stock
                         this.spec_id=this.goods.spec_reg[i].spec_id
+                        console.log(this.spec_id)
                     }
 
                 }
@@ -324,7 +333,8 @@
                                 goods_id:this.goods_id,
                                 num:this.goodsnum,
                                 user_id:this.user_id,
-                                spec_id:this.spec_id
+                                spec_id:this.spec_id,
+                                university_id:this.university_id
                             })).then(res=>{
                             if(res.data.err_code == 0){
                                 //成功加入购物车
@@ -342,18 +352,23 @@
 
             },
             gocart1(){
-                if(this.types=="门店自营"){
-                    localStorage.good=JSON.stringify(this.goods);
-                    this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id}})
-                }else if(this.types=="总仓包邮"){
-                    if(this.choose==""){
-                        this.sx = true;
-                    }else{
-
+                if(this.user_id==""){
+                    jsObj.GotoLogin()
+                }else{
+                    if(this.types=="门店自营"){
                         localStorage.good=JSON.stringify(this.goods);
-                        this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id}})
+                        this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id,spec_id:this.spec_id}})
+                    }else if(this.types=="总仓包邮"){
+                        if(this.choose==""){
+                            this.sx = true;
+                        }else{
+
+                            localStorage.good=JSON.stringify(this.goods);
+                            this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id,spec_id:this.spec_id}})
+                        }
                     }
                 }
+
 
 
 
@@ -704,6 +719,7 @@ function array_search(arr,val,type) {
     .like{
         width: 0.48rem;
         margin-left: 0.88rem;
+
     }
     .liketu{
         width: 0.48rem;
@@ -715,6 +731,7 @@ function array_search(arr,val,type) {
 
         background: url("../assets/images/Favourite_2@2x.png") no-repeat ;
         background-size: 0.48rem 0.38rem;
+
     }
     .lijishop{
         width: 2.14rem;
@@ -859,5 +876,9 @@ function array_search(arr,val,type) {
         position: fixed;
         top:0;
         left:0;
+    }
+    .weui-toast{
+        background: rgba(17, 17, 17, 0.4)!important;
+        buttom: ;
     }
 </style>

@@ -8,14 +8,14 @@
         <!--内容-->
         <main>
             <!--会员卡-->
-            <router-link :to="{name:'membershow',query:{cartid:item.id}}" class="card clearfix" v-for="item in list" :key="item.id">
+            <router-link :to="{name:'membershow',query:{cartid:item.id,user_id:user_id,university_id:university_id,money:item.price,token:token}}" class="card clearfix" v-for="item in list" :key="item.id">
                 <div class="card-rtop clearfix">
                     {{item.days}}天
                 </div>
                 <span class="card-title" v-html="item.desc"></span>
                 <!--<span class="card-title card-title1">9天最高可买1000元</span>-->
                 <span class="card-title3">好象有货{{item.name}}</span>
-                <button class="anniu">￥{{item.price}}</button>
+                <button class="anniu">￥{{item.money}}</button>
             </router-link>
         </main>
     </div>
@@ -27,19 +27,28 @@
         name: "hxmember",
         data(){
             return{
-                list:[]
+                list:[],
+                money:0
+
             }
         },
         computed: {
             ...mapState({
                 user_id: state => state.user_id,
+                university_id:state=>state.university_id,
+                token:state=>state.token,
+                device:state=>state.device,
+                longitude: state => state.longitude,
+                latitude:state=>state.latitude
+
             }),
 
         },
         mounted:function () {
-            this.$axios.get('/cards').then(res=>{
+            this.$axios.get('/cards',{params:{user_id:this.user_id,university_id:this.university_id,token:this.token,device:this.device,longitude:this.longitude,latitude:this.latitude}}).then(res=>{
                 this.list=res.data.data;
                 console.log(res.data.data)
+
             })
         }
     }
