@@ -7,8 +7,8 @@
         <!--</header>-->
         <!--内容-->
         <main>
-            <!--会员卡-->
-            <router-link :to="{name:'membershow',query:{cartid:item.id,user_id:user_id,university_id:university_id,money:item.price,token:token}}" class="card clearfix" v-for="item in list" :key="item.id">
+            <!--非会员-->
+            <router-link :to="{name:'membershow',query:{cartid:item.id,user_id:user_id,university_id:university_id,money:item.money,token:token,days:item.days,desc:item.desc,tit:item.name,tel:tel,istype:istype,maxmoney:item.price}}" class="card clearfix" v-for="item in list" :key="item.id" v-if="ishx == 0">
                 <div class="card-rtop clearfix">
                     {{item.days}}天
                 </div>
@@ -17,6 +17,18 @@
                 <span class="card-title3">好象有货{{item.name}}</span>
                 <button class="anniu">￥{{item.money}}</button>
             </router-link>
+            <!-- 会员 -->
+            <section class="card clearfix"  v-if="ishx == 1">
+                <div class="card-rtop clearfix" v-if="member.status == 1">{{member.rest_days}}天</div>
+                <div class="card-rtop clearfix" v-if="member.status == 0">已过期</div>
+                <span class="card-title">{{member.series_number }}</span>
+                <div class="tiaoma" v-html="member.bar_pic"></div>
+                <span class="card-title3">好象有货{{member.card_type}}</span>
+               <router-link :to="{name:'hxmember',query:{user_id:user_id,token:token}}">
+                   <button class="anniu" @click="renewals">立即续费</button>
+               </router-link>
+
+            </section>
         </main>
     </div>
 </template>
@@ -28,8 +40,12 @@
         data(){
             return{
                 list:[],
-                money:0
-
+                money:0,
+                ishx:-1,//-1会员/非会员
+                member:{},
+                tel:"",//会员手机号
+                istype:0,
+                maxmoney:0
             }
         },
         computed: {
@@ -44,12 +60,42 @@
             }),
 
         },
-        mounted:function () {
-            this.$axios.get('/cards',{params:{user_id:this.user_id,university_id:this.university_id,token:this.token,device:this.device,longitude:this.longitude,latitude:this.latitude}}).then(res=>{
-                this.list=res.data.data;
-                console.log(res.data.data)
-
-            })
+        created(){
+            this.getuserinfo();
+            this.nocard();
+            this.yescard();
+        },
+        methods:{
+            // 用户信息判断是否为会员
+            getuserinfo(){
+                this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.ishx = res.data.data.user_info.is_yellow_card //0非会员1会员
+                        this.istype = res.data.data.user_info.is_yellow_card
+                        this.tel = res.data.data.user_info.tel
+                    }
+                })
+            },
+            // 非会员
+            nocard(){
+                this.$axios.get('/cards',{params:{user_id:this.user_id,university_id:this.university_id,token:this.token,device:this.device,longitude:this.longitude,latitude:this.latitude}}).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.list=res.data.data;
+                    }
+                })
+            },
+            // 会员
+            yescard(){
+                this.$axios.get('/user/card',{params:{user_id:this.user_id}}).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.member=res.data.data;
+                    }
+                })
+            },
+            // 立即续费
+            renewals(){
+                this.ishx = 0;
+            }
         }
     }
 </script>
@@ -151,5 +197,8 @@
     }
     .card:nth-child(n+2){
         margin-top: 0;
+    }
+    section .card-title{
+        padding-top: 1.1rem;
     }
 </style>

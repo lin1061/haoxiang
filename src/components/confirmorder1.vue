@@ -12,10 +12,15 @@
                     <img src="../assets/images/定位.png" alt="">
                 </div>
                 <div class="adr">
-                    <span class="name">{{address}}</span>
-                    <img src="../assets/images/箭头.png" class="go" @click="adr">
-                    <span class="name name1">自提地址:{{school.address}}</span>
-                    <img src="../assets/images/导航.png" class="go go1" @click="daohang">
+                    <div @click="adr">
+                        <span class="name">{{address}}</span>
+                        <img src="../assets/images/箭头.png" class="go">
+                    </div>
+                    <div @click="daohang">
+                        <span class="name name1">自提地址:{{school.address}}</span>
+                        <img src="../assets/images/导航.png" class="go go1" >
+                    </div>
+                   
                 </div>
             </div>
             <div class="ginfo clearfix">
@@ -115,7 +120,7 @@
             <div class="hengfu"@click="gomember" v-show="showbox">成为好象会员，本单可减<span class="yuan">20</span>元。立即开通></div>
             <div class="box">
                 <div class="lbox">
-                    <span class="ltitle">实付金额: <span class="ltitle2">{{moneynum}}</span></span>
+                    <span class="ltitle">实付金额: <span class="ltitle2">￥{{moneynum}}</span></span>
                 </div>
                 <button class="payfor" @click="paygo">确认支付</button>
             </div>
@@ -483,7 +488,7 @@
     }
     .top{
         width: 100%;
-        height: 1.62rem;
+        height: 1.8rem;
         background: linear-gradient(to right, #ff1c8b , #f37404);
         overflow: hidden;
     }
@@ -533,7 +538,7 @@
         width: 7.05rem;
         height: auto;
         position: absolute;
-        top:1.30rem;
+        top:1.50rem;
         left:0.23rem;
 
     }
@@ -597,7 +602,7 @@
         height: 1.56rem;
     }
     .order-title1{
-        font-size:0.26rem;
+        font-size:0.28rem;
         color:#555555;
         display: block;
         float:left;

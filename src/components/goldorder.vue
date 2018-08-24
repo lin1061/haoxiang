@@ -50,8 +50,8 @@
                         <span class="pay-title money">￥{{freight}}</span>
                     </div>
                     <div class="order-box1 pay-title1 order-box2">
-                        <span >金币金额</span>
-                        <span class="pay-title money">{{goldnum}}</span>
+                        <span >金币余额</span>
+                        <span class="pay-title money">{{iconyu}}</span>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
             <div class="hengfu" @click="kaitong" v-show="s">成为好象会员，享受会员特权。立即开通></div>
             <div class="box">
                 <div class="lbox">
-                    <span class="ltitle">实付金币: <span class="ltitle2">{{goldnum}}</span></span>
+                    <span class="ltitle">实付金币: <span class="ltitle2">{{freight}}</span></span>
                 </div>
                 <button class="payfor" @click="payfor">确认支付</button>
             </div>
@@ -110,7 +110,9 @@
                 user_info:"",
                 is_yellow_card:"",
                 s:false,
-                price:""
+                price:"",
+                iconyu:"",
+
             }
         },
         computed: {
@@ -120,9 +122,7 @@
             moneynum(){
                 return this.num*this.price;
             },
-            goldnum(){
-                return this.num*this.goldgood.exchange_gold_coin
-            }
+
 
         },
         created:function(){
@@ -131,6 +131,9 @@
             this.token=this.$route.query.token;
             this.model_id=this.$route.query.model_id;
             this.university_id=this.$route.query.university_id;
+            this.iconyu=this.$route.query.iconyu
+            console.log(this.iconyu)
+
             //小程序跳转过来获取收获地址
             if(this.$route.query.address){
                 this.address = this.$route.query.address
@@ -160,6 +163,7 @@
             this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
                 this.user_info=res.data.data.user_info;
                 this.is_yellow_card=this.user_info.is_yellow_card;
+                this.gold_coin=res.data.data.user_info.gold_coin;
                 if(this.is_yellow_card=='0'){
                         this.s=true;
                 }else if(this.is_yellow_card=='1'){
@@ -257,9 +261,9 @@
                     if(res.data.err_code == 0){
                         this.order_id=res.data.data;
                         if(this.device){
-                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.moneymore})
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.freight})
                         }else{
-                            jsObj.GotoPay(this.order_id,'G',this.moneymore)
+                            jsObj.GotoPay(this.order_id,'G',this.freight)
                         }
                     }}
               )

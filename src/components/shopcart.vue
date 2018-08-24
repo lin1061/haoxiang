@@ -159,7 +159,7 @@
 
                     }
                 })
-                return NUM
+                return NUM.toFixed(2)
             },
         },
         created(){
@@ -532,7 +532,7 @@
 					height: 0.4rem;
 					background-position: left center;
 					margin-left: 0.24rem;
-					margin-right: 0.5rem;
+					/*margin-right: 0.5rem;*/
 				}
 			}
 			.footer-num{

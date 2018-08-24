@@ -22,32 +22,34 @@
                 </div>
                 <div class="xiaoqu clearfix">
                     <span class="huiprice">会员价:￥{{goods.membership_price}}/人</span>
-                    <span class="chajia">已省{{goods.earnest_money}}元</span>
+                    <span class="chajia">已省{{savemoney}}元</span>
                     <span class="numb">销量:{{goods.sales_volume}}件</span>
                 </div>
                 <span class="huititle">已选: <span class="schools">{{goodsname}}</span></span>
                 <img src="../assets/images/ddd@2x.png" class="more" @click="yuyue">
             </div>
             <div class="xiangqin clearfix" v-html="goods.describe"></div>
+            <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
+            <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
         </main>
         <footer>
             <button class="yuyue" @click="yuyue">立即预约</button>
-            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
-                <div class="yuyuemore">
-                    <span class="huititle1">会员价:￥{{original_price}}<span class="shijia">市场价:<span class="oldjia">￥{{membership_price}}/人</span></span></span>
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
+            </div>
+            <div class="yuyuemore" v-show="showbox" @touchmove.prevent>
+                <span class="huititle1">会员价:￥{{membership_price}}<span class="shijia">市场价:<span class="oldjia">￥{{original_price}}/人</span></span></span>
 
-                    <span class="style ">类型:</span>
-                    <div class="stylebox clearfix" >
-                        <button class="style1" v-for="(item,index) in goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
+                <span class="style ">类型:</span>
+                <div class="stylebox clearfix" >
+                    <button class="style1" v-for="(item,index) in goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
 
-                    </div>
-                    <div class="close" @click="close"></div>
-                    <span class="num">数量:</span>
-                    <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                    <span class="numadd">{{num}}</span>
-                    <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
-                    <div class="ok" @click="payfor">立即预约</div>
                 </div>
+                <div class="close" @click="close"></div>
+                <span class="num">数量:</span>
+                <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                <span class="numadd">{{num}}</span>
+                <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                <div class="ok" @click="payfor">立即预约</div>
             </div>
 
         </footer>
@@ -57,6 +59,7 @@
 <script>
     import { mapState } from 'vuex'
     import { Swiper,SwiperItem,} from 'vux'
+    import { Toast } from 'vux'
     export default {
         name: "studying",
         data(){
@@ -74,6 +77,7 @@
                 goods_id:"",
                 sx:false,
                 spec_id:"",
+                sy:false,
 
 
             }
@@ -85,6 +89,9 @@
                 device:state =>state.device,
                 university_id:state=>state.university_id
             }),
+            savemoney(){
+                return this.goods.original_price-this.goods.membership_price
+            }
 
         },
         mounted:function () {
@@ -112,6 +119,9 @@
                 this.choose=item.name;
                 this.spec_id=item.spec_id;
             },
+            zhezhao(){
+                this.showbox=false;
+            },
             add(){
                 this.num++;
             },
@@ -125,18 +135,26 @@
                 }
             },
             payfor(){
-                this.name=this.goods.name+this.goodsname;
-                if(this.choose==""){
-                    this.sx=true;
+                let id=this.user_id;
+                if(id==0){
+                    this.sy=true;
+                    jsObj.GotoLogin();
                 }else{
-                    localStorage.schoolgood=JSON.stringify(this.goods);
-                    this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                    this.name=this.goods.name+this.goodsname;
+                    if(this.choose==""){
+                        this.sx=true;
+                    }else{
+                        localStorage.schoolgood=JSON.stringify(this.goods);
+                        this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                    }
                 }
+
             }
         },
         components: {
             Swiper,
             SwiperItem,
+            Toast
         }
     }
 </script>

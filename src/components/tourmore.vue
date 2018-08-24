@@ -30,25 +30,27 @@
 
             </div>
             <div class="xiangqin clearfix" v-html="travel_goods.describe"></div>
+            <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
+            <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
         </main>
         <footer>
             <button class="yuyue" @click="yuyue">立即预约</button>
-            <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
-                <div class="yuyuemore"@click="choosebox">
-                    <span class="huititle1">会员价:￥{{original_price}}<span class="shijia">市场价:<span class="oldjia">￥{{membership_price}}/人</span></span></span>
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent  @click="zhezhao">
+            </div>
+            <div class="yuyuemore"@click="choosebox" v-show="showbox" @touchmove.prevent>
+                <span class="huititle1">会员价:{{membership_price}}￥<span class="shijia">市场价:<span class="oldjia">￥{{original_price}}/人</span></span></span>
 
-                    <span class="style ">类型:</span>
-                    <div class="stylebox clearfix" >
-                        <button class="style1" v-for="(item,index) in travel_goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
+                <span class="style ">类型:</span>
+                <div class="stylebox clearfix" >
+                    <button class="style1" v-for="(item,index) in travel_goods.goods_spec" @click="check(item,index)">{{item.name}}</button>
 
-                    </div>
-                    <div class="close" @click="close"></div>
-                    <span class="num">数量:</span>
-                    <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                    <span class="numadd">{{num}}</span>
-                    <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
-                    <div class="ok" @click="payfor">立即预约</div>
                 </div>
+                <div class="close" @click="close"></div>
+                <span class="num">数量:</span>
+                <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                <span class="numadd">{{num}}</span>
+                <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                <div class="ok" @click="payfor">立即预约</div>
             </div>
 
         </footer>
@@ -60,6 +62,7 @@
     import Calendar from './vue-calendar-component/index';
     // import calendara from '@/components/calendara.vue'
     import { Swiper,SwiperItem,} from 'vux'
+    import { Toast } from 'vux'
 
     export default {
         name: "tourmore",
@@ -74,7 +77,10 @@
                 original_price:0.00,
                 membership_price:0.00,
                 choose:"",
-                spec_id:""
+                spec_id:"",
+                goodsname:"",
+                sx:false,
+                sy:false
 
             }
         },
@@ -92,7 +98,7 @@
 
         },
         mounted:function () {
-            this.$axios.get('/goods/travel_goods_info',{params:{goods_id:this.goods_id}}).then(res=>{
+            this.$axios.get('/goods/travel_goods_info',{params:{goods_id:this.goods_id,user_id:this.user_id,token:this.token,university_id:this.university_id}}).then(res=>{
                 this.travel_goods=res.data.data;
                 console.log(this.travel_goods)
                 this.schoolname=this.travel_goods.university.name;
@@ -109,7 +115,7 @@
                 this.showbox=!this.showbox;
             },
             check(item,index){
-                // this.goodsname=item.name;
+                this.goodsname=item.name;
                 this.original_price=item.original_price;
                 this.membership_price=item.membership_price;
                 this.choose=item.name;
@@ -129,14 +135,20 @@
             },
 
             payfor(){
-                this.name=this.data+this.travel_goods.name
-                console.log(this.name)
-                if(this.choose==""){
-                    this.sx=true;
+                let id=this.user_id;
+                if(id==0){
+                    this.sy=true;
+                    jsObj.GotoLogin();
                 }else{
-                    localStorage.schoolgood=JSON.stringify(this.travel_goods);
-                    this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                    this.name=this.goodsname
+                    if(this.choose==""){
+                        this.sx=true;
+                    }else{
+                        localStorage.schoolgood=JSON.stringify(this.travel_goods);
+                        this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                    }
                 }
+
             },
             zhezhao(){
                 this.showbox=false;
@@ -150,6 +162,7 @@
             Calendar,
             Swiper,
             SwiperItem,
+            Toast
         }
     }
 </script>

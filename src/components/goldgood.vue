@@ -50,32 +50,32 @@
             <div class="footbox clearfix">
                 <button class="lijishop lijishop1" @click="goodshow">立即兑换</button>
             </div>
-            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
-                <div class="goods clearfix">
-                    <div class="ginfo">
-                        <div class="goodsxtu">
-                            <img :src="style_img" alt="">
-                        </div>
-                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
-                        <span class="numbers">库存件{{style_stock}}</span>
-                        <div class="close" @click="close"></div>
-                        <div class="group" v-for="(item,index) in good.spec_group" :key="index">
-                            <span class="style">{{item.spec_name}}:</span>
-                            <div class="stylebox">
-                                <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
-                            </div>
-                        </div>
-                        <div class="choose">
-                            <span class="num">数量:</span>
-                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                            <span class="numadd">{{goodsnum}}</span>
-                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
+            </div>
+            <div class="goods clearfix" v-show="showbox" @touchmove.prevent>
+                <div class="ginfo">
+                    <div class="goodsxtu">
+                        <img :src="style_img" alt="">
+                    </div>
+                    <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
+                    <span class="numbers">库存件{{style_stock}}</span>
+                    <div class="close" @click="close"></div>
+                    <div class="group" v-for="(item,index) in good.spec_group" :key="index">
+                        <span class="style">{{item.spec_name}}:</span>
+                        <div class="stylebox">
+                            <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
                         </div>
                     </div>
-                    <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
-                    <toast v-model="s"  type="text" :time="800" is-show-mask text="金币不足" position="bottom"></toast >
-                    <div class="ok" clearfix @click="goorder">立即兑换</div>
+                    <div class="choose">
+                        <span class="num">数量:</span>
+                        <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                        <span class="numadd">{{goodsnum}}</span>
+                        <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                    </div>
                 </div>
+                <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
+                <toast v-model="s"  type="text" :time="800" is-show-mask text="金币不足" position="bottom"></toast >
+                <div class="ok" clearfix @click="goorder">立即兑换</div>
             </div>
 
         </footer>
@@ -110,8 +110,8 @@
                 model_id:"",
                 gold_coin:"",
                 icon:"",
-                s:false
-
+                s:false,
+                iconyu:""
             }
         },
         components: {
@@ -136,7 +136,11 @@
             this.user_id=this.$route.query.user_id;
             this.gid=this.$route.query.goods_id;
             this.token=this.$route.query.token;
-
+            this.$axios.get('/user/get_info/'+this.user_id).then((res)=>{
+                if(res.data.err_code == 0){
+                    this.gold_coin=res.data.data.user_info.gold_coin;
+                }
+            })
             this.$axios.get('/user/exchange_goods_info',{params:{goods_id:this.gid,token:this.token}}).then(res=>{
                     this.good=res.data.data;
                     this.icon=this.good.exchange_gold_coin;
@@ -150,7 +154,8 @@
                         this.style_stock=this.good.spec_reg[i].stock
                     }
                 }
-            })
+            });
+
         },
         methods:{
             goodshow(){
@@ -172,21 +177,21 @@
             },
             goorder(){
 
-                this.$axios.get('/user/get_info/'+this.user_id).then((res)=>{
-                    if(res.data.err_code == 0){
-                        this.gold_coin=res.data.data.user_info.gold_coin;
-                    }
-                })
+
                 if(this.gold_coin>=this.icon){
                     if(this.type==1){
+                        this.iconyu=this.gold_coin-this.icon;
+
                         localStorage.shop=JSON.stringify(this.good);
-                        this.$router.push({name:'goldorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,goods_id:this.goods_id,university_id:this.university_id,model_id:this.model_id}})
+                        this.$router.push({name:'goldorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,goods_id:this.goods_id,university_id:this.university_id,model_id:this.model_id,iconyu:this.iconyu}})
                     }else if(this.type==2){
                         if(this.choose==""){
                             this.sx=true
                         }else{
+                            this.iconyu=this.gold_coin-this.icon;
+                            console.log(this.iconyu)
                             localStorage.shop=JSON.stringify(this.good);
-                            this.$router.push({name:'goldorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,goods_id:this.goods_id,university_id:this.university_id,model_id:this.model_id}})
+                            this.$router.push({name:'goldorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,goods_id:this.goods_id,university_id:this.university_id,model_id:this.model_id,iconyu:this.iconyu}})
                         }
                     }
                 }else{
@@ -196,8 +201,11 @@
 
 
             },
+            zhezhao(){
+               this.showbox=false;
+            },
             willmember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             },
             check(value,cellIndex,index){
                 this.names=cellIndex;

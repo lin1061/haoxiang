@@ -4,7 +4,7 @@
             <div class="img">
                 <img src="../assets/images/success.png" alt="">
                 <span>订单支付成功</span>
-                <button class="anniu"></button>
+                <button class="anniu" @click="goorder"></button>
             </div>
         </main>
     </div>
@@ -12,7 +12,17 @@
 
 <script>
     export default {
-        name: "paysuccess"
+        name: "paysuccess",
+        data(){
+            return{
+
+            }
+        },
+        methods:{
+            goorder(){
+                this.$router.push({name:'myorder'})
+            }
+        }
     }
 </script>
 

@@ -22,7 +22,7 @@
                 </div>
                 <div class="xiaoqu clearfix">
                     <span class="huiprice">会员价:￥{{goods.membership_price}}/人</span>
-                    <span class="chajia">已省{{goods.earnest_money}}元</span>
+                    <span class="chajia">已省{{savemoney}}元</span>
                     <span class="numb">销量:{{goods.sales_volume}}件</span>
                 </div>
                 <span class="huititle">已选: <span class="schools">{{goodsname}}</span></span>
@@ -30,22 +30,23 @@
             </div>
             <div class="xiangqin clearfix" v-html="goods.describe"></div>
             <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
+            <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
         </main>
         <footer>
             <button class="yuyue" @click="yuyue">立即预约</button>
-            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
-                <div class="yuyuemore clearfix">
-                    <span class="school1">当前校区: <span class="schoolname">{{schoolname}}</span></span>
-                    <span class="huititle1">会员价:￥{{membership_price}} <span class="shijia">市场价:<span class="oldjia">￥{{original_price}}/人</span></span></span>
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
+            </div>
+            <div class="yuyuemore clearfix" v-show="showbox" @touchmove.prevent>
+                <span class="school1">当前校区: <span class="schoolname">{{schoolname}}</span></span>
+                <span class="huititle1">会员价:￥{{membership_price}} <span class="shijia">市场价:<span class="oldjia">￥{{original_price}}/人</span></span></span>
 
-                    <span class="style">类型:</span>
-                    <div class="stylebox clearfix">
-                        <div class="style1" v-for="(item,index) in goods.goods_spec" @click="check(item,index)">{{item.name}}</div>
+                <span class="style">类型:</span>
+                <div class="stylebox clearfix">
+                    <div class="style1" v-for="(item,index) in goods.goods_spec" @click="check(item,index)">{{item.name}}</div>
 
-                    </div>
-                    <div class="close" @click="close"></div>
-                    <div class="ok" @click="payfor">立即预约</div>
                 </div>
+                <div class="close" @click="close"></div>
+                <div class="ok" @click="payfor">立即预约</div>
             </div>
 
         </footer>
@@ -70,7 +71,8 @@
                 goods_id:"",
                 sx:false,
                 spec_id:"",
-                name:""
+                name:"",
+                sy:false
             }
         },
         computed: {
@@ -80,11 +82,12 @@
                 device:state =>state.device,
                 university_id:state=>state.university_id
             }),
+            savemoney(){
+                return this.goods.original_price-this.goods.membership_price
+            }
 
         },
-        created:function(){
 
-        },
         mounted:function () {
             this.$axios.get('/goods/school_shop?goods_type=0',{params:{university_id:this.university_id,user_id:this.user_id,token:this.token}}).then(res=>{
                 this.goods=res.data.data;
@@ -110,18 +113,28 @@
                 this.choose=item.name;
                 this.spec_id=item.spec_id;
             },
+            zhezhao(){
+                this.showbox=false;
+            },
             // 调用原生定位方法
             addr(){
                 jsObj.GPS()
             },
             payfor(){
-                this.name=this.goods.name+this.goodsname;
-                if(this.choose==""){
-                    this.sx=true;
+                let id=this.user_id;
+                if(id==0){
+                    this.sy=true;
+                    jsObj.GotoLogin();
                 }else{
-                    localStorage.schoolgood=JSON.stringify(this.goods);
-                    this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                    this.name=this.goods.name+this.goodsname;
+                    if(this.choose==""){
+                        this.sx=true;
+                    }else{
+                        localStorage.schoolgood=JSON.stringify(this.goods);
+                        this.$router.push({name:'signinfo',query:{user_id:this.user_id,goods_id:this.goods_id,name:this.name,token:this.token,spec_id:this.spec_id,university_id:this.university_id,device:this.device}})
+                    }
                 }
+
             }
         },
         components: {

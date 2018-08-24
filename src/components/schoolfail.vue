@@ -3,8 +3,8 @@
         <main>
             <div class="img">
                 <img src="../assets/images/fail.png" alt="">
-                <span>订单支付失败</span>
-                <button class="anniu" @click="goorder"></button>
+                <span>支付失败</span>
+                <span id="back" @click="back">返回</span>
             </div>
         </main>
     </div>
@@ -12,15 +12,10 @@
 
 <script>
     export default {
-        name: "paysuccess",
-        data(){
-            return{
-
-            }
-        },
+        name: "schoolfail",
         methods:{
-            goorder(){
-                this.$router.push({name:'myorder'})
+            back(){
+                jsObj.GotoMain()
             }
         }
     }
@@ -50,11 +45,32 @@
         text-align: center;
     }
     .anniu{
-        width: 100%;
-        height: 1.7rem;
+        width: 2.55rem;
+        height: 0.82rem;
         border:none;
         outline: none;
-        background: url("../assets/images/watch_order.png") no-repeat center/cover;
+        display: block;
+        margin:0 auto;
         margin-top: 1.44rem;
+        font-size: 0.32rem;
+        text-align: center;
+        line-height: 0.90rem;
+        color:#fff;
+
+
+    }
+    #back{
+        width: 2.85rem;
+        height: 1.10rem;
+        display: block;
+        margin:0 auto;
+        font-size: 0.32rem;
+        text-align: center;
+        line-height: 1.10rem;
+        margin-top: 0.20rem;
+        color:#fff;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-image: url("../assets/images/button@2x.png") ;
     }
 </style>

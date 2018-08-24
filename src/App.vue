@@ -68,4 +68,7 @@ img{
   display: block;
   margin: 0 auto;
 }
+.imgsbox p {
+        font-size: 0.24rem;
+    }
 </style>

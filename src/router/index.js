@@ -42,6 +42,12 @@ const Contact = r => require.ensure([], () => r(require('@/components/contact'))
 const Confirmorder1 = r => require.ensure([], () => r(require('@/components/confirmorder1')), 'confirmorder1')
 const Paysuccess = r => require.ensure([], () => r(require('@/components/paysuccess')), 'paysuccess')
 const Payfailed = r => require.ensure([], () => r(require('@/components/payfail')), 'payfail')
+const Activesuccess = r => require.ensure([], () => r(require('@/components/activesuccess')), 'activesuccess')
+const Goldsuccess = r => require.ensure([], () => r(require('@/components/goldsuccess')), 'goldsuccess')
+const Goldfail = r => require.ensure([], () => r(require('@/components/goldfail')), 'goldfail')
+const Schoolsuccess = r => require.ensure([], () => r(require('@/components/schoolsuccess')), 'schoolsuccess')
+const Schoolfail = r => require.ensure([], () => r(require('@/components/schoolfail')), 'schoolfail')
+const Memberfail = r => require.ensure([], () => r(require('@/components/memberfail')), 'memberfail')
 
 
 Vue.use(Router)
@@ -287,6 +293,48 @@ export default new Router({
             path: '/payfail',
             name: 'payfail',
             component: Payfailed
+        },
+        //参加活动成功页面
+        {
+            path: '/activesuccess',
+            name: 'activesuccess',
+            component: Activesuccess
+        },
+        //兑换成功页面
+        {
+            path: '/goldsuccess',
+            name: 'goldsuccess',
+            component: Goldsuccess
+        },
+        //兑换失败页面
+        {
+            path: '/goldfail',
+            name: 'goldfail',
+            component: Goldfail
+        },
+        //会员卡失败页面
+        {
+            path: '/goldfail',
+            name: 'goldfail',
+            component: Goldfail
+        },
+        //校园商品成功页面
+        {
+            path: '/schoolsuccess',
+            name: 'schoolsuccess',
+            component: Schoolsuccess
+        },
+        //校园商品失败页面
+        {
+            path: '/schoolfail',
+            name: 'schoolfail',
+            component: Schoolfail
+        },
+        //会员卡失败页面
+        {
+            path: '/memberfail',
+            name: 'memberfail',
+            component: Memberfail
         },
     ]
 })

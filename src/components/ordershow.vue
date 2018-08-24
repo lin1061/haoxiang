@@ -165,6 +165,7 @@
         right:0;
         margin:auto;
         border-radius: 0.20rem;
+        z-index:999;
     }
     .ziti2{
         color:#cccccc;

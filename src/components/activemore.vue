@@ -14,38 +14,168 @@
             <div class="content">
                 <p v-html="active.describe" class="describe"></p>
             </div>
-            <button class="join">立即参与</button>
+            <button class="join" @click="join">立即参与</button>
         </main>
+        <div class="choose" v-show="showchoose">
+            <div class="fanshi">
+                <div class="ziti ziti2 noto" >提示</div>
+                <div class="ziti" >该活动为会员才能参加</div>
+
+                <div class="ziti ziti1 ziti3" @click="canto">算了</div>
+                <div class="ziti ziti1 okto"  @click="willmember">办理会员</div>
+            </div>
+
+        </div>
+        <toast v-model="sx"  type="text" :time="800" is-show-mask text="没有该活动" position="bottom"></toast >
+        <toast v-model="sc"  type="text" :time="800" is-show-mask text="参加活动失败，请稍后重试" position="bottom"></toast >
+        <toast v-model="sa"  type="text" :time="800" is-show-mask text="您已经参加了该活动" position="bottom"></toast >
+        <toast v-model="sb"  type="text" :time="800" is-show-mask text="没货了，下次再来吧" position="bottom"></toast >
+        <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
     </div>
 </template>
 
 <script>
     import { mapState } from 'vuex'
+    import { Toast } from 'vux'
     export default {
         name: "activemore",
         data(){
             return{
-                active:[]
+                active:[],
+                showchoose:false,
+                is_yellow_card:"",
+                user_info:"",
+                sx:false,
+                sa:false,
+                sb:false,
+                sc:false,
+                sy:false
+
             }
         },
         computed: {
             ...mapState({
                 user_id: state => state.user_id,
-                activity_id:state=>state.activity_id
+                activity_id:state=>state.activity_id,
+                token:state=>state.token,
+                university_id:state=>state.university_id
             }),
 
+        },
+        created:function(){
+            this.$axios.get('/user/get_info/'+this.user_id).then(res=> {
+                this.user_info = res.data.data.user_info;
+                this.is_yellow_card = this.user_info.is_yellow_card;
+
+             })
         },
         mounted:function () {
             this.$axios.get('/find/activity_detail',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
                 console.log(res);
                 this.active=res.data.data;
             })
+
+        },
+        methods:{
+            join(){
+                let id=this.user_id;
+                if(id==0){
+                    this.sy=true;
+                    jsObj.GotoLogin();
+                }else{
+                    if(this.is_yellow_card=='0'){
+
+                        this.showchoose=true;
+                    }else  if(this.is_yellow_card=="1"){
+                        this.$axios.get('/find/activity_involvement',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
+                            console.log(res);
+                            if(res.data.err_code==0){
+                                this.$router.push({name:'activesuccess'})
+                            }else if(res.data.err_code==1001){
+                                this.sx=true;
+                            }else if(res.data.err_code==1002){
+                                this.sc=true;
+                            }else if(res.data.err_code==1003){
+                                this.$router.push({name:'activesuccess'})
+                            }else if(res.data.err_code==1005){
+                                this.sb=true;
+                            }
+                        })
+                    }
+                }
+
+
+            },
+            canto(){
+                this.showchoose=false;
+            },
+            willmember(){
+                this.$router.push({name:'hxmember'})
+            }
+        },
+        components: {
+
+            Toast
         }
     }
 </script>
 
 <style scoped>
+    .fanshi{
+        width: 5.53rem;
+        height: 3.43rem;
+        background: #fff;
+        position: absolute;
+        bottom:0;
+        left:0;
+        top:0;
+        right:0;
+        margin:auto;
+        border-radius: 0.20rem;
+    }
+    .ziti2{
+        color:#cccccc;
+        font-size: 0.28rem;
+        line-height: 0.30rem;
+    }
+    body{
+        background: #f5f5f5;
+    }
+    .ziti{
+        font-size: 0.32rem;
+        text-align: center;
+        color:#555555;
+        width: 100%;
+        height: 1.0rem;
+        line-height: 1.0rem;
+    }
+    .ziti1:hover{
+        color:#f9444d;
+    }
+    .ziti3{
+        color:#cccccc;
+    }
+    .choose{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
+        z-index: 44;
+    }
+    .ziti1{
+        width: 50%;
+        float:left;
 
+    }
+    .noto{
+        color:#cccccc;
+        font-size: 0.28rem;
+    }
+    .okto{
+        color:#f9444d;
+    }
     header{
         width: 100%;
         height: 6vh;

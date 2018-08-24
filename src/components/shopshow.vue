@@ -78,7 +78,7 @@
         },
         methods:{
             willmember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             },
             tel(){
                 if(this.device){

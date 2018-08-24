@@ -65,6 +65,7 @@
         <toast v-model="sq"  type="text" :time="800" is-show-mask text="取消收藏" position="bottom"></toast >
         <toast v-model="sh"  type="text" :time="800" is-show-mask text="添加成功" position="bottom"></toast >
         <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
+        <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
         <!--底部-->
         <footer>
             <div class="footbox clearfix">
@@ -80,8 +81,9 @@
                 <button class="lijishop lijishop1" @click="goodshow1">立即购买</button>
             </div>
 
-            <div class="zhezhao" v-show="showbox" @touchmove.prevent>
-                <div class="goods clearfix">
+            <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
+            </div>
+            <div class="goods clearfix" v-show="showbox" @touchmove.prevent>
                     <div class="ginfo">
                         <div class="goodsxtu">
                             <img :src="style_img" alt="">
@@ -105,9 +107,10 @@
 
                     <div class="ok" clearfix @click="gocart">选好了</div>
                 </div>
+
+            <div class="zhezhao" v-show="showbox1" @touchmove.prevent @click="zhezhao">
             </div>
-            <div class="zhezhao" v-show="showbox1" @touchmove.prevent>
-                <div class="goods clearfix">
+            <div class="goods clearfix" v-show="showbox1" @touchmove.prevent>
                     <div class="ginfo">
                         <div class="goodsxtu">
                             <img :src="style_img" alt="">
@@ -131,7 +134,7 @@
 
                     <div class="ok" clearfix @click="gocart1">选好了</div>
                 </div>
-            </div>
+
 
         </footer>
     </div>
@@ -165,7 +168,8 @@
                 sh:false,
                 sx:false,
                 goodid:[],
-                sq:false
+                sq:false,
+                sy:false
 
             }
         },
@@ -176,7 +180,6 @@
               user_id: state => state.user_id,
               device:state =>state.device,
               token:state =>state.token,
-              device:state =>state.device,
               university_id:state=>state.university_id
 
             }),
@@ -280,9 +283,12 @@
             close1(){
                 this.showbox1=!this.showbox1
             },
-
+            zhezhao(){
+                this.showbox1=false;
+                this.showbox=false;
+            },
             willmember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             },
             check(value,cellIndex,index){
                 this.names=cellIndex;
@@ -308,42 +314,48 @@
 
             },
             gocart(){
-                console.log(this.types)
-                if(this.types=="门店自营"){
-                    this.$axios.post('/user/shop_card',
-                        qs.stringify({
-                            goods_id:this.goods_id,
-                            num:this.goodsnum,
-                            user_id:this.user_id,
-                            spec_id:this.spec_id
-                        })).then(res=>{
-                        if(res.data.err_code == 0){
-                            //成功加入购物车
-                            this.sh = true;
-                        }
-                        // console.log(res)
-                    })
-                    localStorage.good=JSON.stringify(this.goods);
-                }else if(this.types=="总仓包邮"){
-                    if(this.choose==""){
-                        this.sx = true;
-                    }else{
+                let id=this.user_id;
+                if(id==0){
+                    this.sy=true;
+                    jsObj.GotoLogin();
+                }else {
+                    if (this.types == "门店自营") {
                         this.$axios.post('/user/shop_card',
                             qs.stringify({
-                                goods_id:this.goods_id,
-                                num:this.goodsnum,
-                                user_id:this.user_id,
-                                spec_id:this.spec_id,
-                                university_id:this.university_id
-                            })).then(res=>{
-                            if(res.data.err_code == 0){
+                                goods_id: this.goods_id,
+                                num: this.goodsnum,
+                                user_id: this.user_id,
+                                spec_id: this.spec_id,
+                                university_id: this.university_id
+                            })).then(res => {
+                            if (res.data.err_code == 0) {
                                 //成功加入购物车
                                 this.sh = true;
                             }
                             // console.log(res)
                         })
-                        localStorage.good=JSON.stringify(this.goods);
+                        localStorage.good = JSON.stringify(this.goods);
+                    } else if (this.types == "总仓包邮") {
+                        if (this.choose == "") {
+                            this.sx = true;
+                        } else {
+                            this.$axios.post('/user/shop_card',
+                                qs.stringify({
+                                    goods_id: this.goods_id,
+                                    num: this.goodsnum,
+                                    user_id: this.user_id,
+                                    spec_id: this.spec_id,
+                                    university_id: this.university_id
+                                })).then(res => {
+                                if (res.data.err_code == 0) {
+                                    //成功加入购物车
+                                    this.sh = true;
+                                }
+                                // console.log(res)
+                            })
+                            localStorage.good = JSON.stringify(this.goods);
 
+                        }
                     }
                 }
 
@@ -352,8 +364,12 @@
 
             },
             gocart1(){
-                if(this.user_id==""){
-                    jsObj.GotoLogin()
+                console.log(0)
+                let id=this.user_id;
+
+                if(id==0){
+                    this.sy=true;
+                    jsObj.GotoLogin();
                 }else{
                     if(this.types=="门店自营"){
                         localStorage.good=JSON.stringify(this.goods);
@@ -413,10 +429,12 @@ function array_search(arr,val,type) {
     .ginfo{
         width: 100%;
         height: auto;
-        float:left;
+        max-height: 7.0rem;
+        float: left;
+        overflow-y: auto;
         position: absolute;
-        bottom:1.02rem;
-        left:0;
+        bottom: 1.02rem;
+        left: 0;
         background: #fff;
     }
     header{

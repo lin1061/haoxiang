@@ -47,7 +47,8 @@
                 spec_id:"",
                 goods_id:"",
                 goodorder:"",
-                order_id:[]
+                order_id:[],
+                money:0.00
 
             }
         },
@@ -67,7 +68,7 @@
 
             this.token=this.$route.query.token;
             this.goodorder=JSON.parse(localStorage.schoolgood);
-            this.money=this.goodorder.earnest_money;
+            this.money=parseInt(this.goodorder.earnest_money).toFixed(2);
             // console.log(this.goodorder)
             this.$axios.get('/user/get_info/'+this.uid).then(res=>{
                 this.user_info=res.data.data.user_info;
@@ -89,11 +90,12 @@
                         }}).then(res=>{
                     console.log(res)
                     if(res.data.err_code==0){
-                        this.order_id.push(res.data.data.order.campus_goods_id)
+                        this.order_id.push(res.data.data)
+                        console.log(this.order_id)
                         if(this.device){
                             wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=C'+'&pay='+this.money})
                         }else{
-                            console.log(this.money)
+                            this.money=parseInt(this.goodorder.earnest_money).toFixed(2);
                             jsObj.GotoPay(this.order_id,'C',this.money)
                         }
                     }
@@ -162,7 +164,7 @@
         width: 5.00rem;
         height: 0.59rem;
         margin-top: 0.40rem;
-        text-align: right;
+        text-align: left;
         outline: none;
         border:none;
     }

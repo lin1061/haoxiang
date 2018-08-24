@@ -8,8 +8,9 @@
         <!--内容-->
         <main>
             <div class="cardshow">
-                <span class="carshow-title">体验无差价购物</span>
-                <span class="carshow-title carshow-title1">9天最高可买1000元</span>
+                <p>{{tit}}</p>
+                <span class="carshow-title" v-html="desc"></span>
+                <span class="carshow-title carshow-title1">{{days}}天最高可买{{maxmoney}}元</span>
             </div>
             <span class="hy-title ">会员特权</span>
             <div class="tequan clearfix">
@@ -38,10 +39,10 @@
                 </div>
                 <div class="name school clearfix" @click="adr">
                     <span class="hy-name">学校</span>
-                    <div  class="namekuan"></div>
-                    <img src="../assets/images/hyd@2x.png" class="hyaddr" @click="adr">
+                    <div  class="namekuan">{{universityname}}</div>
+                    <img src="../assets/images/hyd@2x.png" class="hyaddr">
                 </div>
-                <div class="gou"></div>
+                <div class="gou" :class="{checked:protocol}" @click="isprotocol"></div>
                 <span class="tong">我已阅读并同意<router-link to="/membership">[会员协议]</router-link></span>
             </div>
         </main>
@@ -53,6 +54,7 @@
                 <span class="all">合计:</span>
             </div>
         </footer>
+        <toast v-model="ispost"  type="text" :time="800" is-show-mask :text="text" position="bottom"></toast >
     </div>
 </template>
 
@@ -69,57 +71,114 @@
                 cartid:"",
                 user_id:"",
                 university_id:"",
-                price:0.00,
+                price:"",
                 token:"",
-                order_id:[]
+                order_id:[],
+                ispost:false,//关闭提示
+                protocol:false,//协议
+                text:'请完善提交信息',
+                universityname:"",//高校名称
+                days:"",//天数
+                desc:"",//描述
+                tit:"",//会员卡名称
+                istype:0,//默认非会员
+                maxmoney:0
             }
         },
         computed: {
             ...mapState({
                 device:state => state.device,
-
+                university_name:state => state.university_name,
             }),
 
         },
-        mounted:function(){
+        created(){
             this.cartid=this.$route.query.cartid;
             this.user_id=this.$route.query.user_id;
             this.university_id=this.$route.query.university_id;
             this.price=this.$route.query.money;
+            this.maxmoney=this.$route.query.maxmoney
             // console.log(this.price)
             this.token=this.$route.query.token
+
+
+            this.days=this.$route.query.days;
+            this.desc=this.$route.query.desc;
+            this.tit=this.$route.query.tit;
+            this.phone = this.$route.query.tel
+            this.istype = this.$route.query.istype
+
+            this.universityname = this.university_name
+            // 获取会员的信息
+            if(this.istype == 1){
+                this.$axios.get('/user/get_member_info',{params:{user_id:this.user_id}}).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.name = res.data.data.user_name
+                        this.phone = res.data.data.tel
+                        this.university_id =  res.data.data.university_id
+                        this.universityname = res.data.data.university_name
+                    }
+                })
+            }
+        },
+        mounted:function(){
+            
+            // app调用
+            let that = this
+            window['Goaddress'] = function(address,id){
+                that.universityname = address
+                that.university_id = id
+            }
         },
         methods:{
             ok(){
-
-                this.$axios.post('/user/card_store',
-                    qs.stringify({
-                        user_id:this.user_id,
-                        card_id:this.cartid,
-                        name:this.name,
-                        tel:this.phone,
-                        token:this.token,
-                        university_id:this.university_id
-                    })).then(res=>{
-
-                    console.log(this.order_id)
-                    if(res.data.err_code==0){
-
-                        // console.log(this.price)
-                        this.order_id=res.data.data;
-                        if(this.device){
-                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=M'+'&pay='+this.price})
-                        }else{
-
-                            jsObj.GotoPay(this.order_id,'M',this.price)
+                if(this.name == ""){
+                    this.ispost = true
+                    this.text = "请填写姓名"
+                    return false;
+                }
+                if(this.phone == "" || !/^1\d{10}$/.test(this.phone)){
+                    this.ispost = true
+                    this.text = "请填写有效手机号"
+                    return false;
+                }
+                if(!this.protocol){
+                    this.ispost = true
+                    this.text = "请同意用户协议"
+                    return false;
+                }
+                this.$axios.post('/user/card_store',{
+                    card_id:this.cartid,
+                    name:this.name,
+                    tel:this.phone,
+                    university_id:this.university_id                 
+                }).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.order_id = res.data.data
+                        if(window.__wxjs_environment === 'miniprogram'){
+                            // 小程序
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'&type=M'+'&pay='+this.price})
+                        }else {
+                            // app
+                            
+                            let price = this.price
+                            let order_id = this.order_id
+                            jsObj.GotoPay(order_id,'M',price)
                         }
-
+                    }else {
+                        this.ispost = true
+                        this.text = res.data.msg
                     }
                 })
             },
             adr:function () {
-                jsObj.GPS()
+                if(this.istype == 0){
+                    jsObj.GPS()
+                }                
             },
+            isprotocol(){
+                this.protocol = !this.protocol
+            }
         }
     }
 </script>
@@ -128,7 +187,14 @@
     body{
         background: #f5f5f5;
     }
-
+    .alerterr{
+        font-size: 0.24rem;
+        color: #f9444d;
+        width: 6.25rem;
+        margin: 0 auto;
+        position: relative;
+        top: -10px;
+    }
     main{
         width: 100%;
         /*margin-top: 0.88rem;*/
@@ -138,6 +204,15 @@
         height: 2.45rem;
         background: url("../assets/images/card@2x.png") no-repeat center/cover;
         margin-top: 0.10rem;
+        position: relative;
+    }
+    .cardshow >p{
+        position: absolute;
+        left: 2.2rem;
+        top:0.34rem;
+        color: #f6f6f6;
+        font-size: 16px;
+        font-weight: bold;
     }
     .carshow-title{
         font-size:0.32rem;
@@ -282,14 +357,15 @@
         display: block;
         float:left;
         margin:0.22rem 0.14rem 0.24rem 0.65rem;
-        background: url("../assets/images/x_1@2x.png") no-repeat center/cover;
+        background: url("../assets/images/x_1@2x.png") no-repeat;
+        background-size: 0.30rem  0.30rem;
     }
     .tong{
         font-size:0.24rem;
         color:#a2a2a2;
         display: block;
         float:left;
-        margin-top: 0.24rem;
+        margin-top: 0.20rem;
     }
     .tong a{
         color:#f9444d;
@@ -300,10 +376,13 @@
         float:left;
         margin-bottom: 0.85rem;
     }
-    .gou:hover{
-        background: url("../assets/images/x_2@2x.png") no-repeat center/cover;
+    .gou.checked{
+        background: url("../assets/images/x_2@2x.png") no-repeat;
+        background-size: 0.30rem  0.30rem;
     }
 
-
+    .vux-toast{
+        font-size: 20px;
+    }
 
 </style>
