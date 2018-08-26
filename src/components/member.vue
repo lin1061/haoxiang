@@ -16,11 +16,11 @@
             </section>
             <span class="card-title1">添加该微信号</span>
             <span class="card-title1 card-title2">专属客服将赠送你新会员礼包</span>
-            <div class="erweima">
+            <div class="erweima" @click="baocun">
                 <img :src="info.wechat_pic" alt="">
             </div>
             <span class="card-title1 card-title3">微信号：{{info.wechat}}</span>
-            <span class="card-title1 card-title4">长按保存</span>
+            <span class="card-title1 card-title4">点击保存</span>
             <span class="card-title1 card-title5">任何疑问请致电：{{info.tel}}</span>
         </main>
     </div>
@@ -63,6 +63,10 @@
                         this.info = res.data.data
                     }
                 })
+            },
+            baocun(){
+                console.log(this.info.wechat_pic)
+                jsObj.SavePic(this.info.wechat_pic)
             },
             cardinfo(){
                 this.$axios.get('/user/get_member_info',{params:{user_id:this.user_id}}).then(res=>{

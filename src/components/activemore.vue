@@ -14,7 +14,8 @@
             <div class="content">
                 <p v-html="active.describe" class="describe"></p>
             </div>
-            <button class="join" @click="join">立即参与</button>
+            <button class="join join1" @click="now" v-show="sa">已参与</button>
+            <button class="join" @click="join" v-show="jj">立即参与</button>
         </main>
         <div class="choose" v-show="showchoose">
             <div class="fanshi">
@@ -28,7 +29,6 @@
         </div>
         <toast v-model="sx"  type="text" :time="800" is-show-mask text="没有该活动" position="bottom"></toast >
         <toast v-model="sc"  type="text" :time="800" is-show-mask text="参加活动失败，请稍后重试" position="bottom"></toast >
-        <toast v-model="sa"  type="text" :time="800" is-show-mask text="您已经参加了该活动" position="bottom"></toast >
         <toast v-model="sb"  type="text" :time="800" is-show-mask text="没货了，下次再来吧" position="bottom"></toast >
         <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
     </div>
@@ -49,7 +49,8 @@
                 sa:false,
                 sb:false,
                 sc:false,
-                sy:false
+                sy:false,
+                jj:true
 
             }
         },
@@ -67,7 +68,20 @@
                 this.user_info = res.data.data.user_info;
                 this.is_yellow_card = this.user_info.is_yellow_card;
 
-             })
+            });
+            this.$axios.get('/find/activity_involvement',{params:{user_id:this.user_id,activity_id:this.activity_id,goods_spec_id:this.spec_id,goods_num:this.goodsnum}}).then(res=>{
+                console.log(res);
+                if(res.data.err_code==0){
+                    // this.sa=false;
+                    this.jj=true;
+
+                }
+                if(res.data.err_code==1003){
+                    this.sa=true;
+                    this.jj=false;
+
+                }
+            })
         },
         mounted:function () {
             this.$axios.get('/find/activity_detail',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
@@ -77,6 +91,9 @@
 
         },
         methods:{
+            now(){
+                this.$router.push({name:'activesuccess',query:{university_id:this.university_id}})
+            },
             join(){
                 let id=this.user_id;
                 if(id==0){
@@ -96,6 +113,8 @@
                             }else if(res.data.err_code==1002){
                                 this.sc=true;
                             }else if(res.data.err_code==1003){
+                                this.sa=true;
+                                //     this.jj=false;
                                 this.$router.push({name:'activesuccess'})
                             }else if(res.data.err_code==1005){
                                 this.sb=true;
@@ -110,7 +129,7 @@
                 this.showchoose=false;
             },
             willmember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             }
         },
         components: {
@@ -265,5 +284,9 @@
     .describe img{
         width: 50%;
         height: 50%;
+    }
+    .join1{
+        background: #a2a2a2;
+
     }
 </style>

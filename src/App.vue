@@ -71,4 +71,8 @@ img{
 .imgsbox p {
         font-size: 0.24rem;
     }
+body.dialog-open {
+  position: fixed;
+  width: 100%;
+}
 </style>

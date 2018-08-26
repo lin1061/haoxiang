@@ -10,14 +10,14 @@
             <!--输入发票抬头名称-->
             <div class="name clearfix">
                 <span class="michen">名称</span>
-                <input type="text" class="bill-name" placeholder="发票抬头名称" v-model="name">
+                <input type="text" class="bill-name" placeholder="发票抬头名称" v-model="name" >
             </div>
             <!--输入发票抬头税号-->
             <div class="name billsNO clearfix" v-show="bo">
                 <span class="michen billno">税号</span>
-                <input type="text" class="bill-name billno" placeholder="纳税人识别号或社会统一同意代码" v-model="no">
+                <input type="text" class="bill-name billno" placeholder="纳税人识别号或社会统一同意代码" v-model="no" >
             </div>
-            <div class="name clearfix">
+            <div class="name clearfix" v-show="bo">
                 <span class="leixing">请选择类型:</span>
                 <span class="personal">个人</span>
                 <div class="gouxuan" >
@@ -38,62 +38,71 @@
             </div>
 
             <button class="anniu">
-                <span class="anniu-wenzi" @click="add">添加并使用新抬头</span>
+                <span class="anniu-wenzi" @click="update">确认修改</span>
             </button>
         </main>
     </div>
 </template>
 
 <script>
-    import { mapState } from 'vuex'
     import qs from 'qs'
     export default {
-        name: "addbills",
+        name: "billupdate",
         data(){
             return{
                 name:"",
                 no:"",
-                invoice_type:"",
-                user_id:"",
-                token:'',
-                bo:true,
+                list:[],
+                token:"",
+                invoice_id:'',
+                invoice_type:'',
+                user_id:'',
+                type:'',
+                bo:false
             }
         },
-        computed: {
-
-        },
-        mounted:function(){
+        mounted:function () {
+            this.invoice_id=this.$route.query.invoice_id;
             this.user_id=this.$route.query.user_id;
             this.token=this.$route.query.token;
+            this.$axios.get('/user/invoice_info',{params:{invoice_id:this.invoice_id}}).then(res=>{
+                    this.list=res.data.data;
+                    this.name=this.list.name;
+                    this.type=this.list.type;
+                    if(this.type==1){
+                        this.bo=false;
+                        this.no=""
+                        this.invoice_type=1;
+                    }else{
+                        this.bo=true;
+                    }
+                    this.no=this.list.tax_number;
+            })
         },
         methods:{
             porsonal(){
                 this.invoice_type=1;
-                console.log(1)
-                this.bo=false;
+
+
             },
             company(){
                 this.invoice_type=2;
-                console.log(2)
-            },
-            add:function () {
 
-                this.$axios.post('/user/invoice_store',
+            },
+            update(){
+                this.$axios.post('/user/invoice_update',
                     qs.stringify({
+                        token:this.token,
                         invoice_title:this.name,
                         invoice_tax:this.no,
                         user_id:this.user_id,
                         invoice_type:this.invoice_type
-                    }),).then(res=>{
-                    let {err_code,msg,data}=res.data;
-                    console.log(res)
-                    if(res.data.err_code==0){
-                        this.$router.push({name:'billslist',query:{user_id:this.user_id,token:this.token}})
-                    }
+                    })).then(res=>{
+                        if(res.data.err_code==0){
+                            this.$router.push({name:'billlist',query:{user_id:this.user_id,token:this.token}})
+                        }
                 })
-            },
-
-
+            }
         }
     }
 </script>

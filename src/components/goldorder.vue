@@ -19,41 +19,75 @@
                 </div>
             </div>
             <div class="ginfo">
-                <div class="goods">
-                    <div class="gtop">
-                        <span class="gname">{{types}}</span>
-                    </div>
-                    <div class="order-mitem">
-                        <div class="order-tu">
-                            <img :src="goldgood.goods_img" alt="">
+                    <div v-show="exchange.store.length>0">
+                        <div class="goods">
+                            <div class="gtop">
+                                <span class="gname">门店自营</span>
+                            </div>
+                            <div class="order-mitem" v-for="item in exchange.store">
+                                <div class="order-tu">
+                                    <img :src="item.goods_img" alt="">
+                                </div>
+                                <span class="order-title1">{{item.goods_name}}</span>
+                                <span class="order-weight">{{item.spec_group}}</span>
+                                <span class="order-price">{{item.exchange_gold_coin}}金币</span>
+                                <span class="order-num">x{{item.goods_num}}</span>
+                            </div>
                         </div>
-                        <span class="order-title1">{{goldgood.name}}</span>
-                        <span class="order-weight"></span>
-                        <span class="order-price">{{goldgood.exchange_gold_coin}}金币</span>
-                        <span class="order-num">x{{num}}</span>
-                    </div>
-                </div>
+                        <div class="pay clearfix">
 
-                <div class="pay clearfix">
+                            <div class="order-box1 pay-title1">
+                                <span >配送</span>
+                                <span class="pay-title">{{fanshi}}</span>
+                                <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                            </div>
+                            <div class="order-box1 pay-title1 ">
+                                <span >商品总额</span>
+                                <span class="pay-title money">￥{{moneynum}}</span>
+                            </div>
+                            <div class="order-box1 pay-title1">
+                                <span >运费</span>
+                                <span class="pay-title money">￥{{freight}}</span>
+                            </div>
+                            <div class="order-box1 pay-title1 order-box2">
+                                <span >金币余额</span>
+                                <span class="pay-title money">{{iconyu}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-show="exchange.warehouse.length>0">
+                        <div class="goods">
+                            <div class="gtop">
+                                <span class="gname">总仓包邮</span>
+                            </div>
+                            <div class="order-mitem" v-for="item in exchange.warehouse">
+                                <div class="order-tu">
+                                    <img :src="item.goods_img" alt="">
+                                </div>
+                                <span class="order-title1">{{item.goods_name}}</span>
+                                <span class="order-weight">{{item.spec_group}}</span>
+                                <span class="order-price">{{item.goods_price}}金币</span>
+                                <span class="order-num">x{{item.goods_num}}</span>
+                            </div>
+                        </div>
+                        <div class="pay clearfix">
 
-                    <div class="order-box1 pay-title1">
-                        <span >配送</span>
-                        <span class="pay-title">{{fanshi}}</span>
-                        <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                            <div class="order-box1 pay-title1">
+                                <span >配送</span>
+                                <span class="pay-title">{{fanshi}}</span>
+                                <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                            </div>
+                            <div class="order-box1 pay-title1">
+                                <span >运费</span>
+                                <span class="pay-title money">￥{{freight}}</span>
+                            </div>
+                            <div class="order-box1 pay-title1 order-box2">
+                                <span >金币余额</span>
+                                <span class="pay-title money">{{iconyu}}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="order-box1 pay-title1 ">
-                        <span >商品总额</span>
-                        <span class="pay-title money">￥{{moneynum}}</span>
-                    </div>
-                    <div class="order-box1 pay-title1">
-                        <span >运费</span>
-                        <span class="pay-title money">￥{{freight}}</span>
-                    </div>
-                    <div class="order-box1 pay-title1 order-box2">
-                        <span >金币余额</span>
-                        <span class="pay-title money">{{iconyu}}</span>
-                    </div>
-                </div>
+
             </div>
             <div class="choose" v-show="showchoose">
                 <div class="fanshi">
@@ -65,9 +99,16 @@
         </main>
         <footer>
             <div class="hengfu" @click="kaitong" v-show="s">成为好象会员，享受会员特权。立即开通></div>
-            <div class="box">
+            <div class="box" v-show="jinbi">
                 <div class="lbox">
-                    <span class="ltitle">实付金币: <span class="ltitle2">{{freight}}</span></span>
+                    <span class="ltitle">实付金额:<span class="ltitle2">{{freight}}</span></span>
+                </div>
+                <button class="payfor" @click="payfor1">确认支付</button>
+            </div>
+            <div class="box" v-show="jx">
+                <div class="lbox">
+                    <span class="ltitle ltitle1">实付金额: <span class="ltitle2">{{freight}}</span></span>
+                    <span class="jinbi jinbi1">应付金币:{{goldgood.exchange_gold_coin}}</span>
                 </div>
                 <button class="payfor" @click="payfor">确认支付</button>
             </div>
@@ -84,12 +125,12 @@
             return{
                 goldgood:[],
                 types:"",
-                num:1,
+                num:[],
                 showchoose:false,
                 fanshi:"送货上门",
                 is_yellow_card:"",
                 price:"",
-                freight:3,
+                freight:3.00,
                 address:"",
                 goods_list:[],
                 school:[],
@@ -104,14 +145,18 @@
                 moneymore:0.00,
                 is_cart:0,
                 user_id:"",
-                goods_id:"",
+                goods_id:[],
                 token:"",
-                model_id:"",
+                model_id:[],
                 user_info:"",
-                is_yellow_card:"",
                 s:false,
-                price:"",
                 iconyu:"",
+                jinbi:false,
+                jx:true,
+                exchange:[],
+                good_id:'',
+                model_id1:'',
+                nums:''
 
             }
         },
@@ -127,12 +172,14 @@
         },
         created:function(){
             this.user_id=this.$route.query.user_id;
-            this.goods_id=this.$route.query.goods_id;
+            this.goods_id.push(this.$route.query.goods_id);
             this.token=this.$route.query.token;
-            this.model_id=this.$route.query.model_id;
+            this.model_id.push(this.$route.query.model_id);
             this.university_id=this.$route.query.university_id;
-            this.iconyu=this.$route.query.iconyu
-            console.log(this.iconyu)
+            this.iconyu=this.$route.query.iconyu;
+            this.good_id=this.$route.query.goods_id;
+            this.nums=this.$route.query.num;
+            this.model_id1=this.$route.query.model_id;
 
             //小程序跳转过来获取收获地址
             if(this.$route.query.address){
@@ -143,7 +190,7 @@
             }
         },
         mounted:function(){
-            this.num=this.$route.query.num;
+            this.num.push(this.$route.query.num);
             console.log(this.num)
             this.goldgood=JSON.parse(localStorage.shop);
             this.price=this.goldgood.market_price;
@@ -159,6 +206,19 @@
                 // console.log(res)
                 this.school=res.data.data;
                 console.log(this.school)
+            })
+            this.$axios.post('/user/order_confirm',
+                qs.stringify({
+                    goods_id:this.goods_id,
+                    goods_num:this.num,
+                    user_id:this.user_id,
+                    goods_spec_id:this.model_id,
+                    token:this.token,
+                    is_exchange:1
+
+                })).then(res=>{
+                    console.log(res)
+                this.exchange=res.data.data
             })
             this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
                 this.user_info=res.data.data.user_info;
@@ -232,43 +292,63 @@
             ziti:function () {
                 let ti=document.querySelector(".ziti");
                 this.fanshi="门店自提";
-                this.freight=0;
+                this.freight=0.00;
+                this.jinbi=true;
+                this.jx=false;
                 this.delivery_model=2;
                 this.showchoose=!this.showchoose;
             },
             songhuo:function () {
                 let song=document.querySelector(".ziti1");
                 this.fanshi="送货上门";
-                this.freight=3;
+                this.freight=3.00;
+                this.jx=true;
+                this.jinbi=false;
                 this.delivery_model=1;
                 this.showchoose=!this.showchoose;
             },
             kaitong:function () {
                 this.$router.push({name:'hxmember'})
             },
+
             payfor(){
                 this.$axios.post('/user/exchange_order',
                     qs.stringify({
-                        goods_id:this.goods_id,
-                        goods_number:this.num,
+                        goods_id:this.good_id,
+                        goods_number:this.nums,
                         user_id:this.user_id,
                         address_id:this.address_id,
                         delivery_model:this.delivery_model,
                         trans_fee:this.freight,
-                        model_id:this.model_id
+                        model_id:this.model_id1
 
                     })).then(res=>{
                     if(res.data.err_code == 0){
                         this.order_id=res.data.data;
                         if(this.device){
-                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.freight})
+                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=E'+'&pay='+this.freight})
                         }else{
-                            jsObj.GotoPay(this.order_id,'G',this.freight)
+                            jsObj.GotoPay(this.order_id,'E',this.freight)
                         }
                     }}
               )
-            }
+            },
+            payfor1(){
+                this.$axios.post('/user/exchange_order',
+                    qs.stringify({
+                        goods_id:this.good_id,
+                        goods_number:this.nums,
+                        user_id:this.user_id,
+                        address_id:this.address_id,
+                        delivery_model:this.delivery_model,
+                        trans_fee:this.freight,
+                        model_id:this.model_id1
 
+                    })).then(res=>{
+                        this.$route.push({name:'goldsuccess'})
+                    }
+                )
+            }
         }
     }
 </script>
@@ -474,7 +554,7 @@
     }
     .pay{
         width: 7.04rem;
-        height: 3.33rem;
+        height: 2.33rem;
         background-size:100% 100% ;
         margin-top: 0.20rem;
         background-repeat: no-repeat;
@@ -574,5 +654,25 @@
         position: absolute;
         top:0.25rem;
         right:0.35rem;
+    }
+    .jinbi1{
+        font-size: 0.20rem;
+        color: #555555;
+        display: block;
+        float: right;
+        line-height: 0.5rem;
+        margin-left: 2.0rem;
+        text-align: center;
+        margin-right: 0.38rem;
+    }
+    .ltitle1{
+        font-size: 0.34rem;
+        color: #282828;
+        text-align: right;
+        float: right;
+        height: 0.34rem;
+        line-height: 0.34rem;
+        display: block;
+        margin-top: 0.2rem;
     }
 </style>

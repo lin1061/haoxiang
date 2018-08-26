@@ -8,7 +8,13 @@
         <!--内容-->
         <main>
             <div class="order-box1">
-                <span>待支付</span>
+                <!-- 10待支付,20待发货,40部分发货,50已发货,60已完成,70取消 -->
+                <span v-if="order.order_status == 10">待支付</span>
+                <span v-if="order.order_status == 20">待发货</span>
+                <span v-if="order.order_status == 40">部分发货</span>
+                <span v-if="order.order_status == 50">已发货</span>
+                <span v-if="order.order_status == 60">已完成</span>
+                <span v-if="order.order_status == 70">取消</span>
             </div>
             <div class="order-box1">
                 <span>订单号：<span class="orderno">{{order.order_num}}</span></span>
@@ -19,7 +25,7 @@
                 <span class="order-phone">{{info.phone}}</span>
                 <span class="order-address">{{info.address}}（可选择自提服务）</span>
             </div>
-            <div class="order-mitem clearfix" v-for="item in order.good">
+            <div class="order-mitem clearfix" v-for="item in order.goods">
                 <div class="order-tu">
                     <img :src="item.img_path" alt="">
                 </div>
@@ -27,6 +33,10 @@
                 <span class="order-weight"></span>
                 <span class="order-price">￥{{item.price}}</span>
                 <span class="order-num">x{{item.quantity}}</span>
+            </div>
+            <div class="order-active order-active1" v-if="sh">
+                <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="order.order_status == 50 || order.order_status == 20 || order.order_status == 40" @click.prevent="succseegoods(order.id)">
+                <img src="../assets/images/售后服务.png" alt="" class="cancel pay cancel1" @click="kefu" v-if="order.order_status == 60">
             </div>
             <div class="paybox clearfix">
                 <div class="order-box1 ">
@@ -48,20 +58,21 @@
                 </div>
                 <div class="order-box1">
                     <span >运费</span>
-                    <span class="pay-title">+￥0.00</span>
+                    <span class="pay-title">+￥{{order.postage}}</span>
                 </div>
                 <div class="order-box1">
                     <span >实付金额</span>
-                    <span class="pay-title">￥{{order.total_money}}</span>
+                    <span class="pay-title">￥{{allmoney}}</span>
                 </div>
                 <div class="order-box1 order-box2">
                     <span >下单时间</span>
                     <span class="pay-title">{{order.pay_at}}</span>
                 </div>
                 <div class="order-active clearfix">
-                    <!--<span class="time">自动取消: 14:29</span>-->
-                    <img src="../assets/images/qx@2x.png" alt="" class="cancel"  @click="cancel">
-                    <img src="../assets/images/zf@2x.png" alt="" class="cancel pay">
+                    <span class="time" v-if="!sh">自动取消: {{mo}}:{{so}}</span>
+                    <img src="../assets/images/qx@2x.png" alt="" class="cancel"  @click="cancel" v-if="order.order_status == 10">
+                    <img src="../assets/images/zf@2x.png" alt="" class="cancel pay" v-if="order.order_status == 10" @click="waitpaygoods(order.id,order.total_money)">
+                    <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="order.order_status != 10" @click.prevent="addgoods(order.goods)">
                 </div>
             </div>
 
@@ -81,12 +92,19 @@
             </div>
 
         </div>
+        <confirm v-model="show2"
+          title="提示"
+          theme="android"
+          @on-confirm="ordertype">
+            <p style="text-align:center;">确定取消订单？</p>
+        </confirm>
+        <toast v-model="s"  type="text" :time="800" is-show-mask text="入库成功" position="bottom"></toast >
     </div>
 </template>
 
 <script>
     import { mapState } from 'vuex'
-    import { Toast } from 'vux'
+    import { Toast,Confirm } from 'vux'
     export default {
         name: "ordershow",
         data(){
@@ -97,41 +115,155 @@
                 distribution:"",
                 info:[],
                 s:false,
-                showchoose:false
-
+                showchoose:false,
+                id:"",
+                show2:false,
+                s:false,
+                sh:false,
+                mo:"",
+                so:"",
+                clear:"",
+                allmoney:""
             }
         },
         computed: {
             ...mapState({
                 user_id: state => state.user_id,
-                activity_id:state=>state.activity_id
+                token: state => state.token,
+                university_id:state=>state.university_id,
             }),
 
         },
-        mounted:function () {
+        created(){
             this.oid=this.$route.query.oid;
-            this.$axios.get('/user/order_detail?order_id='+this.oid).then(res=>{
-                this.order=res.data.data;
-                console.log(res)
-                this.info=this.order.address;
-                this.order_pay=this.order.pay_type;
-                if(this.order_pay=="1"){
-                    this.order_pay="在线支付"
-                }else if(this.order_pay=="2"){
-                    this.order_pay="线下支付"
-                }
-                this.distribution=this.order.distribution_mode;
-                if(this.distribution=="1"){
-                    this.distribution="送货上门"
-                }else if(this.distribution=="2"){
-                    this.distribution="自提"
-                }
-            })
+            this.datainfo()
         },
         components: {
-            Toast
+            Toast,
+            Confirm
         },
         methods:{
+
+            //浮点数加法运算
+            FloatAdd(arg1,arg2){
+                var r1,r2,m;
+                try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0}
+                try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0}
+                m=Math.pow(10,Math.max(r1,r2));
+                return (arg1*m+arg2*m)/m;
+            },
+            //确认收货
+            succseegoods(id){
+                // id 订单id
+                this.$axios.get('/user/change_order_status',{params:{order_id:id,status:60}}).then(res=>{
+                    let info =res.data;
+                    if(info.err_code == 0){
+                        this.getorderInfo();
+                    }
+                })
+            },
+            //支付
+            waitpaygoods(id,num){
+                // id 订单id
+                alert(1)
+                jsObj.GotoPay(id,'G',num)
+                // if(window.__wxjs_environment === 'miniprogram'){
+                //             // 小程序
+                //     wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+id+'&type=G'+'&pay='+num})
+                // }else {
+                //     jsObj.GotoPay(id,'G',num)
+                // }
+            },
+             // 取消订单
+            ordertype(){
+                let id = this.order.id
+               this.$axios.get('/user/change_order_status',{params:{order_id:id,status:70}}).then(res=>{
+                    let info =res.data;
+                    if(info.err_code == 0){
+                        // 状态修改成功
+                        this.datainfo()
+                    }
+                }) 
+            },
+            // 再次购买入购物车
+            addgoods(id){
+                // 商品id
+                let that = this
+                console.log(id)
+                if(id.length>0){
+                    id.forEach(function(v,i){
+                        that.$axios.post('/user/shop_card',{'user_id':that.user_id,'num':1,'university_id':that.university_id,'goods_id':v.goods_id,'spec_id':v.spec_id}).then(res=>{
+                            let info =res.data;
+                            if(info.err_code == 0){
+                                //成功加入购物车
+                                that.s = true;
+                            }
+                        })
+                    })
+                    
+                }
+                
+            },
+            // dataifno
+            datainfo(){
+                this.$axios.get('/user/order_detail?order_id='+this.oid).then(res=>{
+                    this.order=res.data.data;
+
+                    
+                    this.allmoney = this.FloatAdd(this.order.total_money,this.order.postage)
+                    // 倒计时统计
+                    if(this.order.order_status == 10){
+                        let Newtimestamp = Date.parse(new Date()); //当前时间戳
+                        let Severtimestamp = new Date(this.order.created_at).getTime();//服务器时间戳
+                        let m = (14-Math.floor((Newtimestamp-Severtimestamp)/1000/60))<=0 ? 0 : 14-Math.floor((Newtimestamp-Severtimestamp)/1000/60)
+                        let s = (60-Math.floor((Newtimestamp-Severtimestamp)/1000%60))<=0 ? 0 : 60-Math.floor((Newtimestamp-Severtimestamp)/1000%60)
+                        // let m= 2
+                        // let s=2
+                        this.mo = m
+                        this.so = s
+                        let that = this
+                        this.clear = setInterval(function(){
+                            that.so = s--
+                            if(that.mo<=0 && that.so<=0){
+                                that.ordertype()
+                                clearInterval(that.clear)
+                                return false
+                            }
+                            if(that.so<=0){                                
+                                s = 60;
+                                that.so = s--
+                                that.mo = that.mo-1
+                            }
+                            
+                        },1000)
+                    }
+                    // 倒计时结束
+                    if(this.order.order_status != 10){
+                        this.sh = true
+                    }
+                    this.info=this.order.address;
+                    this.order_pay=this.order.pay_type;
+                    if(this.order_pay=="1"){
+                        this.order_pay="在线支付"
+                    }else if(this.order_pay=="2"){
+                        this.order_pay="线下支付"
+                    }
+                    this.distribution=this.order.distribution_mode;
+                    if(this.distribution=="1"){
+                        this.distribution="送货上门"
+                    }else if(this.distribution=="2"){
+                        this.distribution="自提"
+                    }
+                })
+            },
+            kefu(){
+                if(window.__wxjs_environment === 'miniprogram'){
+                    wx.miniProgram.navigateTo({url: '/pages/call/main'})
+                }else{
+                    jsObj.GotoService();
+                }
+
+            },
             copy(){
                 let num=document.querySelector(".orderno");
                 console.log(num.innerText)
@@ -139,10 +271,10 @@
 
             },
             gomember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({path:'/hxmember',query:{'user_id':this.user_id,'token':this.token,'university_id':this.university_id}})
             },
             cancel(){
-                this.showchoose=true;
+                this.show2=true;
             },
             canto(){
                 this.showchoose=false;
@@ -165,7 +297,6 @@
         right:0;
         margin:auto;
         border-radius: 0.20rem;
-        z-index:999;
     }
     .ziti2{
         color:#cccccc;

@@ -26,6 +26,7 @@
 
 
         </main>
+        <toast v-model="ispost"  type="text" :time="800" is-show-mask :text="text" position="bottom"></toast >
         <footer>
             <button class="anniu" @click="payfor">应付定金：￥{{money}}</button>
         </footer>
@@ -34,6 +35,7 @@
 
 <script>
     import { mapState } from 'vuex'
+    import { Toast } from 'vux'
     export default {
         name: "signinfo",
         data(){
@@ -78,7 +80,18 @@
 
         },
         methods:{
+
             payfor(){
+                if(this.name == ""){
+                    this.ispost = true
+                    this.text = "请填写姓名"
+                    return false;
+                }
+                if(this.tel == "" || !/^1\d{10}$/.test(this.tel)){
+                    this.ispost = true
+                    this.text = "请填写有效手机号"
+                    return false;
+                }
                 this.$axios.get('/order/campus_create', {
                     params:
                         {user_id:this.uid,

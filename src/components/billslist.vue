@@ -6,18 +6,23 @@
         <!--<span class="title">其他</span>-->
         <!--</header>-->
         <main>
-            <div class="list-item clearfix" v-for="(item,index) in bills" :key="item.id">
-                <div class="list-itemtop">
-                    <span class="list-title1">{{item.name}}</span>
+            <div  class="list-item clearfix" v-for="(item,index) in bills" :key="item.id" >
+
+                <div  class="list-itemtop" style="color:#555555;">
+                    <span class="list-title1" >{{item.name}}</span>
                     <span class="list-title2">{{types[index]}}</span>
                     <span class="list-title2 list-title3">{{item.tax_number}}</span>
                 </div>
-                <div class="list-itembottom clearfix">
-                    <img src="../assets/images/mr@2x.png" alt="" class="mr">
+                <div class="list-itembottom clearfix" >
+                    <div @click="moren(item.id)">
+                        <img src="../assets/images/mr@2x.png"class="mr" v-show="moreno">
+                        <img src="../assets/images/fp@2x.png" alt="" class="mr" v-show="bmoren">
+                    </div>
+
                     <div class="list-ritem">
-                        <div class="list-ritem1">
+                        <div class="list-ritem1"@click="bianji(item.id)">
                             <img src="../assets/images/b@2x.png" alt="">
-                            <span class="list-ritem1-wen">编辑</span>
+                            <span class="list-ritem1-wen" >编辑</span>
                         </div>
                         <div class="list-ritem1 ritem2" @click="del(item.id)">
                             <img src="../assets/images/s@2x.png" alt="">
@@ -38,24 +43,32 @@
 
 <script>
     import { mapState } from 'vuex'
+    import qs from 'qs'
     export default {
         name: "billslist",
         data(){
             return{
                 bills:[],
-                types:[],
-
+                types:"",
+                invoice_id:'',
+                moreno:false,
+                bmoren:true,
+                token:'',
+                gid:[],
+                bid:''
             }
         },
         computed: {
             ...mapState({
-                user_id: state => state.user_id,
+
 
             }),
 
 
         },
         mounted:function () {
+            this.user_id=this.$route.query.user_id;
+            this.token=this.$route.query.token;
 
             this.$axios.get('/user/invoices',{params:{user_id:this.user_id}}).then(res=>{
                 this.bills=res.data.data;
@@ -79,12 +92,14 @@
 
 
 
-
             })
         },
         methods:{
+            bianji(id){
+                this.$router.push({name:'billupdate',query:{user_id:this.user_id,token:this.token,invoice_id:id}})
+            },
             del(id){
-                console.log(id)
+
                 this.$axios.post('/user/invoice_delete?invoice_id='+id).then(res=>{
                     console.log(res)
                 });
@@ -92,7 +107,27 @@
 
             },
             add(){
-                this.$router.push({name:'addbills',params:this.user_id})
+                this.$router.push({name:'addbills',query:{user_id:this.user_id,token:this.token}})
+            },
+            moren(id){
+                var index=0;
+                for(let i=0;i<this.bills.length;i++){
+                    var bills=this.bills[i].id;
+                }
+                if(bills == id){
+                    this.moreno=true;
+                    this.bmoren=false;
+                    index++;
+                }
+
+                this.$axios.post('/user/default_invoice',
+                    qs.stringify({
+                        invoice_id:this.invoice_id
+                    })).then(res=>{
+                    console.log(res)
+
+
+                })
             }
         }
 
@@ -163,7 +198,9 @@
         height: 0.32rem;
         float:left;
         margin:0.16rem 0 0 0.48rem;
+
     }
+
     .list-ritem{
         width: 2.36rem;
         height: 0.69rem;

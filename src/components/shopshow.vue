@@ -62,7 +62,10 @@
             ...mapState({
                 business_id: state => state.business_id,
                 longitude: state => state.longitude,
-                latitude:state=>state.latitude
+                latitude:state=>state.latitude,
+                user_id: state => state.user_id,
+                device:state =>state.device,
+                token:state =>state.token,
             }),
 
         },

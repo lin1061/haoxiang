@@ -46,7 +46,6 @@
             <toast v-model="s"  type="text" :time="800" is-show-mask text="您还不是会员" position="bottom"></toast >
             <toast v-model="sx"  type="text" :time="800" is-show-mask text="没有该活动" position="bottom"></toast >
             <toast v-model="sc"  type="text" :time="800" is-show-mask text="参加活动失败，请稍后重试" position="bottom"></toast >
-            <toast v-model="sa"  type="text" :time="800" is-show-mask text="您已经参加了该活动" position="bottom"></toast >
             <toast v-model="sb"  type="text" :time="800" is-show-mask text="没货了，下次再来吧" position="bottom"></toast >
             <toast v-model="sd"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
             <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
@@ -62,37 +61,39 @@
         </div>
         <!--底部-->
         <footer>
-
+            <div class="footbox clearfix footbox1" v-show="sa" >
+                    <button class="lijishop1"  @click="now"><span>已参加</span></button>
+            </div>
             <div class="footbox clearfix">
-                <button class="lijishop" @click="goodshow">立即参加</button>
+                <button class="lijishop" @click="goodshow" v-show="jj">立即参加</button>
             </div>
             <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
             </div>
-                <div class="goods clearfix" v-show="showbox" @touchmove.prevent>
-                    <div class="ginfo">
-                        <div class="goodsxtu">
-                            <img :src="style_img" alt="">
-                        </div>
-                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
-                        <span class="numbers">库存{{style_stock}}件</span>
-                        <div class="close" @click="close"></div>
-                        <span class="style">类型:</span>
-                        <div class="group" v-for="(item,index) in active.spec" :key="index">
+            <div class="goods clearfix" v-show="showbox" @touchmove.prevent>
+                <div class="ginfo">
+                    <div class="goodsxtu">
+                        <img :src="style_img" alt="">
+                    </div>
+                    <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
+                    <span class="numbers">库存{{style_stock}}件</span>
+                    <div class="close" @click="close"></div>
+                    <span class="style">类型:</span>
+                    <div class="group" v-for="(item,index) in active.spec" :key="index">
 
-                            <div class="stylebox">
-                                <div class="style1"  @click="check(item)">{{item.goods_spec_name}}</div>
-                            </div>
-                        </div>
-                        <div class="choose">
-                            <span class="num">数量:</span>
-                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                            <span class="numadd">{{goodsnum}}</span>
-                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                        <div class="stylebox">
+                            <div class="style1"  @click="check(item)">{{item.goods_spec_name}}</div>
                         </div>
                     </div>
-
-                    <div class="ok" clearfix @click="join">选好了</div>
+                    <div class="choose">
+                        <span class="num">数量:</span>
+                        <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                        <span class="numadd">{{goodsnum}}</span>
+                        <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                    </div>
                 </div>
+
+                <div class="ok" clearfix @click="join">选好了</div>
+            </div>
 
 
         </footer>
@@ -127,14 +128,16 @@
                 sd:false,
                 sy:false,
                 is_yellow_card:"",
-                user_info:""
+                user_info:"",
+                jj:true,
             }
         },
         computed: {
             ...mapState({
                 user_id: state => state.user_id,
                 activity_id:state=>state.activity_id,
-                token:state=>state.token
+                token:state=>state.token,
+                university_id: state => state.university_id,
             }),
             // 总金额
             moneynum:function(){
@@ -143,20 +146,33 @@
         },
         created:function(){
             this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
-                    this.user_info=res.data.data.user_info;
-                    this.is_yellow_card=this.user_info.is_yellow_card;
+                this.user_info=res.data.data.user_info;
+                this.is_yellow_card=this.user_info.is_yellow_card;
+            })
+            this.$axios.get('/find/activity_involvement',{params:{user_id:this.user_id,activity_id:this.activity_id,goods_spec_id:this.spec_id,goods_num:this.goodsnum}}).then(res=>{
+                console.log(res);
+                if(res.data.err_code==1003){
+                    this.sa=true;
+                    this.jj=false;
+
+
+                }
             })
         },
+
         mounted:function () {
             this.$axios.get('/find/activity_detail',{params:{user_id:this.user_id,activity_id:this.activity_id}}).then(res=>{
                 console.log(res.data.data);
                 this.active=res.data.data;
                 this.style_img=this.active.img_path;
+            });
 
-            })
         },
 
         methods:{
+            now(){
+                this.$router.push({name:'activesuccess',query:{university_id:this.university_id}})
+            },
             goodshow(){
                 this.showbox=!this.showbox;
 
@@ -218,7 +234,7 @@
                                 }else if(res.data.err_code==1002){
                                     this.sc=true;
                                 }else if(res.data.err_code==1003){
-                                    this.$router.push({name:'activesuccess'})
+
                                 }else if(res.data.err_code==1005){
                                     this.sb=true;
                                 }
@@ -509,7 +525,6 @@
     .footbox{
         width: 100%;
         height: 0.96rem;
-        background: #fff;
         position: fixed;
         left:0;
         bottom:0rem;
@@ -666,5 +681,23 @@
         position: fixed;
         top:0;
         left:0;
+    }
+    .lijishop1 {
+        width: 100%;
+        height: 100%;
+        display: block;
+        float:left;
+        border: none;
+        outline: none;
+        font-size:0.36rem;
+        text-align: center;
+        background: #a2a2a2;
+        color:#fff;
+
+    }
+    .footbox1{
+        background: #a2a2a2;
+        color:#fff;
+        z-index:99;
     }
 </style>

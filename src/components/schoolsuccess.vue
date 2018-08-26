@@ -1,15 +1,18 @@
 <template>
     <div id="main">
         <main>
-            <div class="erweima">
+            <div class="erweima" @click="baocun">
                 <img :src="kefu.wechat_pic" alt="">
             </div>
-            <span class="wechat wechat2" @click="baocun">长按保存图片</span>
+            <span class="wechat wechat2" >点击保存图片</span>
             <span class="card-title1 card-title3">微信号：{{kefu.wechat}}</span>
             <span class="wechat wechat2">支付成功</span>
             <span class="card-title1 card-title5">我们的客服会在24小时内与你取得联系</span>
             <span class="tel" @click="phone">电话咨询</span>
-            <span id="back" @click="back">返回</span>
+
+                <span id="back" @click="back">返回</span>
+
+
 
         </main>
     </div>
@@ -44,33 +47,11 @@
                 jsObj.GotoMain();
             },
             baocun(){
-                let img=document.querySelector(".erweima");
-                savePicture();
+                jsObj.SavePic(this.img)
             }
         }
     }
-    function savePicture() {
 
-    // 创建下载任务
-            picurl=this.img;
-    //图片保存到手机后的路径
-            picname="_downloads/erwei.png";
-            var dtask = plus.downloader.createDownload(picurl, {}, function ( d, status ) {
-    // 下载完成
-                if ( status == 200 ) {
-    //	alert( "Download success: " + d.filename );
-                    plus.gallery.save(picname,function() {//保存到相册方法
-                        mui.toast('已保存到手机相册');
-                    }, function() {
-                        mui.toast('保存失败，请重试！');
-                    });
-                } else {
-    //	alert( "Download failed: " + status );
-                }
-            });
-    //dtask.addEventListener( "statechanged", onStateChanged, false );
-            dtask.start();//开始下载
-    }
 </script>
 
 <style scoped>

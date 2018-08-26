@@ -1,12 +1,11 @@
 <template>
     <div id="main">
         <main>
-
-
-            <div class="erweima">
-                <img src="../assets/images/qr@2x.png" alt="">
+            <div class="erweima" @click="baocun">
+                <img :src="kefu.wechat_pic" alt="">
             </div>
-            <span class="card-title1 card-title3">微信号：156813518646135</span>
+            <span class="card-title1 card-title3">微信号：{{kefu.wechat}}</span>
+            <span class="card-title1 card-title3">点击保存到手机</span>
             <span class="card-title1 card-title5">发现活动参加成功，请添加该微信号领取成功</span>
         </main>
     </div>
@@ -14,7 +13,28 @@
 
 <script>
     export default {
-        name: "activesuccess"
+        name: "activesuccess",
+        data(){
+            return{
+                kefu:[],
+                img:'',
+                university_id:'',
+                kefu:''
+            }
+        },
+
+        mounted:function () {
+            this.university_id=this.$route.query.university_id;
+            this.$axios.get('/server',{params:{university_id:this.university_id}}).then(res=>{
+                this.kefu=res.data.data;
+                this.img=this.kefu.wechat_pic;
+            })
+        },
+        methods:{
+            baocun(){
+                jsObj.SavePic(this.img)
+            }
+        }
     }
 </script>
 

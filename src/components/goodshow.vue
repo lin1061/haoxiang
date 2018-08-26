@@ -20,7 +20,7 @@
                 </div>
                 <div class="price">
                     <span class="oldprice">￥{{goods.member_price}}</span>
-                    <span class="newprice">已省:￥{{save_price}}</span>
+                    <span class="newprice">已省:￥{{savemoney}}</span>
                     <span class="number">销量：{{goods.sales_volume}}件</span>
                 </div>
                 <div class="price">
@@ -29,7 +29,7 @@
                 </div>
                 <div class="price price1">
                     <span class="oldprice oldprice1">已选：</span>
-                    <span class="newprice newprice1">{{choose}}</span>
+                    <span class="newprice newprice1">{{checkgoods}}</span>
                     <img src="../assets/images/ddd@2x.png"class="anniu anniu1" @click="goodshow">
                 </div>
                 <ul class="fuwu">
@@ -47,7 +47,7 @@
             <!--优选好货-->
             <ul class="yx clearfix">
                 <div class="youxuan">为你推荐</div>
-                <router-link style="text-decoration: none" :to="{path:'/goodshow',query:{goods_id:item.goods_id}}" class="yx-item" v-for="item in goods.about_recommend" :key="item.goods_id" @click.native="flushCom">
+                <router-link style="text-decoration: none" :to="{path:'/goodshow',query:{goods_id:item.goods_id,user_id:user_id,token:token,university_id:university_id}}" class="yx-item" v-for="item in goods.about_recommend" :key="item.goods_id" @click.native="flushCom">
                     <div class="box">
                         <img :src="item.goods_img" class="goodstu">
                     </div>
@@ -65,7 +65,6 @@
         <toast v-model="sq"  type="text" :time="800" is-show-mask text="取消收藏" position="bottom"></toast >
         <toast v-model="sh"  type="text" :time="800" is-show-mask text="添加成功" position="bottom"></toast >
         <toast v-model="sx"  type="text" :time="800" is-show-mask text="请选属性" position="bottom"></toast >
-        <toast v-model="sy"  type="text" :time="800" is-show-mask text="请先登录" position="bottom"></toast >
         <!--底部-->
         <footer>
             <div class="footbox clearfix">
@@ -74,7 +73,7 @@
                     <span class="kefu">客服</span>
                 </div>
                 <div class="ser like" >
-                    <div  class="server liketu" :class="{'check':goodid.indexOf(goods.id)>=0}"  @click="like(goods.id)"></div>
+                    <div  class="server liketu" :class="{'check':iscollect}"  @click="like(goods.id)"></div>
                     <span class="kefu">收藏</span>
                 </div>
                 <button class="lijishop" @click="goodshow">加入购物车</button>
@@ -83,58 +82,66 @@
 
             <div class="zhezhao" v-show="showbox" @touchmove.prevent @click="zhezhao">
             </div>
-            <div class="goods clearfix" v-show="showbox" @touchmove.prevent>
-                    <div class="ginfo">
-                        <div class="goodsxtu">
-                            <img :src="style_img" alt="">
-                        </div>
-                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
-                        <span class="numbers">库存{{style_stock}}件</span>
-                        <div class="close" @click="close"></div>
-                        <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
-                            <span class="style">{{item.spec_name}}:</span>
-                            <div class="stylebox">
-                                <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
-                            </div>
-                        </div>
-                        <div class="choose">
-                            <span class="num">数量:</span>
-                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                            <span class="numadd">{{goodsnum}}</span>
-                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+            <div class="goods clearfix" v-show="showbox">
+                <div class="ginfo">
+                    <div class="goodsxtu">
+                        <img :src="xzinfo.spec_img_path" alt="">
+                    </div>
+                    <span class="sum">共计:
+                        <!-- 会员 -->
+                            <span class="prices" v-if="ishx == 1">￥{{xzinfo.spec_member_price}}</span>
+                        <!-- 非会员价 -->
+                            <span class="prices" v-if="ishx == 0">￥{{xzinfo.spec_original_price}}</span>
+                        </span>
+                    <span class="numbers">库存{{xzinfo.stock}}件</span>
+                    <div class="close" @click="close"></div>
+                    <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
+                        <span class="style">{{item.spec_name}}:</span>
+                        <div class="stylebox">
+                            <div class="style1" :class="{checked:arr.indexOf(value)>=0}" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
                         </div>
                     </div>
-
-                    <div class="ok" clearfix @click="gocart">选好了</div>
+                    <div class="choose">
+                        <span class="num">数量:</span>
+                        <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                        <span class="numadd">{{goodsnum}}</span>
+                        <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                    </div>
                 </div>
 
-            <div class="zhezhao" v-show="showbox1" @touchmove.prevent @click="zhezhao">
+                <div class="ok" clearfix @click="gocart">选好了</div>
             </div>
-            <div class="goods clearfix" v-show="showbox1" @touchmove.prevent>
-                    <div class="ginfo">
-                        <div class="goodsxtu">
-                            <img :src="style_img" alt="">
-                        </div>
-                        <span class="sum">共计: <span class="prices">￥{{moneynum}}</span></span>
-                        <span class="numbers">库存{{style_stock}}件</span>
-                        <div class="close" @click="close1"></div>
-                        <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
-                            <span class="style">{{item.spec_name}}:</span>
-                            <div class="stylebox">
-                                <div class="style1" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
-                            </div>
-                        </div>
-                        <div class="choose">
-                            <span class="num">数量:</span>
-                            <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
-                            <span class="numadd">{{goodsnum}}</span>
-                            <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+            <div class="zhezhao" v-show="showbox1" @touchmove.prevent  @click="zhezhao">
+            </div>
+            <div class="goods clearfix" v-show="showbox1" >
+                <div class="ginfo">
+                    <div class="goodsxtu">
+                        <img :src="xzinfo.spec_img_path" alt="">
+                    </div>
+                    <span class="sum">共计:
+                        <!-- 会员 -->
+                            <span class="prices" v-if="ishx == 1">￥{{xzinfo.spec_member_price}}</span>
+                        <!-- 非会员价 -->
+                            <span class="prices" v-if="ishx == 0">￥{{xzinfo.spec_original_price}}</span>
+                        </span>
+                    <span class="numbers">库存{{xzinfo.stock}}件</span>
+                    <div class="close" @click="close1"></div>
+                    <div class="group" v-for="(item,index) in goods.spec_group" :key="index">
+                        <span class="style">{{item.spec_name}}:</span>
+                        <div class="stylebox">
+                            <div class="style1" :class="{checked:arr.indexOf(value)>=0}" v-for="(value,cellIndex) in item.spec_value" @click="check(value,cellIndex,index)">{{value}}</div>
                         </div>
                     </div>
-
-                    <div class="ok" clearfix @click="gocart1">选好了</div>
+                    <div class="choose">
+                        <span class="num">数量:</span>
+                        <img src="../assets/images/jh@2x.png" class="jh" @click="reduce">
+                        <span class="numadd">{{goodsnum}}</span>
+                        <img src="../assets/images/jhh@2x.png" class="jh jhh" @click="add">
+                    </div>
                 </div>
 
+                <div class="ok" clearfix @click="gocart1">选好了</div>
+            </div>
 
         </footer>
     </div>
@@ -169,11 +176,13 @@
                 sx:false,
                 goodid:[],
                 sq:false,
-                sy:false
-
+                arr:[],//规格数组
+                xzinfo:{},//选中数据
+                ishx:0,//默认不是会员
+                iscollect:false,//默认不收藏
+                checkgoods:""//默认选中商品
             }
         },
-
         computed: {
             ...mapState({
               goods_id: state => state.goods_id,
@@ -186,34 +195,52 @@
             // 总金额
             moneynum:function(){
                 return this.goods.member_price * this.goodsnum
+            },
+            savemoney(){
+                return parseInt(this.goods.market_price-this.goods.member_price).toFixed(2);
             }
         },
-        mounted:function(){
-
-                this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id,user_id:this.user_id,token:this.token}}).then(res=>{
+        created(){
+            
+            // 8月24添加
+            this.getuserinfo();
+            this.$axios.get('/goods/detail',{params:{goods_id:this.goods_id,user_id:this.user_id,token:this.token}}).then(res=>{
                     console.log(res.data.data);
                     this.goods=res.data.data;
                     this.types=this.goods.types;
                     this.style_img=this.goods.goods_img;
+                    this.iscollect = res.data.data.is_collection//判断该商品是否已收藏
                     if(this.types=='1'){
                         this.types="门店自营"
                     }else if(this.types=='2'){
                         this.types="总仓包邮"
                     }
-                    console.log(this.goods)
-                    // console.log(this.goods.spec_reg.length)
-                    this.save_price=this.goods.market_price-this.goods.member_price;
-                    for (var i=0;i<this.goods.spec_reg.length;i++){
-
-                        if(this.names=this.goods.spec_reg[i]){
-                            this.style_img=this.goods.spec_reg[i].spec_img_path
-                            this.style_stock=this.goods.spec_reg[i].stock
+                    // console.log(this.goods.spec_group)
+                    if(this.goods.spec_reg.length>0){
+                        // 有规格参数
+                        this.arr = this.goods.spec_group.map((v,i)=>{
+                            return v.spec_value[0]
+                        })
+                        // 默认数据
+                        if(this.arr.length>0){
+                            let G = this.arr.join('-');
+                            this.checkgoods = G || "";
+                            let data = {}
+                            this.goods.spec_reg.forEach(function(v,i){
+                                if(v.reg_spec_str == G){
+                                    data = v
+                                }
+                            })
+                            this.xzinfo = data;
                         }
+                    }else{
+                        // 没有规格参数
+                        this.xzinfo = {spec_id:'1',spec_original_price:this.goods.market_price,spec_member_price:this.goods.member_price,spec_img_path:this.goods.goods_img}
                     }
+                    
                 })
-
-
-        },
+            // 8月24添加结束
+         },
 
         components: {
             Swiper,
@@ -221,6 +248,14 @@
             Toast
         },
         methods:{
+            // 用户信息判断是否为会员
+            getuserinfo(){
+                this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
+                    if(res.data.err_code == 0){
+                        this.ishx = res.data.data.user_info.is_yellow_card //0非会员1会员
+                    }
+                })
+            },
             goodshow(){
                 this.showbox=!this.showbox;
 
@@ -238,6 +273,10 @@
             add(){
                 this.goodsnum++
             },
+            zhezhao(){
+                this.showbox=false;
+                this.showbox1=false;
+            },
             reduce(){
                 this.goodsnum--;
                 if(this.goodsnum<=1){
@@ -245,29 +284,37 @@
                 }
             },
             like(id){
-                this.$axios.post('/user/collection_store',
-                    qs.stringify({
-                        user_id:this.user_id,
-                        goods_id:this.goods_id,
-                        token:this.token,
-                        university_id:this.university_id
+                if(!this.iscollect){
+                    // 没有收藏
+                    this.$axios.post('/user/collection_store',
+                        qs.stringify({
+                            user_id:this.user_id,
+                            goods_id:this.goods_id,
+                            token:this.token,
+                            university_id:this.university_id
 
-                    })).then(res=>{
-                    if(res.data.err_code == 0){
-                        //成功加入购物车
-                        this.s = true;
+                        })).then(res=>{
+                        if(res.data.err_code == 0){
+                            //成功收藏
+                            this.s = true;
+                            this.iscollect = true
+                        }
+                    })
+                }else{
+                    // 已收藏删除收藏
+                    this.$axios.post('/user/collection_delete',
+                        qs.stringify({
+                            goods_id:[{id:this.goods_id}],
+                            university_id:this.university_id
 
-                    }
-                    let idIndex = this.goodid.indexOf(id)
-                    if (idIndex >= 0) {//如果已经包含就去除
-                        this.goodid.splice(idIndex, 1)
-                        this.sq=true;
-                    } else {//如果没有包含就添加
-                        this.goodid.push(id)
-                    }
-                    console.log(this.goodid)
-                    // console.log(res)
-                })
+                        })).then(res=>{
+                        if(res.data.err_code == 0){
+                            this.sq = true
+                            this.iscollect = false
+                        }
+                    })
+                }
+                
             },
             flushCom:function(){
                 this.$router.go(0);
@@ -283,80 +330,85 @@
             close1(){
                 this.showbox1=!this.showbox1
             },
-            zhezhao(){
-                this.showbox1=false;
-                this.showbox=false;
-            },
+
             willmember(){
                 this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             },
+            // 8-24添加
             check(value,cellIndex,index){
-                this.names=cellIndex;
-                // console.log(this.names)
-                this.choose_spec[index] = value;
-                // console.log(this.goods.spec_reg);
-                var reg_str = '';
-                // console.log(this.choose_spec.length)
-                for(var i=0;i<this.choose_spec.length;i++){
-                    reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
-                    this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
-                }
-
-                for (var i=0;i<this.goods.spec_reg.length;i++){
-                    if(this.goods.spec_reg[i].reg_spec_str == reg_str){
-                        this.style_img=this.goods.spec_reg[i].spec_img_path
-                        this.style_stock=this.goods.spec_reg[i].stock
-                        this.spec_id=this.goods.spec_reg[i].spec_id
-                        console.log(this.spec_id)
+                this.arr.splice(index,1,value)
+                let G = this.arr.join('-');
+                this.checkgoods = G || "";
+                let data = {}
+                this.goods.spec_reg.forEach(function(v,i){
+                    if(v.reg_spec_str == G){
+                        data = v
                     }
+                })
+                this.xzinfo = data;
+            // 8-24添加结束
 
-                }
+                // this.names=cellIndex;
+                // // console.log(this.names)
+                // this.choose_spec[index] = value;
+                // // console.log(this.goods.spec_reg);
+                // var reg_str = '';
+                // // console.log(this.choose_spec.length)
+                // for(var i=0;i<this.choose_spec.length;i++){
+                //     reg_str += i==(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+'-';
+                //     this.choose=(this.choose_spec.length-1)?this.choose_spec[i]:this.choose_spec[i]+',';
+                // }
+
+                // for (var i=0;i<this.goods.spec_reg.length;i++){
+                //     if(this.goods.spec_reg[i].reg_spec_str == reg_str){
+                //         this.style_img=this.goods.spec_reg[i].spec_img_path
+                //         this.style_stock=this.goods.spec_reg[i].stock
+                //         this.spec_id=this.goods.spec_reg[i].spec_id
+                //         console.log(this.spec_id)
+                //     }
+
+                // }
 
             },
             gocart(){
-                let id=this.user_id;
-                if(id==0){
-                    this.sy=true;
-                    jsObj.GotoLogin();
-                }else {
-                    if (this.types == "门店自营") {
+                console.log(this.types)
+                if(this.types=="门店自营"){
+                    this.$axios.post('/user/shop_card',
+                        qs.stringify({
+                            goods_id:this.goods_id,
+                            num:this.goodsnum,
+                            user_id:this.user_id,
+                            spec_id:this.xzinfo.spec_id,
+                            university_id:this.university_id
+                        })).then(res=>{
+                        if(res.data.err_code == 0){
+                            //成功加入购物车
+                            this.sh = true;
+                            this.showbox = false
+                        }
+                        // console.log(res)
+                    })
+                    localStorage.good=JSON.stringify(this.goods);
+                }else if(this.types=="总仓包邮"){
+                    
                         this.$axios.post('/user/shop_card',
                             qs.stringify({
-                                goods_id: this.goods_id,
-                                num: this.goodsnum,
-                                user_id: this.user_id,
-                                spec_id: this.spec_id,
-                                university_id: this.university_id
-                            })).then(res => {
-                            if (res.data.err_code == 0) {
+                                goods_id:this.goods_id,
+                                num:this.goodsnum,
+                                user_id:this.user_id,
+                                spec_id:this.xzinfo.spec_id,
+                                university_id:this.university_id
+                            })).then(res=>{
+                            if(res.data.err_code == 0){
                                 //成功加入购物车
+                                this.showbox = false
                                 this.sh = true;
                             }
                             // console.log(res)
                         })
-                        localStorage.good = JSON.stringify(this.goods);
-                    } else if (this.types == "总仓包邮") {
-                        if (this.choose == "") {
-                            this.sx = true;
-                        } else {
-                            this.$axios.post('/user/shop_card',
-                                qs.stringify({
-                                    goods_id: this.goods_id,
-                                    num: this.goodsnum,
-                                    user_id: this.user_id,
-                                    spec_id: this.spec_id,
-                                    university_id: this.university_id
-                                })).then(res => {
-                                if (res.data.err_code == 0) {
-                                    //成功加入购物车
-                                    this.sh = true;
-                                }
-                                // console.log(res)
-                            })
-                            localStorage.good = JSON.stringify(this.goods);
+                        localStorage.good=JSON.stringify(this.goods);
 
-                        }
-                    }
+                    
                 }
 
 
@@ -364,34 +416,20 @@
 
             },
             gocart1(){
-                console.log(0)
-                let id=this.user_id;
-
-                if(id==0){
-                    this.sy=true;
-                    jsObj.GotoLogin();
+                if(this.user_id==""){
+                    jsObj.GotoLogin()
                 }else{
                     if(this.types=="门店自营"){
                         localStorage.good=JSON.stringify(this.goods);
-                        this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id,spec_id:this.spec_id}})
+                        this.$router.push({name:'confirmorder',query:{goods_id:this.goods_id,num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id,spec_id:this.xzinfo.spec_id}})
                     }else if(this.types=="总仓包邮"){
-                        if(this.choose==""){
-                            this.sx = true;
-                        }else{
+
 
                             localStorage.good=JSON.stringify(this.goods);
-                            this.$router.push({name:'confirmorder',query:{num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id,spec_id:this.spec_id}})
-                        }
+                            this.$router.push({name:'confirmorder',query:{goods_id:this.goods_id,num:this.goodsnum,user_id:this.user_id,token:this.token,university_id:this.university_id,spec_id:this.xzinfo.spec_id}})
+                        
                     }
                 }
-
-
-
-
-
-
-
-
             },
 
         }
@@ -429,9 +467,9 @@ function array_search(arr,val,type) {
     .ginfo{
         width: 100%;
         height: auto;
-        max-height: 7.0rem;
-        float: left;
+        max-height: 6.9rem;
         overflow-y: auto;
+        float: left;
         position: absolute;
         bottom: 1.02rem;
         left: 0;
@@ -606,6 +644,7 @@ function array_search(arr,val,type) {
         height: auto;
         background: #fff;
     }
+    
     .imgsbox img{
         width: 100%;
         height: 100%;
@@ -841,7 +880,7 @@ function array_search(arr,val,type) {
     .style2{
         margin-left:0;
     }
-    .style1:hover{
+    .style1.checked{
         color:#f9444d;
     }
     .stylebox{

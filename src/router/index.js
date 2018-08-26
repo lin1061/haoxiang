@@ -48,6 +48,8 @@ const Goldfail = r => require.ensure([], () => r(require('@/components/goldfail'
 const Schoolsuccess = r => require.ensure([], () => r(require('@/components/schoolsuccess')), 'schoolsuccess')
 const Schoolfail = r => require.ensure([], () => r(require('@/components/schoolfail')), 'schoolfail')
 const Memberfail = r => require.ensure([], () => r(require('@/components/memberfail')), 'memberfail')
+const Billupdate = r => require.ensure([], () => r(require('@/components/billupdate')), 'billupdate')
+const Goldadd = r => require.ensure([], () => r(require('@/components/goldadd')), 'goldadd')
 
 
 Vue.use(Router)
@@ -335,6 +337,18 @@ export default new Router({
             path: '/memberfail',
             name: 'memberfail',
             component: Memberfail
+        },
+        //发票编辑页面
+        {
+            path: '/billupdate',
+            name: 'billupdate',
+            component: Billupdate
+        },
+        //金币签到页面
+        {
+            path: '/goldadd',
+            name: 'goldadd',
+            component: Goldadd
         },
     ]
 })

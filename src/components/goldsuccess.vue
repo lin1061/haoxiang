@@ -4,18 +4,21 @@
             <div class="erweima" @click="baocun">
                 <img src="../assets/images/qr@2x.png" alt="">
             </div>
-            <span class="wechat wechat2" >长按保存图片</span>
+            <span class="wechat wechat2" >点击保存图片</span>
             <span class="card-title1 card-title3">微信号：156813518646135</span>
             <span class="wechat wechat2">兑换成功</span>
             <span class="card-title1 card-title5">我们会尽快组织发货</span>
             <span class="tel" @click="phone">电话咨询</span>
             <span id="back">返回</span>
 
+
+
         </main>
     </div>
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "goldsuccess",
         data(){
@@ -23,37 +26,17 @@
 
             }
         },
-        methods:{
+
+            methods:{
             phone(){
                 jsObj.GotoCall(15703410266);
             },
             baocun(){
-                savePicture()
+                jsObj.SavePic("../static/img/qr@2x.7bc452f.png")
             }
         }
     }
-    function savePicture() {
 
-        // 创建下载任务
-        picurl="../assets/images/qr@2x.png";
-        //图片保存到手机后的路径
-        picname="_downloads/erwei.png";
-        var dtask = plus.downloader.createDownload(picurl, {}, function ( d, status ) {
-            // 下载完成
-            if ( status == 200 ) {
-                //	alert( "Download success: " + d.filename );
-                plus.gallery.save(picname,function() {//保存到相册方法
-                    mui.toast('已保存到手机相册');
-                }, function() {
-                    mui.toast('保存失败，请重试！');
-                });
-            } else {
-                //	alert( "Download failed: " + status );
-            }
-        });
-        //dtask.addEventListener( "statechanged", onStateChanged, false );
-        dtask.start();//开始下载
-    }
 </script>
 
 <style scoped>

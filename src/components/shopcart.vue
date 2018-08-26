@@ -18,16 +18,21 @@
 					<div class="shopcart-cont border-1px" v-for="(item,index) in cart.store" :key=index>
 						<div class="seller-checkbox" :class="{'checked':goodscart.store.indexOf(item.goods.goods_id)
           			>=0}" @click="onegoods(1,item.goods.goods_id,index)"></div>
-						<div class="shopcart-thumb">
-							<img :src="item.goods.goods_img">
-						</div>
-						<div class="shopcart-info">
-							<div class="shopcart-info-name">
-								<div class="n1">{{item.goods.goods_name}}</div>
-								<!--<div class="n2"></div>-->
+						<router-link :to="{name:'goodshow',query:{goods_id:item.goods.goods_id}}">
+							<div class="shopcart-thumb">
+								<img :src="item.goods.goods_img">
 							</div>
-							<div class="shopcart-info-pro">原价:{{item.goods.market_price}}</div>
-							<div class="shopcart-info-rmb">会员价¥{{item.goods.shop_price}}</div>
+						</router-link>
+						<div class="shopcart-info">
+							<router-link :to="{name:'goodshow',query:{goods_id:item.goods.goods_id}}">
+								<div class="shopcart-info-name">
+									<div class="n1"><span style="text-decoration:none;color:#555555;">{{item.goods.goods_name}}</span></div>
+									<!--<div class="n2"></div>-->
+								</div>
+								<div class="shopcart-info-pro">原价:{{item.goods.market_price}}</div>
+								<div class="shopcart-info-rmb">会员价¥{{item.goods.shop_price}}</div>
+
+							</router-link>
 							<div class="shopcart-num">
 								<span class="minus" @click="minus(item.id,index,1)"></span>
 								<div class="goos-num">{{item.num}}</div>
@@ -165,6 +170,9 @@
         created(){
             this.init();
         },
+		mounted:function(){
+            console.log(this.university_id);
+		},
         methods:{
             init(){
                 // 获取用户跟人信息判断会员
@@ -179,6 +187,7 @@
                 // if(this.is_yellow_card==0){
                 //     this.showbox=!this.showbox;
                 // }
+				console.log(this.university_id);
                 this.$axios.get('/user/shop_card',{params:{user_id:this.user_id,university_id:this.university_id}}).then(res=>{
                     if(res.data.err_code == 0){
                         let cartdata =res.data.data;
@@ -324,6 +333,8 @@
             postorder(){
                 this.cartgoodsinfo();
                 this.$router.push({path:'/confirmorder1',query:{user_id:this.user_id,token:this.token,university_id:this.university_id,device:this.device}})
+                jsObj.SetTitle("确认订单")
+
 
             },
             // 统计购物车选中
@@ -365,9 +376,11 @@
             deletgoodsapi(id){
                 // 购物车id
                 this.$axios.get('/user/delete_shop_card',{params:{'shop_card_id':id}}).then(res=>{
-                    console.log(res)
                     if(res.data.err_code == 0){
-                        this.successcard()
+                        let that = this
+                        setTimeout(function(){
+                            that.successcard()
+                        },500)
                         this.init();
                     }
                 })
@@ -532,7 +545,7 @@
 					height: 0.4rem;
 					background-position: left center;
 					margin-left: 0.24rem;
-					/*margin-right: 0.5rem;*/
+					margin-right: 0.5rem;
 				}
 			}
 			.footer-num{

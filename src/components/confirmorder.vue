@@ -19,19 +19,19 @@
                 </div>
             </div>
             <div class="ginfo clearfix">
-                <div v-show="types=='门店自营'">
+                <div v-show="ordergood.store.length>0">
                     <div class="goods">
                         <div class="gtop">
-                            <span class="gname">{{types}}</span>
+                            <span class="gname">门店自营</span>
                         </div>
-                        <div class="order-mitem">
+                        <div class="order-mitem" v-for="item in ordergood.store" :key="item.goods_id">
                             <div class="order-tu">
-                                <img :src="goodorder.goods_img" alt="">
+                                <img :src="item.goods_img" alt="">
                             </div>
-                            <span class="order-title1">{{goodorder.name}}</span>
-                            <span class="order-weight"></span>
-                            <span class="order-price">￥{{price}}</span>
-                            <span class="order-num">x{{num}}</span>
+                            <span class="order-title1">{{item.goods_name}}</span>
+                            <span class="order-weight">{{item.spec_group}}</span>
+                            <span class="order-price">￥{{item.goods_price}}</span>
+                            <span class="order-num">x{{item.goods_num}}</span>
                         </div>
                     </div>
                     <div class="pay">
@@ -56,19 +56,19 @@
 
                     </div>
                 </div>
-                <div v-show="types=='总仓包邮'">
+                <div v-show="ordergood.warehouse.length>0">
                     <div class="goods">
                         <div class="gtop">
-                            <span class="gname">{{types}}</span>
+                            <span class="gname">总仓包邮</span>
                         </div>
-                        <div class="order-mitem">
+                        <div class="order-mitem" v-for="item in ordergood.warehouse" :key="item.goods_id">
                             <div class="order-tu">
-                                <img :src="goodorder.goods_img" alt="">
+                                <img :src="item.goods_img" alt="">
                             </div>
-                            <span class="order-title1">{{goodorder.name}}</span>
-                            <span class="order-weight"></span>
-                            <span class="order-price">￥{{price}}</span>
-                            <span class="order-num">x{{num}}</span>
+                            <span class="order-title1">{{item.goods_name}}</span>
+                            <span class="order-weight">{{item.spec_group}}</span>
+                            <span class="order-price">￥{{item.goods_price}}</span>
+                            <span class="order-num">x{{item.goods_num}}</span>
                         </div>
                     </div>
                     <div class="pay">
@@ -88,7 +88,7 @@
                         </div>
                         <div class="order-box1 pay-title1 ">
                             <span >商品总额</span>
-                            <span class="pay-title money">￥{{moneynum}}</span>
+                            <span class="pay-title money">￥{{ordergood.total_money.toFixed(2)}}</span>
                         </div>
                         <div class="order-box1 pay-title1">
                             <span >运费</span>
@@ -108,6 +108,17 @@
 
             </div>
         </main>
+        <div class="choose2" v-show="showbox2">
+            <div class="fanshi2">
+                <div class="ziti2 ziti22 noto2" >提示</div>
+                <div class="ziti2 ziti3" >您的额度不够，可选择返回购物车删除或立即续费增加额度</div>
+
+                <div class="ziti2 ziti12 ziti32" @click="shopgo">返回购物车</div>
+                <div class="ziti2 ziti12 okto2"  @click="gomember">立即续费</div>
+            </div>
+
+        </div>
+        <toast v-model="tj"  type="text" :time="800" is-show-mask text="请添地址" position="bottom"></toast >
         <footer>
             <div class="hengfu"@click="gomember" v-show="s">成为好象会员，本单可减<span class="yuan">20</span>元。立即开通></div>
             <div class="box">
@@ -121,16 +132,19 @@
 </template>
 
 <script>
+    import { Toast } from 'vux'
     import { mapState } from 'vuex'
     import qs from 'qs'
     export default {
         name: "confirmorder",
         data(){
             return{
+                tj:false,
                 goodorder:[],
                 showchoose:false,
+                showbox2:false,
                 fanshi:"送货上门",
-                num:1,
+                num:[],
                 types:"",
                 pay:"在线支付",
                 user_info:[],
@@ -148,12 +162,19 @@
                 order_type:'',
                 order_id:[],
                 money1:0,
-                spec_id:"",
+                spec_id:[],
                 address_id:'',
                 moneymore:0.00,
                 is_cart:0,
                 s:false,
-
+                goods_id:[],
+                token:'',
+                ordergood:[],
+                typeof:'',
+                specs_id:'',
+                goods_ids:"",
+                nums:"",
+                allmoney:0
 
             }
         },
@@ -163,13 +184,18 @@
                 device:state =>state.device
             }),
             totalmoney(){
-                return this.moneymore=this.moneynum+this.freight;
+                return this.moneymore=this.ordergood.total_money+this.freight
             }
 
         },
         created:function(){
+
             this.university_id=this.$route.query.university_id;
-            this.spec_id=this.$route.query.spec_id;
+            this.spec_id.push(this.$route.query.spec_id);
+            // console.log(this.spec_id)
+            this.token=this.$route.query.token;
+            this.goods_id.push(this.$route.query.goods_id);
+            this.allmoney=this.ordergood.total_money
             //小程序跳转过来获取收获地址
             if(this.$route.query.address){
                 this.address = this.$route.query.address
@@ -179,10 +205,24 @@
             }
         },
         mounted:function(){
-            this.num=this.$route.query.num;
-            console.log(this.num)
+            // app调用
+            let that = this
+            window['Showaddress'] = function(address,id,addressid,addressname){
+                that.address = address
+                that.university_id = id
+                that.address_id=addressid;
+                that.addressname=addressname;
+            }
+            this.nums=this.$route.query.num;
+            this.specs_id=this.$route.query.spec_id
+            this.goods_id==this.$route.query.goods_id;
+            this.num.push(this.$route.query.num);
+            // console.log(this.num)
             this.goodorder=JSON.parse(localStorage.good);
+            this.typeof=this.goodorder.types;
+            console.log(this.typeof)
             this.types=this.goodorder.types;
+
             this.$axios.get('/university_address',{params:{university_id:this.university_id}}).then(res=>{
                 // console.log(res)
                 this.school=res.data.data;
@@ -194,20 +234,64 @@
             }else if(this.types=='2'){
                 this.types="总仓包邮"
             }
+            if(this.typeof=='1'){
+                this.$axios.post('/user/order_confirm',
+                    qs.stringify({
+                        goods_id:this.goods_id,
+                        goods_num:this.num,
+                        user_id:this.user_id,
+                        goods_spec_id:[0],
+
+                    })).then(res=>{
+                    // console.log(res.data.err_code)
+                    if(res.data.err_code==0){
+                        this.ordergood=res.data.data;
+                    }else if(res.data.err_code==1003){
+                        this.ordergood=res.data.data;
+                        this.showbox2=true;
+                    }
+                    // console.log(res)
+                })
+            }
+            if(this.typeof=='2'){
+                this.$axios.post('/user/order_confirm',
+                    qs.stringify({
+                        goods_id:this.goods_id,
+                        goods_num:this.num,
+                        user_id:this.user_id,
+                        goods_spec_id:this.spec_id,
+
+                    })).then(res=>{
+                    // console.log(res.data.err_code)
+                    if(res.data.err_code==0){
+                        this.ordergood=res.data.data;
+                    }else if(res.data.err_code==1003){
+                        this.ordergood=res.data.data;
+                        this.showbox2=true;
+                    }
+                    // console.log(res)
+                })
+            }
+
             this.$axios.get('/user/get_info/'+this.user_id).then(res=>{
                 this.user_info=res.data.data.user_info;
                 this.is_yellow_card=this.user_info.is_yellow_card;
                 if(this.is_yellow_card=='0'){
                     this.price=this.goodorder.market_price;
                     this.moneynum=this.num*this.price
-
+                    this.s=true;
                 }else if(this.is_yellow_card=='1'){
                     this.price=this.goodorder.member_price;
                     this.moneynum=this.num*this.price;
-                    this.s=true;
+
                 }
-                console.log(res.data.data.user_info)
+                // console.log(res.data.data.user_info)
             })
+            this. defaultaddress();
+        },
+        components: {
+
+            Toast
         },
         methods:{
             // 查询用户默认收货地址
@@ -215,7 +299,7 @@
                 this.$axios.get('/user/addresses?user_id='+this.user_id).then((res)=>{
                     if(res.data.err_code == 0){
                         if(res.data.data.length<=0){
-                            this.address = "请添加收货方式";
+                            this.address = "请添加收货地址";
                         }else {
                             res.data.data.forEach((val,index)=>{
                                 if(val.is_default == 1){
@@ -262,9 +346,11 @@
                     jsObj.GotoPoi(this.school.addresss,this.school.latitude,this.school.longitude)
                 }
             },
-
+            shopgo(){
+                this.$router.push({name:'shopcart',query:{user_id:this.user_id,token:this.token,university_id:this.university_id}})
+            },
             gomember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             },
             gochoose:function () {
                 this.showchoose=!this.showchoose;
@@ -286,6 +372,9 @@
                 this.$router.push({name:'addbills'})
             },
             payfor(){
+                if( this.address = "请添加收货地址"){
+                    this.tj=true;
+                }
                 let _data = this.goodorder;
                 let _goods_type2 = {goods_type:0,goods_info:[],delivery_model:0,trans_fee:0,invoice_id:0};
                 let _goods_type1 = {goods_type:0,goods_info:[],delivery_model:0,trans_fee:0,invoice_id:1};
@@ -295,8 +384,8 @@
                     _goods_type2.goods_type = 2;
                     // if(this.fanshi="")
                         _goods_info.id = _data.id;
-                        _goods_info.number = this.num;
-                        _goods_info.model_id = this.spec_id;
+                        _goods_info.number = this.nums;
+                        _goods_info.model_id = this.specs_id;
 
                     _goods_type2.goods_info.push(_goods_info);
                     if(this.fanshi=='送货上门'){
@@ -313,7 +402,7 @@
                     _goods_type1.goods_type = 1;
 
                         _goods_info.id = _data.id;
-                        _goods_info.number = this.num;
+                        _goods_info.number = this.nums;
                         _goods_info.model_id = 0;
 
                     _goods_type1.goods_info.push(_goods_info);
@@ -341,6 +430,7 @@
                         if(this.device){
                             wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'&pay='+this.moneymore})
                         }else{
+                            console.log(this.moneymore)
                             jsObj.GotoPay(this.order_id,'G',this.moneymore)
                         }
 
@@ -353,6 +443,66 @@
 </script>
 
 <style scoped>
+    .fanshi2{
+        width: 5.63rem;
+        height: 4.43rem;
+        background: #fff;
+        position: absolute;
+        bottom:0;
+        left:0;
+        top:0;
+        right:0;
+        margin:auto;
+        border-radius: 0.20rem;
+    }
+    .ziti22{
+        color:#cccccc;
+        font-size: 0.28rem;
+        line-height: 0.30rem;
+    }
+
+    body{
+        background: #f5f5f5;
+    }
+    .ziti2{
+        font-size: 0.32rem;
+        text-align: center;
+        color:#555555;
+        width: 100%;
+        height: 1.0rem;
+        display: block;
+        line-height: 1.0rem;
+    }
+    .ziti3{
+        height: 2.0rem;
+    }
+    .ziti12:hover{
+        color:#f9444d;
+    }
+    .ziti32{
+        color:#cccccc;
+    }
+    .choose2{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
+        z-index: 44;
+    }
+    .ziti12{
+        width: 50%;
+        float:left;
+
+    }
+    .noto2{
+        color:#cccccc;
+        font-size: 0.28rem;
+    }
+    .okto2{
+        color:#f9444d;
+    }
     .fanshi{
         width: 100%;
         height: 3.0rem;

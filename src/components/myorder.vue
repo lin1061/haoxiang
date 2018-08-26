@@ -7,34 +7,34 @@
         <!--</header>-->
         <!--内容-->
         <div class="nav clearfix">
-            <router-link :to="{path:'/myorder/1',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
+            <div class="nav-item"  @click="touchtype(1)">
                 <span>全部</span>
                 <img src="../assets/images/d@2x.png" alt="" class="xian">
                 <div class="lan" v-show="order_status == ''"></div>
                 <div class="lan lan1"></div>
-            </router-link>
-            <router-link :to="{path:'/myorder/10',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
+            </div>
+            <div class="nav-item"  @click="touchtype(10)">
                 <span>待支付</span>
                 <img src="../assets/images/d@2x.png" alt="" class="xian">
                 <div class="lan" v-show="order_status == 10"></div>
                 <div class="lan lan1"></div>
-            </router-link>
-            <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
+            </div>
+            <div class="nav-item"  @click="touchtype(20)">
                 <span>待收货</span>
                 <img src="../assets/images/d@2x.png" alt="" class="xian xian1">
                 <div class="lan" v-show="order_status == 20"></div>
                 <div class="lan lan1"></div>
-            </router-link>
-            <router-link :to="{path:'/myorder/60',query:{'user_id':user_id,'token':token,'university_id':university_id}}" class="nav-item"  @click.native="flushCom">
+            </div>
+            <div class="nav-item"  @click="touchtype(60)">
                 <span>已完成</span>
                 <div class="lan" v-show="order_status == 60"></div>
                 <div class="lan lan1"></div>
-            </router-link>
+            </div>
         </div>
         <main>
 
             <div class="order" v-if="list.store.length>0||list.warehouse.length>0">
-                <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token}}" class="order-item clearfix" v-for="item in list.store" :key="item.id">
+                <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token,'user_id':user_id,'university_id':university_id}}" class="order-item clearfix" v-for="item in list.store" :key="item.id">
                     <div class="order-top">
                         <span>门店自营</span>
                     </div>
@@ -52,16 +52,17 @@
                         <span class="order-num">x{{gitem.quantity}}</span>
                     </div>
                     <div class="order-bitem1 order-bitem2">
-                        <span class="order-total">合计：￥{{item.total_money}}（运费：0）</span>
+                        <span class="order-total">合计：￥{{item.total_money}}（运费：{{item.postage || 0}}）</span>
                     </div>
                     <div class="order-active">
-                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">
-                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10">
-                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
-                        <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
+                        <img src="../assets/images/qx@2x.png" alt="" class="cancel" v-if="item.order_status == 10" @click.prevent="onConfirm(item.id)">
+                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50 || item.order_status == 40" @click.prevent="logistics">
+                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10" @click.prevent="waitpaygoods(item.id,item.total_money)">
+                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50 || item.order_status == 20 || item.order_status == 40" @click.prevent="succseegoods(item.id)">
+                        <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods)">
                     </div>
                 </router-link>
-                <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token}}" class="order-item clearfix" v-for="item in list.warehouse" :key="item.id">
+                <router-link :to="{name:'ordershow',query:{oid:item.id,'token':token,'user_id':user_id,'university_id':university_id}}" class="order-item clearfix" v-for="item in list.warehouse" :key="item.id">
                     <div class="order-top">
                         <span>总仓包邮</span>
                     </div>
@@ -82,32 +83,59 @@
                         <span class="order-total">合计：￥{{item.total_money}}（运费：0）</span>
                     </div>
                     <div class="order-active">
-                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50" @click.prevent="logistics">
-                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10" @click.prevent="waitpaygoods(item.id)">
-                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50" @click.prevent="succseegoods(item.id)">
-                        <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods.goods_id)">
+                        <img src="../assets/images/qx@2x.png" alt="" class="cancel" v-if="item.order_status == 10" @click.prevent="onConfirm(item.id)">
+                        <img src="../assets/images/wl@2x.png" alt="" class="cancel" v-if="item.order_status == 50 || item.order_status == 40" @click.prevent="logistics">
+                        <img src="../assets/images/zf@2x.png" class="cancel pay" v-if="item.order_status == 10" @click.prevent="waitpaygoods(item.id,item.total_money)">
+                        <img src="../assets/images/sh@2x.png" alt="" class="cancel pay" v-if="item.order_status == 50 || item.order_status == 20 || item.order_status == 40" @click.prevent="succseegoods(item.id)">
+                        <img src="../assets/images/play.png" alt="" class="cancel pay" v-if="item.order_status == 60 || item.order_status == 70" @click.prevent="addgoods(item.goods)">
                     </div>
                 </router-link>
             </div>
             <errinfo v-else></errinfo>
             <toast v-model="s"  type="text" :time="800" is-show-mask text="入库成功" position="bottom"></toast >
+            <confirm v-model="show2"
+              title="提示"
+              theme="android"
+              @on-confirm="ordertype">
+                <p style="text-align:center;">{{text}}</p>
+            </confirm>
+            <!--<confirm v-model="show3"-->
+                     <!--title="提示"-->
+                     <!--theme="android"-->
+                     <!--@on-confirm="getorder">-->
+                <!--<p style="text-align:center;">{{text1}}</p>-->
+            <!--</confirm>-->
+
         </main>
+        <!--<div class="zhezhaojin" v-show="zhezhao" @click="close">-->
+            <!--&lt;!&ndash;会员卡&ndash;&gt;-->
+            <!--<section class="cardjin">-->
+                <!--<span class="titlegold">20</span>-->
+            <!--</section>-->
+        <!--</div>-->
     </div>
 </template>
 
 <script>
     import { mapState } from 'vuex'
-    import { Toast } from 'vux'
+    import { Toast,Confirm} from 'vux'
     import errinfo from "@/assets/errinfo";
     export default {
         name: "myorder",
         data(){
             return{
+                zhezhao:true,
                 list:{store:[],warehouse:[]},
                 types:"",
                 status:"",
                 order_status:"",
-                s:false
+                s:false,
+                show2:false,
+                text:'确定取消订单？',
+                text1:'确定收货么？',
+                id:"",
+                show3:false,
+                coin:""
             }
         },
         computed: {
@@ -120,34 +148,38 @@
         },
         components: {
             errinfo,
-            Toast
-        },
-        watch:{
-            $route:function(){
-                let status = this.$route.params.id == 1?"":this.$route.params.id;
-                this.order_status = status;
-                this.getorderInfo();
-            }
-
+            Toast,
+            Confirm
         },
         created:function(){
-            let status = this.$route.params.id == 1?"":this.$route.params.id;
-            this.order_status = status;
+            this.order_status= this.$route.params.id == 1?"":this.$route.params.id;
             this.getorderInfo();
         },
         methods:{
+            onConfirm(id){
+                this.show2 = true
+                this.id = id
+            },
+            // 点击切换订单状态
+            touchtype(type){
+                // type订单状态
+                this.order_status = (type==1)?"":type
+                this.getorderInfo();
+            },
             // 调用接口
             getorderInfo(){
                 // order_status为空默认查询所有订单 10待支付,20待发货,40部分发货,50已发货,60已完成,70取消
                 let status = this.order_status || "";
                 this.$axios.get('/user/order',{params:{user_id:this.user_id,university_id:this.university_id,status:status}}).then(res=>{
                     let info =res.data.data;
-                    console.log(info)
                     let store = info.store || []//门店自营
                     let warehouse = info.warehouse || []//总仓包邮
                     this.list.store = store.map((v)=>{
                         if(v.order_status == 10){
                             v.status = '待支付'
+                            
+                        }else{
+                            v.time = ""
                         }
                         if(v.order_status == 20){
                             v.status = '已支付'
@@ -170,8 +202,11 @@
                         return v;
                     })
                     this.list.warehouse = warehouse.map((v)=>{
-                        if(v.order_status == '10'){
+                        if(v.order_status == 10){
                             v.status = '待支付'
+                            v.time = 60
+                        }else{
+                            v.time = ""
                         }
                         if(v.order_status == '20'){
                             v.status = '已支付'
@@ -209,36 +244,69 @@
                 // id 订单id
                 this.$axios.get('/user/change_order_status',{params:{order_id:id,status:60}}).then(res=>{
                     let info =res.data;
+                    console.log(info)
                     if(info.err_code == 0){
+                        this.coin=this.info.data.coin;
                         this.getorderInfo();
-                    }
-                })
-            },
-            //待付款
-            waitpaygoods(id){
-                // id 订单id
-                this.$axios.get('/user/change_order_status',{params:{order_id:id,status:10}}).then(res=>{
-                    let info =res.data;
-                    if(info.err_code == 0){
-                        this.getorderInfo();
-                    }
-                })
-            },
 
+                    }
+                })
+            },
+            //支付
+            waitpaygoods(id,num){
+                // id 订单id
+                if(window.__wxjs_environment === 'miniprogram'){
+                            // 小程序
+                    wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+id+'&type=G'+'&pay='+num})
+                }else {
+                    jsObj.GotoPay(id,'G',num)
+                }
+            },
+            getorder(){
+                if(this.coin>0){
+                    this.zhezhao=true;
+                }
+
+            },
+            close(){
+                this.zhezhao=false;
+            },
             flushCom:function(){
                 this.$router.go(0);
             },
             // 再次购买入购物车
             addgoods(id){
                 // 商品id
-                this.$axios.get('/user/shop_card',{params:{user_id:this.user_id,num:1,university_id:this.university_id,goods_id:id}}).then(res=>{
+                let that = this
+                if(id.length>0){
+                    id.forEach(function(v,i){
+                        that.$axios.post('/user/shop_card',{'user_id':that.user_id,'num':1,'university_id':that.university_id,'goods_id':v.goods_id,'spec_id':v.spec_id}).then(res=>{
+                            let info =res.data;
+                            if(info.err_code == 0){
+                                //成功加入购物车
+                                that.s = true;
+                            }
+                        })
+                    })
+                    
+                }
+                
+            },
+            // 取消订单
+            ordertype(){
+                let id = this.id
+               this.$axios.get('/user/change_order_status',{params:{order_id:id,status:70}}).then(res=>{
                     let info =res.data;
                     if(info.err_code == 0){
-                        //成功加入购物车
-                        this.s = true;
+                        // 状态修改成功
+                        this.getorderInfo();
                     }
-                })
-            }
+                }) 
+            },
+            // 倒计时函数
+            // entime(s,m,index){
+            //     let 
+            // }
         }
     }
 </script>
@@ -452,4 +520,49 @@
     .order-bitem2{
         border:none;
     }
+    .zhezhaojin{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
+    }
+    .cardjin{
+        width: 6.32rem;
+        height: 4.89rem;
+        position:fixed;
+        top:4.23rem;
+        left:0;
+        right:0;
+        margin:auto;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-image: url("../assets/images/jinbi.png") ;
+    }
+    .card-rtopjin{
+        width: auto;
+        height: 0.53rem;
+        background: #fff;
+        float:right;
+        padding:0rem 0.2rem;
+        -webkit-border-radius: 0.5rem;
+        -moz-border-radius: 0.5rem;
+        border-radius: 0.5rem;
+        margin-right:0.42rem;
+        margin-top: 0.30rem;
+        font-size:0.28rem;
+        color:#f9444d;
+        text-align: center;
+        line-height: 0.53rem;
+    }
+    .titlegold{
+        font-size:0.48rem;
+        color:black;
+        text-align: center;
+        z-index:999;
+        margin-top:3.2rem;
+        display: block;
+    }
+
 </style>

@@ -4,13 +4,16 @@
             <div class="img">
                 <img src="../assets/images/success.png" alt="">
                 <span>订单支付成功</span>
-                <button class="anniu" @click="goorder"></button>
+                <router-link :to="{path:'/myorder/20',query:{'user_id':user_id,'token':token,'university_id':university_id}}">
+                    <button class="anniu" @click="goorder"></button>
+                </router-link>
             </div>
         </main>
     </div>
 </template>
 
 <script>
+    import { mapState } from 'vuex'
     export default {
         name: "paysuccess",
         data(){
@@ -18,9 +21,16 @@
 
             }
         },
+        computed: {
+            ...mapState({
+                user_id: state => state.user_id,
+                token: state => state.token,
+                university_id: state => state.university_id
+            }),
+        },
         methods:{
             goorder(){
-                this.$router.push({name:'myorder'})
+                jsObj.SetTitle("全部订单")
             }
         }
     }

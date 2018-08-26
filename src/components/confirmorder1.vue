@@ -20,23 +20,23 @@
                         <span class="name name1">自提地址:{{school.address}}</span>
                         <img src="../assets/images/导航.png" class="go go1" >
                     </div>
-                   
+
                 </div>
             </div>
             <div class="ginfo clearfix">
-                <div v-show="goodorder.store.length>0">
+                <div v-show="ordergood.store.length>0">
                     <div class="goods">
                         <div class="gtop">
                             <span class="gname">门店自营</span>
                         </div>
-                        <div class="order-mitem" v-for="(item,index) in goodorder.store">
+                        <div class="order-mitem" v-for="(item,index) in ordergood.store">
                             <div class="order-tu">
-                                <img :src="item.goods.goods_img">
+                                <img :src="item.goods_img">
                             </div>
-                            <span class="order-title1">{{item.goods.goods_name}}</span>
-                            <span class="order-weight"></span>
-                            <span class="order-price">￥{{price}}</span>
-                            <span class="order-num">x{{item.num}}</span>
+                            <span class="order-title1">{{item.goods_name}}</span>
+                            <span class="order-weight">{{item.spec_group}}</span>
+                            <span class="order-price">￥{{item.goods_price}}</span>
+                            <span class="order-num">x{{item.goods_num}}</span>
                         </div>
                     </div>
                     <div class="pay">
@@ -47,7 +47,7 @@
                         </div>
                         <div class="order-box1 pay-title1">
                             <span >配送</span>
-                            <span class="pay-title">{{fanshi}}</span>
+                            <span class="pay-title" @click="gochoose">{{fanshi}}</span>
                             <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
                         </div>
                         <!--<div class="order-box1 pay-title1 order-box2">-->
@@ -56,7 +56,7 @@
                         <!--</div>-->
                         <div class="order-box1 pay-title1 ">
                             <span >商品总额</span>
-                            <span class="pay-title money">￥{{money1}}</span>
+                            <span class="pay-title money">￥{{allmoney}}</span>
                         </div>
                         <div class="order-box1 pay-title1">
                             <span >运费</span>
@@ -65,31 +65,30 @@
 
                     </div>
                 </div>
-                <div v-show="goodorder.warehouse.length>0">
+                <div v-show="ordergood.warehouse.length>0">
                     <div class="goods">
                         <div class="gtop">
                             <span class="gname">总仓包邮</span>
                         </div>
-                        <div class="order-mitem"  v-for="item in goodorder.warehouse">
+                        <div class="order-mitem"  v-for="item in ordergood.warehouse">
                             <div class="order-tu">
-                                <img :src="item.goods.goods_img" alt="">
+                                <img :src="item.goods_img" alt="">
                             </div>
-                            <span class="order-title1">{{item.goods.goods_name}}</span>
-                            <span class="order-weight"></span>
-                            <span class="order-price">￥{{price}}</span>
-                            <span class="order-num">x{{item.num}}</span>
+                            <span class="order-title1">{{item.goods_name}}</span>
+                            <span class="order-weight">{{item.spec_group}}</span>
+                            <span class="order-price">￥{{item.goods_price}}</span>
+                            <span class="order-num">x{{item.goods_num}}</span>
                         </div>
                     </div>
                     <div class="pay pay1">
                         <div class="order-box1 pay-title1">
                             <span>支付方式</span>
                             <span class="pay-title">在线支付</span>
-
                         </div>
                         <div class="order-box1 pay-title1">
                             <span >配送</span>
-                            <span class="pay-title">{{fanshi}}</span>
-                            <img src="../assets/images/箭头2.png" class="goto" @click="gochoose">
+                            <span class="pay-title" @click="gochooses">{{zfanshi}}</span>
+                            <img src="../assets/images/箭头2.png" class="goto" @click="gochooses">
                         </div>
                         <div class="order-box1 pay-title1 order-box2">
                             <span >其他</span>
@@ -97,11 +96,11 @@
                         </div>
                         <div class="order-box1 pay-title1 ">
                             <span >商品总额</span>
-                            <span class="pay-title money">￥{{money}}</span>
+                            <span class="pay-title money">￥{{allmoneys}}</span>
                         </div>
                         <div class="order-box1 pay-title1">
                             <span >运费</span>
-                            <span class="pay-title money">￥{{yunfei}}</span>
+                            <span class="pay-title money">￥{{yunfei2}}</span>
                         </div>
                     </div>
                 </div>
@@ -114,8 +113,24 @@
                 </div>
 
             </div>
-        </main>
+            <div class="choose" v-show="showchoose1l">
+                <div class="fanshi">
+                    <div class="ziti" @click="ziti1">门店自提</div>
+                    <div class="ziti ziti1" @click="songhuo1">送货上门</div>
+                </div>
 
+            </div>
+        </main>
+        <div class="choose2" v-show="showbox2">
+            <div class="fanshi2">
+                <div class="ziti2 ziti22 noto2" >提示</div>
+                <div class="ziti2 ziti3" >您的额度不够，可选择返回购物车删除或立即续费增加额度</div>
+                <div class="ziti2 ziti12 ziti32" @click="shopgo">返回购物车</div>
+                <div class="ziti2 ziti12 okto2"  @click="gomember">立即续费</div>
+            </div>
+
+        </div>
+        <!--<toast v-model="tj"  type="text" :time="800" is-show-mask text="请添地址" position="bottom"></toast >-->
         <footer>
             <div class="hengfu"@click="gomember" v-show="showbox">成为好象会员，本单可减<span class="yuan">20</span>元。立即开通></div>
             <div class="box">
@@ -130,27 +145,31 @@
 
 <script>
     import { mapState } from 'vuex'
-
     import qs from 'qs'
+    import { Toast } from 'vux'
     export default {
-        name: "confirmorder",
+        name: "confirmorder1",
         data(){
             return{
                 goodorder:[],
                 showchoose:false,
-                fanshi:"送货上门",
-                num:1,
+                showchoose1l:false,
+                showbox2:false,
+                fanshi:"门店自提",
+                num:[],
                 uid:'',
                 user_info:[],
                 is_yellow_card:"",
                 price:'',
                 money:0,
-                yunfei:3,
+                yunfei:0.00,
+                yunfei2:0.00,
                 address:"",
                 goods_list:[],
                 school:[],
+                zfanshi:"门店自提",
                 goods_type:"",
-                delivery_model:"",
+                delivery_model:2,
                 showbox:false,
                 university_id:'',
                 order_type:'',
@@ -158,7 +177,24 @@
                 money1:0,
                 address_id:'',
                 moneymore:0.00,
-                is_cart:1
+                is_cart:1,
+                ordergood:[],
+                spec_id:[],
+                goods_id:[],
+                specs_id:'',
+                goods_ids:"",
+                nums:"",
+                price:0.00,
+                pricenum:0,
+                allmoney:0,
+                allmoneys:0,
+                tj:false,
+                addressid:0,
+                addressname:'',
+                address_name:"",
+                university:'',
+                university_ids:''
+
 
             }
         },
@@ -170,7 +206,7 @@
             }),
 
             moneynum:function () {
-                return this.moneymore=this.money+this.yunfei+this.money1;
+                return this.moneymore=(this.ordergood.total_money+this.yunfei+this.yunfei2).toFixed(2)
     }
 
         },
@@ -178,6 +214,7 @@
             this.uid=this.$route.query.user_id;
             this.token=this.$route.query.token;
             this.university_id=this.$route.query.university_id;
+            console.log(this.university_id)
             this.goodorder=JSON.parse(localStorage.order);
             // this.goodorder=localStorage.order;
             //小程序跳转过来获取收获地址
@@ -193,41 +230,109 @@
 
 
         mounted:function(){
+            // app调用
+            let that = this
+            window['Showaddress'] = function(address,id,addressid,addressname){
+                alert(addressname)
+                that.address = address
+                that.university_id = id
+                that.address_id=addressid;
+                that.address_name=that.address+this.address_name;
+            }
+            this.university=that.address+this.address_name;
 
 
             console.log(this.goodorder)
-            this.$axios.get('/university_address',{params:{university_id:this.university_id}}).then(res=>{
-                // console.log(res)
-                this.school=res.data.data;
-                console.log(this.school)
-            })
+            let _data = this.goodorder;
+            console.log(_data.warehouse.length);
+            if(_data.warehouse.length>0){
+                for (let item in _data.warehouse) {
+                    this.goods_id.push(_data.warehouse[item].goods.goods_id) ;
+                    this.num.push( _data.warehouse[item].num);
+                    this.spec_id.push(_data.warehouse[item].spec_id) ;
+                }
+            }
+            if(_data.store.length>0){
+                for (let item in _data.store) {
+                    this.goods_id.push(_data.store[item].goods.goods_id) ;
+                    this.num.push( _data.store[item].num);
+                    this.spec_id.push(_data.store[item].spec_id);
+                }
+            }
 
+            this.$axios.get('/university_address',{params:{university_id:this.university_id}}).then(res=>{
+                this.school=res.data.data;
+                for(let i=0;i++;i<length){
+                    if(this.university=this.school[i].address){
+                        this.university_ids=this.school[i].university;
+                    }
+                }
+            })
             this.$axios.get('/user/get_info/'+this.uid).then(res=>{
                 this.user_info=res.data.data.user_info;
                 this.is_yellow_card=this.user_info.is_yellow_card;
-                // console.log(this.is_yellow_card)
-                // console.log(this.goodorder.warehouse.length)
-                if(this.is_yellow_card=='0'){
-                    if(this.goodorder.store.length>0){
-                        this.smoneytotal1()
-                    }
 
-                    if(this.goodorder.warehouse.length>0){
-                        this.moneytotal1()
-                    }
-                }else if(this.is_yellow_card=='1'){
-                    if(this.goodorder.store.length>0){
-                        this.smoneytotal()
-                    }
-                    if(this.goodorder.warehouse.length>0){
-                        this.moneytotal()
-                        console.log(this.money)
-                    }
-                }
-                // console.log(res.data.data.user_info)
             })
+            this.goods_id = [];
+            this.num = [];
+            this.spec_id = [];
+            var index = 0;
+            for(var i=0;i<this.goodorder.warehouse.length;i++){
+                this.goods_id[index] = this.goodorder.warehouse[i].goods.goods_id;
+                this.spec_id[index] = this.goodorder.warehouse[i].spec_id;
+                this.num[index++] = this.goodorder.warehouse[i].num;
+            }
+            for(var i=0;i<this.goodorder.store.length;i++){
+                this.goods_id[index] = this.goodorder.store[i].goods.goods_id;
+                this.spec_id[index] = 0;
+                this.num[index++] = this.goodorder.store[i].num;
+            }
+            this.$axios.post('/user/order_confirm',
+                qs.stringify({
+                    goods_id:this.goods_id,
+                    goods_num:this.num,
+                    user_id:this.user_id,
+                    goods_spec_id:this.spec_id,
+
+                })).then(res=>{
+                if(res.data.err_code==0){
+                    this.ordergood=res.data.data;
+                   for(var i=0;i<this.ordergood.store.length;i++){
+                       this.pricenum=this.ordergood.store[i].goods_num
+                       this.price=this.ordergood.store[i].goods_price;
+                       this.allmoney+=this.pricenum*this.price;
+                   }
+                    for(var i=0;i<this.ordergood.warehouse.length;i++){
+                        this.pricenum=this.ordergood.warehouse[i].goods_num
+                        this.price=this.ordergood.warehouse[i].goods_price;
+                        this.allmoneys+=this.pricenum*this.price;
+                    }
 
 
+                }else if(res.data.err_code==1003){
+                    this.ordergood=res.data.data;
+                    this.showbox2=true;
+                    this.ordergood=res.data.data;
+
+                    for(var i=0;i<this.ordergood.store.length;i++){
+                        this.pricenum=this.ordergood.store[i].goods_num
+                        this.price=this.ordergood.store[i].goods_price;
+                        this.allmoney+=parseInt(this.price*this.pricenum)
+
+                    }
+                    for(var i=0;i<this.ordergood.warehouse.length;i++){
+                        this.pricenum=this.ordergood.warehouse[i].goods_num
+                        this.price=this.ordergood.warehouse[i].goods_price;
+                        this.allmoneys+=this.pricenum*this.price;
+                    }
+
+
+                }
+            })
+        },
+        components: {
+
+            Toast
         },
         methods:{
             // 查询用户默认收货地址
@@ -235,7 +340,8 @@
                 this.$axios.get('/user/addresses?user_id='+this.user_id).then((res)=>{
                     if(res.data.err_code == 0){
                         if(res.data.data.length<=0){
-                            this.address = "请添加收货方式";
+                            this.address = "请添加收货地址";
+
                         }else {
                             res.data.data.forEach((val,index)=>{
                                 if(val.is_default == 1){
@@ -257,6 +363,9 @@
 
                     }
                 })
+            },
+            gochooses(){
+                this.showchoose1l=true;
             },
             adr:function () {
                 if(this.device){
@@ -282,163 +391,177 @@
                     jsObj.GotoPoi(this.school.addresss,this.school.latitude,this.school.longitude)
                 }
             },
-            smoneytotal1(){
-                let NUM=0;
-                let price=0;
-                this.goodorder.store.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        price= v.goods.market_price;
 
-                    }
-
-                })
-                this.price=price
-                this.goodorder.store.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        NUM += v.num*v.goods.market_price;
-                    }
-
-                })
-                this.money1=NUM;
-            },
-            smoneytotal(){
-                let NUM=0;
-                let price=0
-                this.goodorder.store.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        price= v.goods.shop_price;
-
-                    }
-
-                })
-                this.price=price
-                this.goodorder.store.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        NUM += v.num*v.goods.shop_price;
-                    }
-
-                })
-                this.money1=NUM;
-            },
-            moneytotal1(){
-                let NUM=0;
-                let price=0
-                this.goodorder.warehouse.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        price= v.goods.market_price;
-                    }
-
-                })
-
-                this.goodorder.warehouse.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        NUM += v.num*v.goods.market_price;
-                    }
-
-                })
-                this.money=NUM;
-            },
-            moneytotal(){
-                let NUM=0;
-                let price=0
-
-                this.goodorder.warehouse.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        price= v.goods.shop_price;
-                    }
-
-                })
-                this.price=price
-                this.goodorder.warehouse.forEach(function(v){
-                    if(v.goods.goods_id >= 0){
-                        NUM += v.num*v.goods.shop_price;
-                    }
-
-                })
-                this.money=NUM;
-
+            shopgo(){
+                this.$router.push({name:'shopcart',query:{user_id:this.user_id,token:this.token,university_id:this.university_id}})
             },
             gomember(){
-                this.$router.push({name:'hxmember'})
+                this.$router.push({name:'hxmember',query:{user_id:this.user_id,token:this.token}})
             },
             gochoose:function () {
                 this.showchoose=!this.showchoose;
 
             },
+            ziti1:function () {
+                let ti=document.querySelector(".ziti");
+                this.zfanshi="门店自提"
+                this.delivery_model=2
+                this.showchoose1l=!this.showchoose1l;
+                this.yunfei2=0.00
+            },
+            songhuo1:function () {
+                let song=document.querySelector(".ziti1");
+                this.zfanshi="送货上门";
+                this.delivery_model=1
+                this.showchoose1l=!this.showchoose1l;
+                this.yunfei2=3.00
+            },
             ziti:function () {
                 let ti=document.querySelector(".ziti");
-                this.fanshi="门店自提"
+                this.fanshi="门店自提";
+                this.delivery_model=2
                 this.showchoose=!this.showchoose;
-                this.yunfei=0
+                this.yunfei=0.00
             },
             songhuo:function () {
                 let song=document.querySelector(".ziti1");
-                this.fanshi="送货上门"
+                this.fanshi="送货上门";
+                this.delivery_model=1
                 this.showchoose=!this.showchoose;
-                this.yunfei=3
+                this.yunfei=3.00
             },
             qita(){
-                this.$router.push({name:'addbills'})
+                this.$router.push({name:'addbills',query:{user_id:this.user_id,token:this.token}})
             },
             paygo(){
-                let _data = this.goodorder;
-                let _goods_type2 = {goods_type:0,goods_info:[],delivery_model:0,trans_fee:0,invoice_id:0};
-                let _goods_type1 = {goods_type:0,goods_info:[],delivery_model:0,trans_fee:0,invoice_id:1};
-                let _goods_info = {};
-                let  _goods_list = [];
-                if(_data.warehouse.length>0){
-                    _goods_type2.goods_type = 2;
-                    // if(this.fanshi="")
-                    for (let item in _data.warehouse) {
-                        _goods_info.id = _data.warehouse[item].goods.goods_id;
-                        _goods_info.number = _data.warehouse[item].num;
-                        _goods_info.model_id = _data.warehouse[item].spec_id;
-                    }
-                    _goods_type2.goods_info.push(_goods_info);
-                    _goods_list.push(_goods_type2);
-                }
-                if(_data.store.length>0){
-                    _goods_info = {};
-                    _goods_type1.goods_type = 1;
-                    for (let item in _data.store) {
-                        _goods_info.id = _data.store[item].goods.goods_id;
-                        _goods_info.number = _data.store[item].num;
-                        _goods_info.model_id = 0;
-                    }
-                    _goods_type1.goods_info.push(_goods_info);
-                    _goods_list.push(_goods_type1);
-                }
-                console.log(_goods_list);
 
-                this.$axios.post("/user/order_create",
-                    qs.stringify({
-                        goods_list:_goods_list,
-                        address_id:this.address_id,
-                        university_id:this.university_id,
-                        is_cart:this.is_cart
-                    })).then(res=>{
-                        console.log(res)
-                    if(res.data.err_code==0){
-                            this.order_id=res.data.data;
-                        if(this.device){
-                            wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.moneymore})
-                        }else{
-                            jsObj.GotoPay(this.order_id,'G',this.moneymore)
+                    let _data = this.goodorder;
+                    let _goods_type2 = {goods_type:0,goods_info:[],delivery_model:2,trans_fee:0,invoice_id:0};
+                    let _goods_type1 = {goods_type:0,goods_info:[],delivery_model:2,trans_fee:0,invoice_id:1};
+                    let _goods_info = {};
+                    let  _goods_list = [];
+
+                    if(_data.warehouse.length>0){
+                        _goods_type2.goods_type = 2;
+                        // if(this.fanshi="")
+                        for (let item in _data.warehouse) {
+                            _goods_info.id = _data.warehouse[item].goods.goods_id;
+                            _goods_info.number = _data.warehouse[item].num;
+                            _goods_info.model_id = _data.warehouse[item].spec_id;
+                            _goods_type2.goods_info.push(_goods_info);
+                            _goods_info = {};
                         }
+                        _goods_type2.delivery_model=this.delivery_model;
+                        console.log(this.delivery_model)
+
+                        _goods_list.push(_goods_type2);
+                        console.log(1)
 
                     }
-                })
+                    console.log(_goods_list)
+                    if(_data.store.length>0){
+
+                        _goods_type1.goods_type = 1;
+                        for (let item in _data.store) {
+                            _goods_info.id = _data.store[item].goods.goods_id;
+                            _goods_info.number = _data.store[item].num;
+                            _goods_info.model_id = 0;
+                            _goods_type1.goods_info.push(_goods_info);
+                            _goods_info = {};
+                        }
+                        _goods_type1.delivery_model=this.delivery_model;
+                        _goods_list.push(_goods_type1);
+                    }
+                    console.log(_goods_list);
+
+                    this.$axios.post("/user/order_create",
+                        qs.stringify({
+                            goods_list:_goods_list,
+                            address_id:this.address_id,
+                            university_id:this.university_ids,
+                            is_cart:this.is_cart
+
+                        })).then(res=>{
+                        console.log(res)
+                        if(res.data.err_code==0){
+                            this.order_id=res.data.data;
+                            if(this.device){
+                                wx.miniProgram.navigateTo({url: '/pages/collectmoney/main?id='+this.order_id+'type=G'+'&pay='+this.moneymore})
+                            }else{
+                                console.log()
+                                jsObj.GotoPay(this.order_id,'G',this.moneymore)
+                            }
+
+                        }
+                    })
+
+
             }
         }
-    }
-    function Goaddress(address,id){
-        document.getElementsByClassName('name').innerHTML+=adderss;
-        this.address_id=id;
     }
 </script>
 
 <style scoped>
+    .fanshi2{
+        width: 5.63rem;
+        height: 4.43rem;
+        background: #fff;
+        position: absolute;
+        bottom:0;
+        left:0;
+        top:0;
+        right:0;
+        margin:auto;
+        border-radius: 0.20rem;
+    }
+    .ziti22{
+        color:#cccccc;
+        font-size: 0.28rem;
+        line-height: 0.30rem;
+    }
 
+    body{
+        background: #f5f5f5;
+    }
+    .ziti2{
+        font-size: 0.32rem;
+        text-align: center;
+        color:#555555;
+        width: 100%;
+        height: 1.0rem;
+        display: block;
+        line-height: 1.0rem;
+    }
+    .ziti3{
+        height: 2.0rem;
+    }
+    .ziti12:hover{
+        color:#f9444d;
+    }
+    .ziti32{
+        color:#cccccc;
+    }
+    .choose2{
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        position: fixed;
+        top:0;
+        left:0;
+        z-index: 44;
+    }
+    .ziti12{
+        width: 50%;
+        float:left;
+
+    }
+    .noto2{
+        color:#cccccc;
+        font-size: 0.28rem;
+    }
+    .okto2{
+        color:#f9444d;
+    }
     .fanshi{
         width: 100%;
         height: 3.0rem;

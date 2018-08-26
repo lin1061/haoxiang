@@ -24,9 +24,10 @@
                 <span class="card-title">{{member.series_number }}</span>
                 <div class="tiaoma" v-html="member.bar_pic"></div>
                 <span class="card-title3">好象有货{{member.card_type}}</span>
-               <router-link :to="{name:'hxmember',query:{user_id:user_id,token:token}}">
+
                    <button class="anniu" @click="renewals">立即续费</button>
-               </router-link>
+                   <span class="edu">剩余额度:{{member.surplus_amount}}</span>
+
 
             </section>
         </main>
@@ -89,6 +90,7 @@
                 this.$axios.get('/user/card',{params:{user_id:this.user_id}}).then(res=>{
                     if(res.data.err_code == 0){
                         this.member=res.data.data;
+                        console.log(res)
                     }
                 })
             },
@@ -200,5 +202,14 @@
     }
     section .card-title{
         padding-top: 1.1rem;
+    }
+    .edu{
+        font-size:0.24rem;
+        color:#555555;
+        position: absolute;
+        right:0.4rem;
+        bottom:0.58rem;
+        margin:auto;
+
     }
 </style>
